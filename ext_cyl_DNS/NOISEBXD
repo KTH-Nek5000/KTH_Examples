@@ -1,0 +1,36 @@
+!> @file NOISEBXD
+!! @ingroup noise_box
+!! @brief Include file with parameter and common block definitions for 
+!! noise_box
+!! @author Adam Peplinski
+!! @date Feb 2, 2017
+!=======================================================================
+!     parameter set
+      real nseb_tim              !< @var time to add noise
+      real nseb_amp              !< @var noise magnitude (0.0 do not add noise)
+      real nseb_bmin(LDIM)       !< @var min box bound
+      real nseb_bmax(LDIM)       !< @var max box bound
+
+!     runtime parameter name section
+      integer nseb_nkeys
+      parameter (nseb_nkeys = 9)
+      character*132 nseb_dictkey(nseb_nkeys)
+      data
+     $  nseb_dictkey(1) / '_NOISEBX'  /   ! section name
+     $  nseb_dictkey(2) / 'TIME'      / ! nseb_tim
+     $  nseb_dictkey(3) / 'AMPLITUDE' / ! nseb_amp
+     $  nseb_dictkey(4) / 'BOXMINX'   / ! nseb_bmin(1)
+     $  nseb_dictkey(5) / 'BOXMINY'   / ! nseb_bmin(2)
+     $  nseb_dictkey(6) / 'BOXMINZ'   / ! nseb_bmin(3)
+     $  nseb_dictkey(7) / 'BOXMAXX'   / ! nseb_bmax(1)
+     $  nseb_dictkey(8) / 'BOXMAXY'   / ! nseb_bmax(2)
+     $  nseb_dictkey(9) / 'BOXMAXZ'   / ! nseb_bmax(3)
+
+!     runtime parameters used for 3D run only
+      integer nseb_n3dkeys
+      parameter (nseb_n3dkeys = 2)
+      integer nseb_l3dkey(nseb_n3dkeys)
+      data nseb_l3dkey / 6, 9 /
+
+!     common block section
+      common /NOISEBX/ nseb_tim, nseb_amp, nseb_bmin, nseb_bmax
