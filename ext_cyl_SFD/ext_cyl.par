@@ -1,0 +1,58 @@
+#
+# nek parameter file
+#
+[GENERAL] 
+#startFrom = restart.fld 
+stopAt = numSteps #endTime
+#endTime = 0.00000
+numSteps = 102.0
+
+dt = 1.000000E-02
+timeStepper = bdf #char #steady
+tOrder = 3.00000
+variableDt = no
+maxCFL = 1.00000
+
+writeControl = timeStep #runTime
+writeInterval = 20.0
+
+dealiasing = yes
+filtering = yes  
+filterWeight = 0.100000E-01
+
+userParam01 = 5 # use in .usr uparam(01)
+
+[PROBLEMTYPE]
+#stressFormulation = yes
+#lowMachNumber = yes 
+#dp0dt = yes
+#variableProperties = yes
+
+[MESH]
+writeToFieldFile = yes
+
+[PRESSURE]
+preconditioner = semg
+residualTol = 0.100000E-08
+residualProj = no
+writeToFieldFile = yes
+
+[VELOCITY]
+residualTol = 0.100000E-08
+residualProj = no
+density = 1.0
+viscosity = -100
+advection = yes
+writeToFieldFile = yes
+
+[_CHKPOINT]
+chkpInterval = 25
+readchkpt = no
+chkpFnumber = 0
+
+[_SFD]
+runsfd = yes
+filtwdth = 1.05
+controlcff = 0.5
+residualtol = 0.1E-06
+loginterval = 5

@@ -1,0 +1,66 @@
+!> @file SFD
+!! @ingroup sfd
+!! @brief Include file for selective frequency damping module
+!! @author Adam Peplinski
+!! @date Feb 6, 2017
+!=======================================================================
+!     parameter section
+
+      integer SFDFCONV   !< frequency for saving convegence data
+      real SFDD          !< filter width
+      real SFDCHI        !< control coefficient
+      real SFDTOL        !< tolerance for residual
+      logical IFSFD      !< do we prform SFD
+
+!     runtime parameter name section
+      integer sfd_nkeys
+      parameter (sfd_nkeys = 6)
+      character*132 sfd_dictkey(sfd_nkeys)
+      data
+     $  sfd_dictkey(1)  / '_SFD' /      ! section name
+     $  sfd_dictkey(2)  / 'RUNSFD' /    ! IFSFD
+     $  sfd_dictkey(3)  / 'FILTWDTH' /  ! SFDD
+     $  sfd_dictkey(4)  / 'CONTROLCFF' /     ! SFDCHI
+     $  sfd_dictkey(5)  / 'RESIDUALTOL' /     ! SFDTOL
+     $  sfd_dictkey(6)  / 'LOGINTERVAL' /     ! SFDFCONV
+
+!     runtime parameters used for 3D run only
+      integer sfd_n3dkeys
+      parameter (sfd_n3dkeys = 0)
+      integer sfd_l3dkey(sfd_n3dkeys)
+
+!     file units
+!     convergence
+      integer SFDFIDCNV
+
+!     this should be related to chkptnrsf in CHKPTMSTPD
+      integer SFDNRSF
+      parameter (SFDNRSF=4)
+
+!     variables
+!     filtered velocity field
+      real VSX(LX1,LY1,LZ1,LELV), VSY(LX1,LY1,LZ1,LELV),
+     $     VSZ(LX1,LY1,LZ1,LELV)
+
+!     history of filtered velocity field
+      real VSXLAG(LX1,LY1,LZ1,LELV,3), VSYLAG(LX1,LY1,LZ1,LELV,3),
+     $     VSZLAG(LX1,LY1,LZ1,LELV,3)
+
+!     right hand sides
+      real BFSX(LX1,LY1,LZ1,LELV), BFSY(LX1,LY1,LZ1,LELV),
+     $     BFSZ(LX1,LY1,LZ1,LELV)
+
+!     timing SFD
+!     SFDTIME - total time spent within SFD
+!     SFDTIME1,SFDTIME2 - temporary storage
+      real SFDTIME,SFDTIME1,SFDTIME2
+      
+!     common block section
+      COMMON /SFDI/ SFDFCONV, SFDFIDCNV
+
+      COMMON /SFDR/ SFDD, SFDCHI, SFDTIME, SFDTIME1, SFDTIME2, SFDTOL
+
+      COMMON /SFDRV/ VSX, VSY, VSZ, BFSX, BFSY, BFSZ, VSXLAG, VSYLAG,
+     $     VSZLAG
+
+      COMMON /SFDL/ IFSFD

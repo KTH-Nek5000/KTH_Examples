@@ -1,0 +1,35 @@
+!> @file CHKPTMSTPD
+!! @ingroup chkpoint_dns_lin
+!! @brief Include file for multistep checkpointing
+!! @author Adam Peplinski
+!! @date Feb 6, 2017
+!=======================================================================
+!     number of restart sets to keep
+      integer chpm_nset
+      parameter (chpm_nset=2)
+
+!     max number of snapshots in a single set
+      integer chpm_snmax
+      parameter  (chpm_snmax=3)
+      
+!     current number of snapshots in a single set
+      integer chpm_nsnap
+
+!     number of files in a snapshot
+      integer chkptnfile, chkptnfmax
+      parameter (chkptnfmax=5)
+
+!     filenames
+      character*80 chkptfname(chpm_snmax,chkptnfmax)
+
+!     write and read reastart file set number. 
+!     Keep it in common block, so other subroutines can access it.
+!     Important!!! Do not modify it elswere!!!
+      integer chpm_set_o, chpm_set_i
+
+!     common blocks
+      common /CHKPTDNSI/ chkptnfile, chpm_nsnap
+
+      common /CHKPTDNSC/ chkptfname
+
+      common /RST_SET/ chpm_set_o, chpm_set_i
