@@ -10,27 +10,20 @@ C     - forcing function for passive scalar (q)
 C     - general purpose routine for checking errors etc.
 C
 c-----------------------------------------------------------------------
-      subroutine uservp (ix,iy,iz,eg)
+      subroutine uservp (ix,iy,iz,ieg)
       include 'SIZE'
       include 'TOTAL'
       include 'NEKUSE'
-
-      integer e,f,eg
-c     e = gllel(eg)
 
       udiff =0.
       utrans=0.
       return
       end
 c-----------------------------------------------------------------------
-      subroutine userf  (ix,iy,iz,eg)
+      subroutine userf  (ix,iy,iz,ieg)
       include 'SIZE'
       include 'TOTAL'
       include 'NEKUSE'
-
-      integer e,f,eg
-c     e = gllel(eg)
-
 
 c     Note: this is an acceleration term, NOT a force!
 c     Thus, ffx will subsequently be multiplied by rho(x,t).
@@ -46,13 +39,10 @@ c     Thus, ffx will subsequently be multiplied by rho(x,t).
       return
       end
 c-----------------------------------------------------------------------
-      subroutine userq  (ix,iy,iz,eg)
+      subroutine userq  (ix,iy,iz,ieg)
       include 'SIZE'
       include 'TOTAL'
       include 'NEKUSE'
-
-      integer e,f,eg
-c     e = gllel(eg)
 
       qvol   = 0.0
 
