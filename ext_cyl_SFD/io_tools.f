@@ -77,7 +77,7 @@
       implicit none
 
       include 'SIZE'
-      include 'INPUT'           ! IFREGUO
+      include 'INPUT'           ! IFREGUO, IFMPIIO
       include 'RESTART'         ! NFILEO
 
 !     argument list
@@ -98,11 +98,11 @@
       fname = ''
 
 !     numbe or IO nodes
-#ifdef MPIIO
-      rfileo = 1
-#else
-      rfileo = NFILEO
-#endif
+      if (MPIIO) then
+        rfileo = 1
+      else
+        rfileo = NFILEO
+      endif
       ndigit = log10(rfileo) + 1
 
 !     Add directory
@@ -156,13 +156,8 @@
       character*132 hname
 
 !     local variables
-      character (LEN=8) eight,fmt,s8
-      save         eight
-      data         eight / "????????" /
-
       character(LEN=132) fname
-
-      integer ipass, kl, itmp
+      integer itmp
 !-----------------------------------------------------------------------
 !     initialise variables
       ierr = 0
@@ -177,17 +172,8 @@
          return
       endif
 
-      do ipass=1,2              ! 2nd pass, in case 1 file/directory
-         kloop: do kl=8,1,-1
-         itmp = index(fname,eight(1:kl))
-         if (itmp.ne.0) then      ! found k??? string
-            write(fmt,"('(i',i1,'.',i1,')')") kl,kl
-            write(s8,fmt) fid
-            fname(itmp:itmp+kl-1) = s8(1:kl)
-            exit kloop
-         endif
-         enddo kloop
-      enddo
+!     add file number
+      call addfid(hname,fid)
 
 !     add ending character; required by C
       fname = trim(fname)//CHAR(0)
