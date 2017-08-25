@@ -79,6 +79,9 @@
             call exitt
          endif
 
+!     as io_init was removed from nek_init
+         call io_init
+
 !     fill chkptfname array with 'rbx' and 'rsx' file names
          if (IFPERT) then
 !     assumes only single perturbation

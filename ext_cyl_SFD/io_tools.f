@@ -98,7 +98,7 @@
       fname = ''
 
 !     numbe or IO nodes
-      if (MPIIO) then
+      if (IFMPIIO) then
         rfileo = 1
       else
         rfileo = NFILEO
