@@ -51,7 +51,7 @@
      $           ' chpt_step and NSTEPS not optimal'
       endif
 
-!     check perturbation parameters
+!     check perturbation and mhd parameters
       if (IFPERT) then
          if (IFBASE.or.NPERT.gt.1.or.IFMHD) then
             if (NIO.eq.0) write(*,*) 'CHECKPOINT: mode not supported'
@@ -312,7 +312,7 @@
 !! @param[in] iosave
 !! @param[in] save_size
 !! @param[in] nfldi
-!! @note This is version of @ref restart_save routines.
+!! @note This is version of @ref restart_save routine.
       subroutine restart_save_pert(iosave,save_size,nfldi)
       implicit none
 
@@ -448,7 +448,7 @@
             call sioflag(ndumps,fname,initc(ifile))
             call mfi_pert(fname,ifile)
          enddo
-         call setup_convect(3)
+!         call setup_convect(3)
          if (nid.ne.0) time=0
          time = glmax(time,1) ! Sync time across processors
          return
@@ -465,7 +465,7 @@
 !! @param[in] fname  file name
 !! @param[in] ifile  field pointer (nonlinear, mhd, perturbation; at the same time file number)
 !! @note This is version of @ref mfi including perturbation field.
-!! @remark This routine uses global scratch space SCRNS, SCRCG.
+!! @remark This routine uses global scratch space \a SCRNS, \a SCRCG.
       subroutine mfi_pert(fname,ifile)
       implicit none
 
@@ -490,7 +490,7 @@
       real wk(lwk), pm1(lx1*ly1*lz1,lelv)
       common /scrns/ wk
       common /scrcg/ pm1
-      integer e, j, k, ierr
+      integer el, jl, kl, ierr
 
       integer*8 offs0,offs,nbyte,stride,strideB,nxyzr8
       integer iofldsr
@@ -536,8 +536,9 @@
 !     perturbation mode
 !     importatn assumption; there are no MHD perturbation
             elseif (ifpert.and.ifile.ge.2) then
-               j=ifile-1  ! pointer to perturbation field
-               call mfi_getv(vxp(1,j),vyp(1,j),vzp(1,j),wk,lwk,.false.)
+               jl=ifile-1  ! pointer to perturbation field
+               call mfi_getv(vxp(1,jl),vyp(1,jl),vzp(1,jl),
+     $              wk,lwk,.false.)
             else
 !               if(nio.eq.0) write(6,*) 'Reading velocity field'
                call mfi_getv(vx,vy,vz,wk,lwk,.false.)
@@ -566,8 +567,8 @@
          if (ifgett) then
 !     perturbation mode
             if (ifpert.and.ifile.ge.2) then
-               j=ifile-1  ! pointer to perturbation field
-               call mfi_gets(tp(1,1,j),wk,lwk,.false.)
+               jl=ifile-1  ! pointer to perturbation field
+               call mfi_gets(tp(1,1,jl),wk,lwk,.false.)
             else
 !               if(nid.eq.0) write(6,*) 'Reading temperature field'
                call mfi_gets(t,wk,lwk,.false.)
@@ -578,21 +579,21 @@
          iofldsr = iofldsr + 1
       endif
 
-      do k=1,ldimt-1
-         if (ifgtpsr(k)) then
+      do kl=1,ldimt-1
+         if (ifgtpsr(kl)) then
             offs = offs0 + iofldsr*stride + strideB
             call byte_set_view(offs,ifh_mbyte)
-            if (ifgtps(k)) then
-!               if(nid.eq.0) write(6,'(A,I2,A)') ' Reading ps',k,' field'
+            if (ifgtps(kl)) then
+!             if(nid.eq.0) write(6,'(A,I2,A)') ' Reading ps',kl,' field'
 !     perturbation mode
                if (ifpert.and.ifile.ge.2) then
-                  j=ifile-1     ! pointer to perturbation field
-                  call mfi_gets(tp(1,k+1,j),wk,lwk,.false.)
+                  jl=ifile-1     ! pointer to perturbation field
+                  call mfi_gets(tp(1,kl+1,jl),wk,lwk,.false.)
                else
-                  call mfi_gets(t(1,1,1,1,k+1),wk,lwk,.false.)
+                  call mfi_gets(t(1,1,1,1,kl+1),wk,lwk,.false.)
                endif
             else
-               call mfi_gets(t(1,1,1,1,k+1),wk,lwk,.true.)
+               call mfi_gets(t(1,1,1,1,kl+1),wk,lwk,.true.)
             endif
             iofldsr = iofldsr + 1
          endif
@@ -604,11 +605,11 @@
 
       ierr = 0
 
-#ifdef MPIIO
-      if (nid.eq.pid0r) call byte_close_mpi(ifh_mbyte,ierr)
-#else
-      if (nid.eq.pid0r) call byte_close(ierr)
-#endif
+      if(ifmpiio) then
+        if(nid.eq.pid0r) call byte_close_mpi(ifh_mbyte,ierr)
+      else
+        if(nid.eq.pid0r) call byte_close(ierr)
+      endif
       call err_chk(ierr,'Error closing restart file, in mfi_pert.$')
       tio = dnekclock()-tiostart
 
