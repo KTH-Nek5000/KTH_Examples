@@ -30,6 +30,6 @@
       integer chpt_l3dkey(chpt_n3dkeys)
 
 !     common blocks
-      common /CHKPNTI/ chpt_step
+      common /CHKPNTI/ chpt_step, chpt_fnum
 
       common /CHKPNTL/ chpt_ifrst

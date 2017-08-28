@@ -69,6 +69,7 @@
 
 !     broadcast data
       call bcast(chpt_step,ISIZE)
+      call bcast(chpt_fnum,ISIZE)
       call bcast(chpt_ifrst,LSIZE)
 
       return
