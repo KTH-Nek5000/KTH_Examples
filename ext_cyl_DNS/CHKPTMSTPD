@@ -15,12 +15,9 @@
 !     current number of snapshots in a single set
       integer chpm_nsnap
 
-!     number of files in a snapshot
-      integer chkptnfile, chkptnfmax
-      parameter (chkptnfmax=5)
-
-!     filenames
-      character*80 chkptfname(chpm_snmax,chkptnfmax)
+!     max number of files in a snapshot (DNS, perturbation, mhd..)
+      integer chkptnfmax
+      parameter (chkptnfmax=2)
 
 !     write and read reastart file set number. 
 !     Keep it in common block, so other subroutines can access it.
@@ -28,8 +25,6 @@
       integer chpm_set_o, chpm_set_i
 
 !     common blocks
-      common /CHKPTDNSI/ chkptnfile, chpm_nsnap
-
-      common /CHKPTDNSC/ chkptfname
+      common /CHKPTDNSI/ chpm_nsnap
 
       common /RST_SET/ chpm_set_o, chpm_set_i

@@ -78,7 +78,7 @@
 !> @brief Main checkpoint interface
 !! @ingroup chkpoint
 !! @note This routine should be called in userchk
-      subroutine checkpoint_main
+      subroutine chkpt_main
       implicit none
 
       include 'CHKPOINTD'        ! chpt_ifrst

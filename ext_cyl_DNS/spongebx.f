@@ -226,7 +226,8 @@
                if (SPNG_WL(il).lt.SPNG_DL(il).or.
      $              SPNG_WR(il).lt.SPNG_DR(il)) then
                   if (NIO.eq.0) then
-                     write(*,*) 'ERROR; wrong sponge parameters'
+                     write(*,*)
+     $                  'ERROR: spng_box_init; wrong sponge parameters'
                   endif
                   call exitt
                endif
@@ -242,7 +243,8 @@
 
 !     get SPNG_FUN
                if (xxmax.le.xxmin) then
-                  if (NIO.eq.0) write(6,*) 'ERROR; sponge to wide'
+                  if (NIO.eq.0)
+     $                write(6,*) 'ERROR: spng_box_init; sponge to wide'
                   call exitt
                else
 !     this should be done by pointers, but for now I avoid it
@@ -311,19 +313,18 @@
       integer ix,iy,iz,ieg
 
 !     local variables
-      integer e, ip
-      real rtmp
+      integer iel, ip
 !-----------------------------------------------------------------------
       if (SPNG_STR.gt.0.0) then
-         e=GLLEL(ieg)
-         ip=ix+NX1*(iy-1+NY1*(iz-1+NZ1*(e-1)))
+         iel=GLLEL(ieg)
+         ip=ix+NX1*(iy-1+NY1*(iz-1+NZ1*(iel-1)))
 
          if (JP.eq.0) then
 !     dns
-            ffx = ffx + SPNG_FUN(ip)*(SPNG_VR(ip,1) - VX(ix,iy,iz,e))
-            ffy = ffy + SPNG_FUN(ip)*(SPNG_VR(ip,2) - VY(ix,iy,iz,e))
+            ffx = ffx + SPNG_FUN(ip)*(SPNG_VR(ip,1) - VX(ix,iy,iz,iel))
+            ffy = ffy + SPNG_FUN(ip)*(SPNG_VR(ip,2) - VY(ix,iy,iz,iel))
             if (IF3D) ffz = ffz + SPNG_FUN(ip)*
-     $           (SPNG_VR(ip,NDIM) - VZ(ix,iy,iz,e))
+     $           (SPNG_VR(ip,NDIM) - VZ(ix,iy,iz,iel))
          else
 !     perturbation
             ffx = ffx - SPNG_FUN(ip)*VXP(ip,JP)

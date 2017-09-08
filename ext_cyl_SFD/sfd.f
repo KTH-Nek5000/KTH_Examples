@@ -654,6 +654,9 @@
 !-----------------------------------------------------------------------
       tiostart=dnekclock_sync()
 
+!     as it was removed form nek_init
+      call io_init
+
 !     copy and set output parameters
       lwdsizo= WDSIZO
       WDSIZO = 8

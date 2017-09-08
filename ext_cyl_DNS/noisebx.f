@@ -163,13 +163,15 @@
                         xl(2) = YM1(il,jl,kl,iel)
                         if (IF3D) xl(NDIM) = YM1(il,jl,kl,iel)
                         ifadd = .TRUE.
-                        diml: do nl=1,NDIM
+                        do nl=1,NDIM
                            if (xl(nl).lt.NSEB_BMIN(nl).or.
      $                          xl(nl).gt.NSEB_BMAX(nl)) then
                               ifadd = .FALSE.
-                              exit diml
+!                              exit
+                              goto 20
                            endif
-                        enddo diml
+                        enddo
+ 20                     continue
 
                         if (ifadd) then
                            fcoeff(1)=  3.0e4

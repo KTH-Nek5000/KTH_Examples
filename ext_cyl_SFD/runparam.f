@@ -61,9 +61,11 @@
      $            ':'//trim(adjustl(mod_dictkey(ip)))
                if(index(key,trim(lkey)).eq.1) then
                   ifvar = .TRUE.
-                  exit
+!                  exit
+                  goto 20
                endif
             enddo
+ 20         continue
             if (ifvar) then
 !     check 2D versus 3D
                if (.not.IF3D) then
@@ -71,9 +73,11 @@
                   do jl=1,mod_n3dkeys
                      if (ip.eq.mod_l3dkey(jl)) then
                         if3dkey = .TRUE.
-                        exit
+!                        exit
+                        goto 40
                      endif
                   enddo
+ 40               continue
                   if (if3dkey) then
                      write(*,*) 'Module ',trim(mod_dictkey(1))
                      write(*,*) '3D parameter specified for 2D run'

@@ -71,7 +71,7 @@ c-----------------------------------------------------------------------
       endif
 
 !     save/load files for full-restart
-      call checkpoint_main
+      call chkpt_main
 
 !     add noise
       call sfd_main
