@@ -8,7 +8,7 @@
 !=======================================================================
 !> @brief Initialise multi-file checkpoint routines
 !! @ingroup chkpoint_mstep
-!! @note This interface is defined in @ref checkpoint_main
+!! @note This interface is defined in @ref chkpt_main
 !! @todo Add timestep reader to ensure proper restart
       subroutine chkpt_init
       implicit none
@@ -75,7 +75,7 @@
 !=======================================================================
 !> @brief Write full file restart set
 !! @ingroup chkpoint_mstep
-!! @note This interface is defined in @ref checkpoint_main.
+!! @note This interface is defined in @ref chkpt_main.
 !! @note This is version of @ref full_restart_save routine.
       subroutine chkpt_write()
       implicit none
@@ -164,7 +164,7 @@
 !=======================================================================
 !> @brief Read full file restart set.
 !! @ingroup chkpoint_mstep
-!! @note This interface is defined in @ref checkpoint_main
+!! @note This interface is defined in @ref chkpt_main
 !! @note This is version of @ref full_restart routine.
       subroutine chkpt_read()
       implicit none
