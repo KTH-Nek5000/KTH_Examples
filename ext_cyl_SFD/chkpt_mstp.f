@@ -70,6 +70,9 @@
          chpm_set_o = 0
       endif
 
+!     set reset flag
+      chpm_reset = -1
+
       return
       end
 !=======================================================================
@@ -151,9 +154,11 @@
          if (ifile.eq.chpm_nsnap) then
             if (NIO.eq.0) write(*,*)
      $              'Written checkpoint snapshot number: ',chpm_set_o+1
-            chpm_set_o = mod(chpm_set_o+1,chpm_nset)
+            chpm_reset = mod(chpm_set_o+1,chpm_nset)
          endif
-
+      elseif (chpm_reset.ge.0) then
+         chpm_set_o = chpm_reset
+         chpm_reset = -1
       endif
 
 !     put parameters back
@@ -550,6 +555,11 @@
 !     simple timing
       tiostart=dnekclock_sync()
 
+!     set elelemnt size
+      NXO  = NX1
+      NYO  = NY1
+      NZO  = NZ1
+
 !     open file
       call io_mbyte_open(fname,ierr)
       call err_chk(ierr,'ERROR: io_mfo; file not opened. $')
@@ -649,7 +659,7 @@
 
 !     close file
       call io_mbyte_close(ierr)
-      call err_chk(ierr,'ERROR: io_mfo; file not closed. $')
+      call err_chk(ierr,'ERROR: chkpt_mfo; file not closed. $')
 
       tio = dnekclock_sync()-tiostart
       if (tio.le.0) tio=1.
@@ -965,7 +975,7 @@ c      if (ibsw_out.ne.0) call set_bytesw_write(ibsw_out)
 
 !     close file
       call io_mbyte_close(ierr)
-      call err_chk(ierr,'ERROR: io_mfo_outfld; file not closed. $')
+      call err_chk(ierr,'ERROR: chkpt_mfi; file not closed. $')
 
       tio = dnekclock_sync()-tiostart
       if (tio.le.0) tio=1.
@@ -991,7 +1001,7 @@ c      if (ibsw_out.ne.0) call set_bytesw_write(ibsw_out)
       return
       end
 !=======================================================================
-!> @brief Interpolate variables
+!> @brief Interpolate checkpoint variables
 !! @details This routine interpolates fields from nxr to nx1 (nx2) polynomial order
 !! @ingroup chkpoint_mstep
 !! @param[in]   fname      file name
@@ -1028,7 +1038,7 @@ c      if (ibsw_out.ne.0) call set_bytesw_write(ibsw_out)
       common /SCRCG/ pm1
 !-----------------------------------------------------------------------
       if (NIO.eq.0) then
-         write(*,*) 'ERROR: chkpt_interp, nothing done yet'
+         write(*,*) 'ERROR: chkpt_interp; nothing done yet'
          call exitt
       endif
 

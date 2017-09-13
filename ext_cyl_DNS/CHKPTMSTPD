@@ -19,12 +19,15 @@
       integer chkptnfmax
       parameter (chkptnfmax=2)
 
-!     write and read reastart file set number. 
+!     write and read reastart file set number and the reset marker
+!     the reset marker is necessayr to dependencies between checkpointing routines
+!     form different modules; the only rule should be that call to chkpt_main should
+!     called first
 !     Keep it in common block, so other subroutines can access it.
 !     Important!!! Do not modify it elswere!!!
-      integer chpm_set_o, chpm_set_i
+      integer chpm_set_o, chpm_set_i, chpm_reset
 
 !     common blocks
       common /CHKPTDNSI/ chpm_nsnap
 
-      common /RST_SET/ chpm_set_o, chpm_set_i
+      common /RST_SET/ chpm_set_o, chpm_set_i, chpm_reset
