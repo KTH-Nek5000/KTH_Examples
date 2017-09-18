@@ -207,6 +207,10 @@
                ifcoord = .true.
             endif
          else
+            if (ifpert.and.(.not.ifbase)) then
+               call chcopy (fname(1),fname(fnum),132)
+               fnum = 1
+            endif
             ifcoord = .false.
          endif
 
@@ -999,7 +1003,7 @@ c      if (ibsw_out.ne.0) call set_bytesw_write(ibsw_out)
             endif
          elseif(chktype.eq.3) then
 !     copy array
-            call io_mfi_gets(offs,ifskip)
+            call io_mfi_gets(offs,pm1,ifskip)
             if (ifgetp) then
                itmp = nx2*ny2*nz2
                do il=1,nelv
