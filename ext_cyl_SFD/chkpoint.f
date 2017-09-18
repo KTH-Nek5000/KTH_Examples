@@ -14,8 +14,8 @@
       include 'CHKPOINTD'
 
 !     local variables
-      character*132 lkey
-      integer i_out,ifnd
+      character*132 lkey, c_out
+      integer i_out,ifnd, ierr, nhour, nmin
       real d_out
       logical ifsec
 !-----------------------------------------------------------------------
@@ -23,6 +23,7 @@
       chpt_step = 100
       chpt_ifrst = .FALSE.
       chpt_fnum = 1
+      chpt_wtime = 0.0
 
 !     dictionary
       if (NID.eq.0) then
@@ -53,6 +54,33 @@
             if (ifnd.eq.1) then
                chpt_fnum = int(d_out)
             endif
+!     simulation wall time
+            lkey = trim(adjustl(chpt_dictkey(1)))//':'//
+     $             trim(adjustl(chpt_dictkey(5)))
+            call finiparser_getString(c_out,trim(lkey),ifnd)
+            if (ifnd.eq.1) then
+               lkey = trim(adjustl(c_out))
+!     check string format
+               ierr = 0
+               if (lkey(3:3).ne.':') ierr = 1
+               if (.not.(LGE(lkey(1:1),'0').and.LLE(lkey(1:1),'9')))
+     $             ierr = 1
+               if (.not.(LGE(lkey(2:2),'0').and.LLE(lkey(2:2),'9')))
+     $             ierr = 1
+               if (.not.(LGE(lkey(4:4),'0').and.LLE(lkey(4:4),'9')))
+     $             ierr = 1
+               if (.not.(LGE(lkey(5:5),'0').and.LLE(lkey(5:5),'9')))
+     $             ierr = 1
+
+               if (ierr.eq.0) then
+                  read(lkey(1:2),'(I2)') nhour
+                  read(lkey(4:5),'(I2)') nmin
+                  chpt_wtime = 60.0*(nmin +60*nhour)
+               else
+                  write(*,*)
+     $              'WARNING: chkpt_param_get; wrong wall time format'
+               endif
+            endif
          endif
 
 !     print prarameters values
@@ -65,12 +93,14 @@
          write(*,*) trim(chpt_dictkey(2)),' = ', chpt_step
          write(*,*) trim(chpt_dictkey(3)),' = ', trim(lkey)
          write(*,*) trim(chpt_dictkey(4)),' = ', chpt_fnum
+         write(*,*) trim(chpt_dictkey(5)),' = ', chpt_wtime,' sec'
       endif
 
 !     broadcast data
       call bcast(chpt_step,ISIZE)
       call bcast(chpt_fnum,ISIZE)
       call bcast(chpt_ifrst,LSIZE)
+      call bcast(chpt_wtime,WDSIZE)
 
       return
       end

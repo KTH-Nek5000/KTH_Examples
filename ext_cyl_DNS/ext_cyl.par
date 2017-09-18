@@ -49,6 +49,7 @@ writeToFieldFile = yes
 chkpInterval = 25
 readchkpt = no
 chkpFnumber = 0
+chkpWallTime = 02:05
 
 [_SPONGEBX]
 strength = 1.0

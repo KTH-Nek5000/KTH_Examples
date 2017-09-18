@@ -14,14 +14,14 @@
       implicit none
 
       include 'SIZE'            ! NID, NPERT
-      include 'TSTEP'           ! IOSTEP, ISTEP, NSTEPS
+      include 'TSTEP'           ! ISTEP, NSTEPS
       include 'INPUT'           ! IFPERT, PARAM
       include 'CHKPOINTD'       ! chpt_step, chpt_ifrst, chpt_fnum
       include 'CHKPTMSTPD'      ! chpm_set_o, chpm_set_i, chpm_snmax,
                                 ! chpm_nset, chpm_nsnap
 
 !     local variables
-      integer il, ierr, itmp
+      integer itmp
 !-----------------------------------------------------------------------
 !     get number of snapshots in a set
       if (PARAM(27).lt.0) then
@@ -42,6 +42,15 @@
          chpt_step = NSTEPS
          if (NIO.eq.0) write (*,*) 'WARNING: chkpt_init; ',
      $           'wrong chpt_step; resetting to ', chpt_step
+      endif
+
+!     to aviod possible problems at the end of the simulation
+!     find max ISTEP for cyclic checkpoint writning
+      chpm_nstep = NSTEPS-2*chpm_nsnap
+      itmp = chpm_nstep + chpt_step -1
+      if (mod(itmp,chpt_step).ge.(chpt_step-chpm_nsnap)) then
+         itmp = chpm_nsnap + mod(itmp,chpt_step) + 1 - chpt_step
+         chpm_nstep = chpm_nstep - itmp
       endif
 
 !     we support only one perturbation
@@ -86,19 +95,74 @@
       include 'SIZE'            !
       include 'TSTEP'           ! ISTEP, NSTEPS
       include 'INPUT'           ! IFMVBD, IFREGUO
+      include 'PARALLEL'        ! WDSIZE
+      include 'CTIMER'          ! ETIMES
       include 'CHKPOINTD'       ! chpt_step
       include 'CHKPTMSTPD'      ! chpm_nsnap, chpm_set_o, chpm_nset
 
 !     local variables
-      integer ifile, itmp, fnum
+      integer il, ifile, itmp, fnum
+      real rtmp
       character*132 fname(CHKPTNFMAX)
       logical ifcoord
       logical ifreguol
 
-      integer icalld
-      save    icalld
-      data    icalld  /0/
+      integer icalldl
+      save    icalldl
+      data    icalldl  /0/
+
+!     functions; for some reason allready declared in CTIMER
+!      real dnekclock
 !-----------------------------------------------------------------------
+!     check simulation wall time
+      if (chpt_wtime.gt.0.0) then
+!     save wall time of the current step
+         do il=chpm_nsnap,2,-1
+            chpm_wtstep(il) = chpm_wtstep(il-1)
+         enddo
+         chpm_wtstep(1) = dnekclock() - ETIMES
+
+!     check if simulation is going to exceed wall time
+         if (ISTEP.gt.chpm_nsnap) then
+!     it should be enough for the master to check condition
+            if (NID.eq.0) rtmp = 2.0*chpm_wtstep(1) -
+     $         chpm_wtstep(chpm_nsnap)
+!     broadcast predicted time
+            il = WDSIZE
+            call bcast(rtmp,il)
+
+            if (rtmp.gt.chpt_wtime) then
+               if (NIO.eq.0)
+     $             write(*,*) 'Checkpoint: wall clock reached.'
+
+!     should we shift checkpointing or shorten the run
+               if (ISTEP.lt.chpm_nstep) then
+                  il = ISTEP + chpt_step -1
+!     shift checkpointing
+                  if(mod(il,chpt_step).lt.(chpt_step-chpm_nsnap))then
+                     NSTEPS = ISTEP+chpm_nsnap
+                     chpt_step = NSTEPS
+                     chpm_nstep = ISTEP
+                     if (NIO.eq.0)
+     $                   write(*,*) 'Checkpoint: shift checkpointing'
+                  else
+!     shortent the run
+                     il = chpt_step - mod(il,chpt_step) - 1
+                     if (il.eq.0) then
+                        LASTEP = 1 ! it is a last step
+                     else
+                        NSTEPS = ISTEP+il
+                        chpm_nstep = ISTEP - chpm_nsnap
+                     endif
+                     if (NIO.eq.0)
+     $                   write(*,*) 'Checkpoint: shorten simulation'
+                  endif
+               endif
+            endif
+
+         endif
+      endif
+
 !     no regular mesh
       ifreguol= IFREGUO
       IFREGUO = .false.
@@ -108,8 +172,8 @@
       itmp = ISTEP + chpt_step -1
       if (ISTEP.gt.(NSTEPS-chpm_nsnap)) then
          ifile = chpm_nsnap + ISTEP - NSTEPS
-      elseif (ISTEP.gt.chpm_nsnap.and.ISTEP.lt.(NSTEPS-2*chpm_nsnap)
-     $     .and.mod(itmp,chpt_step).ge.(chpt_step-chpm_nsnap)) then
+      elseif (ISTEP.gt.chpm_nsnap.and.ISTEP.lt.chpm_nstep.and.
+     $        mod(itmp,chpt_step).ge.(chpt_step-chpm_nsnap)) then
          ifile = chpm_nsnap + mod(itmp,chpt_step) + 1 - chpt_step
       endif
 
@@ -130,8 +194,8 @@
          elseif (ifile.eq.1) then
 ! perturbation mode with constant base flow - only 1 rsX written
             if (ifpert.and.(.not.ifbase)) then
-               if (icalld.eq.0) then
-                  icalld = 1
+               if (icalldl.eq.0) then
+                  icalldl = 1
                   ifcoord = .true.
                else
                   call chcopy (fname(1),fname(fnum),132)

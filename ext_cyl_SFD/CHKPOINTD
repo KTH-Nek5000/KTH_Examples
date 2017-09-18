@@ -13,16 +13,20 @@
 
 !     restart file number
       integer chpt_fnum
+      
+!     simulation wall time
+      real chpt_wtime
 
 !     runtime parameter name section
       integer chpt_nkeys
-      parameter (chpt_nkeys = 4)
+      parameter (chpt_nkeys = 5)
       character*132 chpt_dictkey(chpt_nkeys)
       data
      $  chpt_dictkey(1)  / '_CHKPOINT' /    ! section name
      $  chpt_dictkey(2)  / 'CHKPINTERVAL' / ! chpt_ifrst
      $  chpt_dictkey(3)  / 'READCHKPT' /    ! chpt_step
      $  chpt_dictkey(4)  / 'CHKPFNUMBER' /  ! chpt_fnum
+     $  chpt_dictkey(5)  / 'CHKPWALLTIME' / ! chpt_wtime
      
 !     runtime parameters used for 3D run only
       integer chpt_n3dkeys
@@ -31,5 +35,7 @@
 
 !     common blocks
       common /CHKPNTI/ chpt_step, chpt_fnum
+      
+      common /CHKPNTR/ chpt_wtime
 
       common /CHKPNTL/ chpt_ifrst

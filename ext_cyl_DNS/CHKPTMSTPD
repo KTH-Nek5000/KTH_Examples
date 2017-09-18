@@ -13,7 +13,11 @@
       parameter  (chpm_snmax=3)
       
 !     current number of snapshots in a single set
-      integer chpm_nsnap
+!     max ISTEP for cyclic checkpoint writning to avoid collisions at the end of simulation
+      integer chpm_nsnap, chpm_nstep
+
+!     wall time of given step      
+      real chpm_wtstep(chpm_snmax)
 
 !     max number of files in a snapshot (DNS, perturbation, mhd..)
       integer chkptnfmax
@@ -28,6 +32,8 @@
       integer chpm_set_o, chpm_set_i, chpm_reset
 
 !     common blocks
-      common /CHKPTDNSI/ chpm_nsnap
+      common /CHKPTDNSI/ chpm_nsnap, chpm_nstep
+      
+      common /CHKPTDNSR/ chpm_wtstep
 
       common /RST_SET/ chpm_set_o, chpm_set_i, chpm_reset

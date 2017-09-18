@@ -137,7 +137,7 @@
 !     SFD evolution
          if (IFSFD) then
             call sfd_solve
-            call sfd_rst_save
+            call sfd_rst_write
             call sfd_end
          endif
       endif
@@ -446,12 +446,13 @@
                if (NIO.eq.0) write(*,*) 'SFD: stopping criteria reached'
 
 !     should we shift checkpointing or shorten the run
-               if (ISTEP.lt.(NSTEPS-2*chpm_nsnap)) then
+               if (ISTEP.lt.chpm_nstep) then
                   ilag = ISTEP + chpt_step -1
 !     shift checkpointing
                   if(mod(ilag,chpt_step).lt.(chpt_step-chpm_nsnap))then
                      NSTEPS = ISTEP+chpm_nsnap
                      chpt_step = NSTEPS
+                     chpm_nstep = ISTEP
                      if (NIO.eq.0) write(*,*) 'SFD: shift checkpointing'
                   else
 !     shortent the run
@@ -460,6 +461,7 @@
                         LASTEP = 1 ! it is a last step
                      else
                         NSTEPS = ISTEP+ilag
+                        chpm_nstep = ISTEP - chpm_nsnap
                      endif
                      if (NIO.eq.0) write(*,*) 'SFD: shorten simulation'
                   endif
@@ -478,7 +480,7 @@
 !=======================================================================
 !> @brief Create checkpoint
 !! @ingroup sfd
-      subroutine sfd_rst_save
+      subroutine sfd_rst_write
       implicit none
 
       include 'SIZE'            ! NID, NDIM, NPERT
@@ -498,9 +500,8 @@
       if (ISTEP.le.chpm_nsnap) return
 
 !     save checkpoint
-      if (IFSFD.and.((ISTEP.eq.NSTEPS).or.
-     $    (ISTEP.lt.(NSTEPS-2*chpm_nsnap).and.
-     $     mod(ISTEP,chpt_step).eq.0))) then
+      if (IFSFD.and.((ISTEP.eq.NSTEPS).or.(ISTEP.gt.chpm_nsnap.and.
+     $    ISTEP.lt.chpm_nstep.and.mod(ISTEP,chpt_step).eq.0))) then
 
 !     timing
          SFDTIME1=dnekclock()
