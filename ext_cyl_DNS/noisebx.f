@@ -161,7 +161,7 @@
                         ieg = LGLEL(iel)
                         xl(1) = XM1(il,jl,kl,iel)
                         xl(2) = YM1(il,jl,kl,iel)
-                        if (IF3D) xl(NDIM) = YM1(il,jl,kl,iel)
+                        if (IF3D) xl(NDIM) = ZM1(il,jl,kl,iel)
                         ifadd = .TRUE.
                         do nl=1,NDIM
                            if (xl(nl).lt.NSEB_BMIN(nl).or.
