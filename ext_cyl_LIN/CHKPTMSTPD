@@ -1,0 +1,39 @@
+!> @file CHKPTMSTPD
+!! @ingroup chkpoint_dns_lin
+!! @brief Include file for multistep checkpointing
+!! @author Adam Peplinski
+!! @date Feb 6, 2017
+!=======================================================================
+!     number of restart sets to keep
+      integer chpm_nset
+      parameter (chpm_nset=2)
+
+!     max number of snapshots in a single set
+      integer chpm_snmax
+      parameter  (chpm_snmax=3)
+      
+!     current number of snapshots in a single set
+!     max ISTEP for cyclic checkpoint writning to avoid collisions at the end of simulation
+      integer chpm_nsnap, chpm_nstep
+
+!     wall time of given step      
+      real chpm_wtstep(chpm_snmax)
+
+!     max number of files in a snapshot (DNS, perturbation, mhd..)
+      integer chkptnfmax
+      parameter (chkptnfmax=2)
+
+!     write and read reastart file set number and the reset marker
+!     the reset marker is necessayr to dependencies between checkpointing routines
+!     form different modules; the only rule should be that call to chkpt_main should
+!     called first
+!     Keep it in common block, so other subroutines can access it.
+!     Important!!! Do not modify it elswere!!!
+      integer chpm_set_o, chpm_set_i, chpm_reset
+
+!     common blocks
+      common /CHKPTDNSI/ chpm_nsnap, chpm_nstep
+      
+      common /CHKPTDNSR/ chpm_wtstep
+
+      common /RST_SET/ chpm_set_o, chpm_set_i, chpm_reset
