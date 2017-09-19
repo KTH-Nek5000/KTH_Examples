@@ -194,7 +194,7 @@
          elseif (ifile.eq.1) then
 ! perturbation mode with constant base flow - only 1 rsX written
             if (ifpert.and.(.not.ifbase)) then
-               if (icalldl.eq.0) then
+               if (icalldl.eq.0.and.(.not.chpt_ifrst)) then
                   icalldl = 1
                   ifcoord = .true.
                else
@@ -250,8 +250,8 @@
 
 !     local variables
       logical ifreguol
-      integer ifile, fnum, il
-      character*132 fname(CHKPTNFMAX)
+      integer ifile, fnum, fnuml, il
+      character*132 fname(CHKPTNFMAX),fnamel(CHKPTNFMAX)
 !-----------------------------------------------------------------------
 !     no regular mesh; important for file name generation
       ifreguol= IFREGUO
@@ -266,6 +266,19 @@
 
 !     get set of file names in the snapshot
          call chkpt_set_name(fname, fnum, chpm_set_i, ifile)
+
+! perturbation mode with constant base flow - only 1 rsX written
+         if (ifpert.and.(.not.ifbase)) then
+            if (ifile.eq.1) then
+               il = 0
+               call chkpt_set_name(fnamel, fnuml, il, ifile)
+               call chcopy (fname(1),fnamel(1),132)
+               fnum = 2
+            else
+               call chcopy (fname(1),fname(fnum),132)
+               fnum = 1
+            endif
+         endif
 
          call chkpt_restart_read(fname, fnum)
       endif
