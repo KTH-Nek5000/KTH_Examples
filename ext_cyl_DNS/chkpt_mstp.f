@@ -72,7 +72,8 @@
             call exitt
          endif
 
-!     palce to get dt!!!!!!!
+!     this is multi step restart so check for timestep consistency is necessary
+         call chkpt_dt_get
 
          chpm_set_o = mod(chpm_set_i+1,chpm_nset)
       else
@@ -249,8 +250,10 @@
       include 'CHKPTMSTPD'      ! chpm_nsnap, CHKPTNFMAX
 
 !     local variables
-      logical ifreguol
       integer ifile, fnum, fnuml, il
+      real dtratio, epsl
+      parameter (epsl = 0.0001)
+      logical ifreguol
       character*132 fname(CHKPTNFMAX),fnamel(CHKPTNFMAX)
 !-----------------------------------------------------------------------
 !     no regular mesh; important for file name generation
@@ -281,10 +284,95 @@
          endif
 
          call chkpt_restart_read(fname, fnum)
+
+!     check time step consistency
+         if(ifile.gt.1.and.chpm_dtstep(ifile).gt.0.0) then
+            dtratio = abs(DT-chpm_dtstep(ifile))/chpm_dtstep(ifile)
+            if (dtratio.gt.epsl.and.NIO.eq.0) then
+               write(*,*) 'WARNING: chkpt_read; DT inconsistent, new=',
+     $            DT,', old=',chpm_dtstep(ifile)
+!     possible place to exit if this should be trerated as error
+            endif
+         endif
+
       endif
 
 !     put parameters back
       IFREGUO = ifreguol
+
+      return
+      end
+!=======================================================================
+!> @brief Get old simulation time steps for consistency check.
+!! @ingroup chkpoint_mstep
+      subroutine chkpt_dt_get
+      implicit none
+
+      include 'SIZE'
+      include 'INPUT'
+      include 'RESTART'
+      include 'TSTEP'
+      include 'CHKPTMSTPD'
+
+!     local variables
+      integer ifile, ierr
+      real timerl(chpm_snmax)
+      character*132 fname, header
+      character*3 prefix
+!-----------------------------------------------------------------------
+!     which set of files should be used
+      if (ifpert.and.(.not.ifbase)) then
+         prefix(1:2)='rp'
+      else
+         prefix(1:2)='rs'
+      endif
+
+!     initialise I/O data
+      call io_init
+
+!     collect simulation time from file headers
+      do ifile=1,chpm_nsnap
+         call chkpt_fname(fname, prefix, chpm_set_i, ifile, ierr)
+
+         if (ierr.ne.0) then
+            if (NIO.eq.0) write(*,*)
+     $            'ERROR: chkpt_dt_check; file name error'
+            call exitt
+         endif
+
+         ierr = 0
+         if (NID.eq.pid00) then
+!     open file
+            call addfid(fname,fid0)
+!     add ending character; required by C
+            fname = trim(fname)//CHAR(0)
+            call byte_open(fname,ierr)
+!     read header
+            if (ierr.eq.0) then
+               call blank     (header,iHeaderSize)
+               call byte_read (header,iHeaderSize/4,ierr)
+            endif
+!     close the file
+            if (ierr.eq.0) call byte_close(ierr)
+         endif
+         call err_chk(ierr,
+     $               'ERROR: chkpt_dt_check; error reading header$')
+
+         call bcast(header,iHeaderSize)
+         call mfi_parse_hdr(header,ierr)
+         if (ierr.ne.0) then
+            if (NIO.eq.0) write(*,*) 'ERROR: chkpt_dt_check; ',
+     $         'error extracting timer.'
+            call exitt
+         endif
+
+         timerl(ifile) = timer
+      enddo
+
+!     get dt
+      do ifile=2,chpm_nsnap
+         chpm_dtstep(ifile) = timerl(ifile) - timerl(ifile-1)
+      enddo
 
       return
       end
@@ -643,7 +731,7 @@
 
 !     open file
       call io_mbyte_open(fname,ierr)
-      call err_chk(ierr,'ERROR: io_mfo; file not opened. $')
+      call err_chk(ierr,'ERROR: chkpt_mfo; file not opened. $')
 
 !     write a header and create element mapping
       call chkpt_mfo_write_hdr
@@ -759,7 +847,7 @@
       end
 !=======================================================================
 !> @brief Write a header in the checkpoint file
-!! @details This routine is a copy fo @ref mfo_write_hrd. I've made my
+!! @details This routine is a copy of @ref mfo_write_hdr. I've made my
 !!    own version of this routine to remove ambiguity between P_n-P_n
 !!    and P_n-P_n-2 runs when it comes to the format of the pressure.
 !!    Right now therer is a flag IF_FULL_PRES in the main nek release
@@ -1085,11 +1173,10 @@ c      if (ibsw_out.ne.0) call set_bytesw_write(ibsw_out)
 !> @brief Interpolate checkpoint variables
 !! @details This routine interpolates fields from nxr to nx1 (nx2) polynomial order
 !! @ingroup chkpoint_mstep
-!! @param[in]   fname      file name
 !! @param[in]   chktype    data type to interpolate (DNS, MHD, preturbation)
 !! @param[in]   ipert      index of perturbation field
 !! @remark This routine uses global scratch space \a SCRCG.
-!! @todo Finitsh interpolation to increase polynomial order
+!! @todo Finish interpolation to increase polynomial order
       subroutine chkpt_interp(chktype,ipert)
       implicit none
 

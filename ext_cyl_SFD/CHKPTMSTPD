@@ -16,6 +16,9 @@
 !     max ISTEP for cyclic checkpoint writning to avoid collisions at the end of simulation
       integer chpm_nsnap, chpm_nstep
 
+!     time step for old simulation (used during restart)
+      real chpm_dtstep(chpm_snmax)
+
 !     wall time of given step      
       real chpm_wtstep(chpm_snmax)
 
@@ -34,6 +37,6 @@
 !     common blocks
       common /CHKPTDNSI/ chpm_nsnap, chpm_nstep
       
-      common /CHKPTDNSR/ chpm_wtstep
+      common /CHKPTDNSR/ chpm_dtstep, chpm_wtstep
 
       common /RST_SET/ chpm_set_o, chpm_set_i, chpm_reset
