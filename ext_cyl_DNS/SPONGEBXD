@@ -4,38 +4,33 @@
 !! @author Adam Peplinski
 !! @date Feb 1, 2017
 !=======================================================================
+!     module id and name
+      integer spng_id
+      character*(*) spng_name
+      parameter(spng_name='SPONGEBX')
+
+!     timer id
+      integer spng_tmr_id
+
+!     initialisation flag
+      logical spng_ifinit
+
+!     runtime parameter part
+!     section id
+      integer spng_sec_id
+
+
 !     parameter section
       real spng_str      !<  @var sponge strength
+      integer spng_str_id
       real spng_wl(LDIM) !<  @var sponge width (left section; every dmension separately)
+      integer spng_wl_id(LDIM)
       real spng_wr(LDIM) !<  @var sponge width (right section)
+      integer spng_wr_id(LDIM)
       real spng_dl(LDIM) !<  @var sponge drop/rise width (left section)
+      integer spng_dl_id(LDIM)
       real spng_dr(LDIM) !<  @var sponge drop/rise width (right section)
-
-!     runtime parameter name section
-      integer spng_nkeys
-      parameter (spng_nkeys = 14)
-      character*132 spng_dictkey(spng_nkeys)
-      data
-     $  spng_dictkey(1)  / '_SPONGEBX' /   ! section name
-     $  spng_dictkey(2)  / 'STRENGTH' /    ! spng_str
-     $  spng_dictkey(3)  / 'WIDTHLX' /     ! spng_wl(1)
-     $  spng_dictkey(4)  / 'WIDTHLY' /     ! spng_wl(2)
-     $  spng_dictkey(5)  / 'WIDTHLZ' /     ! spng_wl(3)
-     $  spng_dictkey(6)  / 'WIDTHRX' /     ! spng_wr(1)
-     $  spng_dictkey(7)  / 'WIDTHRY' /     ! spng_wr(2)
-     $  spng_dictkey(8)  / 'WIDTHRZ' /     ! spng_wr(3)
-     $  spng_dictkey(9)  / 'DROPLX'  /     ! spng_dl(1)
-     $  spng_dictkey(10) / 'DROPLY'  /     ! spng_dl(2)
-     $  spng_dictkey(11) / 'DROPLZ'  /     ! spng_dl(3)
-     $  spng_dictkey(12) / 'DROPRX'  /     ! spng_dr(1)
-     $  spng_dictkey(13) / 'DROPRY'  /     ! spng_dr(2)
-     $  spng_dictkey(14) / 'DROPRZ'  /     ! spng_dr(3)
-
-!     runtime parameters used for 3D run only
-      integer spng_n3dkeys
-      parameter (spng_n3dkeys = 4)
-      integer spng_l3dkey(spng_n3dkeys)
-      data spng_l3dkey / 5, 8, 11, 14 /
+      integer spng_dr_id(LDIM)
       
 !     sponge function
       real spng_fun(LX1*LY1*LZ1*LELV)
@@ -44,6 +39,11 @@
       real spng_vr(LX1*LY1*LZ1*LELV,LDIM)
 
 !     common block section
+      common /SPONGEI/ spng_id, spng_tmr_id, spng_sec_id, spng_str_id, 
+     $ spng_wl_id, spng_wr_id, spng_dl_id, spng_dr_id
+      
+      common /SPONGEL/ spng_ifinit
+
       common /SPONGER/ spng_str, spng_wl, spng_wr, spng_dl, spng_dr
 
       common /SPONGEV/ spng_fun, spng_vr

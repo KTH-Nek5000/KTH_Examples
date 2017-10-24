@@ -27,14 +27,16 @@ c-----------------------------------------------------------------------
 
 c     Note: this is an acceleration term, NOT a force!
 c     Thus, ffx will subsequently be multiplied by rho(x,t).
-
+      integer iel
 
       ffx = 0.0
       ffy = 0.0
       ffz = 0.0
 
+      iel=GLLEL(ieg)
+
 !     add sponge
-      call spng_box_forcing(FFX,FFY,FFZ,ix,iy,iz,ieg)
+      call spng_forcing(FFX,FFY,FFZ,ix,iy,iz,iel)
       
       return
       end
@@ -56,6 +58,7 @@ c-----------------------------------------------------------------------
       include 'INPUT'
       include 'SOLN'
 
+
 !     local variables
       real scale
       real x0(3)
@@ -65,20 +68,29 @@ c-----------------------------------------------------------------------
       
       if (ISTEP.eq.0) then
          call set_obj           ! define objects for surface integrals
-!     initialise runtime parameters
-         call chkpt_param_get
-         call spng_box_param_get
-         call nse_box_param_get
-!     initialise module
-!     provide initial velocity condition as reference field for sponge
-         call spng_box_init(vx,vy,vz)
+!     start framework
+         call frame_start
+!     register modules
+         call chkpt_register
+         call spng_register
+         call nseb_register
+!     get runtime parameters
+         call frame_rparam
+!     initialise modules
+         call chkpt_init
+         call spng_init(vx,vy,vz)
+         call nseb_init
+
       endif
+
+!     monitor simulation
+      call frame_monitor
 
 !     save/load files for full-restart
       call chkpt_main
 
 !     add noise
-      call nse_box_add
+      call nseb_noise_add
       
       call estimate_strouhal
 
@@ -87,6 +99,11 @@ c-----------------------------------------------------------------------
 
 !     write out probes
       if (mod(ISTEP,int(UPARAM(1))).eq.0) call hpts()
+
+!     finalise framework
+      if (ISTEP.ge.NSTEPS.or.LASTEP.eq.1) then
+         call frame_end
+      endif
       
       return
       end

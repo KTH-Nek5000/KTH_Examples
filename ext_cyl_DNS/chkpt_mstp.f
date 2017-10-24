@@ -2,23 +2,58 @@
 !! @ingroup chkpoint_mstep
 !! @brief Set of multi-file checkpoint routines for DNS, MHD and
 !!    perturbation simulations
-!! @details This module writes different file sets for DNS (rsX...),
-!!    MHD (rbX...) and perturbation (rpX...). In perturbation mode only
-!!    single perturbation (NPERT=1) is supported right now.
+!=======================================================================
+!> @brief Register multi step checkpointing module
+!! @ingroup chkpoint_mstep
+      subroutine chkpts_register()
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+      include 'CHKPOINTD'
+      include 'CHKPTMSTPD'
+
+!     local variables
+      integer lpmid
+!-----------------------------------------------------------------------
+!     find parent module
+      call mntr_mod_is_name_reg(lpmid,chpt_name)
+!     register module
+      call mntr_mod_reg(chpm_id,lpmid,chpm_name,
+     $         'Multi-file checkpointing')
+      if (lpmid.le.0) then
+        call mntr_log(chpm_id,lp_vrb,
+     $   'ERROR: parent ['//trim(chpt_name)//'] module not registered')
+      endif
+
+!     register timers
+      call mntr_tmr_is_name_reg(lpmid,'CHP_TOT')
+      call mntr_tmr_reg(chpm_tread_id,lpmid,chpm_id,
+     $      'CHP_READ','Checkpointing reading time',.true.)
+
+      call mntr_tmr_reg(chpm_twrite_id,lpmid,chpm_id,
+     $      'CHP_WRITE','Checkpointing writing time',.true.)
+
+!     adjust step delay
+      call mntr_set_step_delay(chpm_snmax)
+
+      return
+      end
+
 !=======================================================================
 !> @brief Initialise multi-file checkpoint routines
 !! @ingroup chkpoint_mstep
 !! @note This interface is defined in @ref chkpt_main
 !! @todo Add timestep reader to ensure proper restart
-      subroutine chkpt_init
+      subroutine chkpts_init
       implicit none
 
       include 'SIZE'            ! NID, NPERT
       include 'TSTEP'           ! ISTEP, NSTEPS
       include 'INPUT'           ! IFPERT, PARAM
-      include 'CHKPOINTD'       ! chpt_step, chpt_ifrst, chpt_fnum
-      include 'CHKPTMSTPD'      ! chpm_set_o, chpm_set_i, chpm_snmax,
-                                ! chpm_nset, chpm_nsnap
+      include 'FRAMELP'
+      include 'CHKPOINTD'
+      include 'CHKPTMSTPD'
 
 !     local variables
       integer itmp
@@ -30,164 +65,86 @@
          chpm_nsnap = chpm_snmax
       endif
 
-!     check number of steps and set size
-      if (NSTEPS.lt.2*chpm_nsnap) then
-         if (NIO.eq.0) write (*,*) 'Error: chkpt_init; ',
-     $           'too short run for multi-file restart.'
-         call exitt
-      endif
-
-!     check checkpoint frequency
-      if (chpt_step.le.chpm_nsnap.or.chpt_step.gt.NSTEPS) then
-         chpt_step = NSTEPS
-         if (NIO.eq.0) write (*,*) 'WARNING: chkpt_init; ',
-     $           'wrong chpt_step; resetting to ', chpt_step
-      endif
-
-!     to aviod possible problems at the end of the simulation
-!     find max ISTEP for cyclic checkpoint writning
-      chpm_nstep = NSTEPS-2*chpm_nsnap
-      itmp = chpm_nstep + chpt_step -1
-      if (mod(itmp,chpt_step).ge.(chpt_step-chpm_nsnap)) then
-         itmp = chpm_nsnap + mod(itmp,chpt_step) + 1 - chpt_step
-         chpm_nstep = chpm_nstep - itmp
-      endif
-
 !     we support only one perturbation
       if (IFPERT) then
          if (NPERT.gt.1) then
-            if (NIO.eq.0) write(*,*)
-     $         'ERROR: chkpt_init; only single perturbation supported'
-            call exitt
+           call mntr_abort(chpm_id,'only single perturbation supported')
          endif
       endif
-
-      if (chpt_ifrst) then
-!     get input set number
-         chpm_set_i = chpt_fnum - 1
-         if (chpm_set_i.ge.chpm_nset) then
-            if (NIO.eq.0) write(*,*)
-     $         'ERROR: chkpt_init; chpt_fnum must be in the range: 1-',
-     $                    chpm_nset + 1
-            call exitt
-         endif
 
 !     this is multi step restart so check for timestep consistency is necessary
-         call chkpt_dt_get
+      if (chpt_ifrst) call chkpt_dt_get
 
-         chpm_set_o = mod(chpm_set_i+1,chpm_nset)
-      else
-         chpm_set_o = 0
-      endif
-
-!     set reset flag
-      chpm_reset = -1
+      chpm_ifinit = .true.
 
       return
       end
+!=======================================================================
+!> @brief Check if module was initialised
+!! @ingroup chkpoint_mstep
+!! @return chkpts_is_initialised
+      logical function chkpts_is_initialised()
+      implicit none
+
+      include 'SIZE'
+      include 'CHKPTMSTPD'
+!-----------------------------------------------------------------------
+      chkpts_is_initialised = chpm_ifinit
+
+      return
+      end function
 !=======================================================================
 !> @brief Write full file restart set
 !! @ingroup chkpoint_mstep
 !! @note This interface is defined in @ref chkpt_main.
 !! @note This is version of @ref full_restart_save routine.
-      subroutine chkpt_write()
+      subroutine chkpts_write()
       implicit none
 
       include 'SIZE'            !
       include 'TSTEP'           ! ISTEP, NSTEPS
       include 'INPUT'           ! IFMVBD, IFREGUO
-      include 'PARALLEL'        ! WDSIZE
-      include 'CTIMER'          ! ETIMES
-      include 'CHKPOINTD'       ! chpt_step
-      include 'CHKPTMSTPD'      ! chpm_nsnap, chpm_set_o, chpm_nset
+      include 'FRAMELP'
+      include 'CHKPOINTD'
+      include 'CHKPTMSTPD'
 
 !     local variables
       integer il, ifile, itmp, fnum
-      real rtmp
+      real ltim
       character*132 fname(CHKPTNFMAX)
       logical ifcoord
       logical ifreguol
+
+      character*2 str
+      character*200 lstring
 
       integer icalldl
       save    icalldl
       data    icalldl  /0/
 
-!     functions; for some reason allready declared in CTIMER
-!      real dnekclock
+!     functions
+      real dnekclock
 !-----------------------------------------------------------------------
-!     check simulation wall time
-      if (chpt_wtime.gt.0.0) then
-!     save wall time of the current step
-         do il=chpm_nsnap,2,-1
-            chpm_wtstep(il) = chpm_wtstep(il-1)
-         enddo
-         chpm_wtstep(1) = dnekclock() - ETIMES
-
-!     check if simulation is going to exceed wall time
-         if (ISTEP.gt.chpm_nsnap) then
-!     it should be enough for the master to check condition
-            if (NID.eq.0) rtmp = 2.0*chpm_wtstep(1) -
-     $         chpm_wtstep(chpm_nsnap)
-!     broadcast predicted time
-            il = WDSIZE
-            call bcast(rtmp,il)
-
-            if (rtmp.gt.chpt_wtime) then
-               if (NIO.eq.0)
-     $             write(*,*) 'Checkpoint: wall clock reached.'
-
-!     should we shift checkpointing or shorten the run
-               if (ISTEP.lt.chpm_nstep) then
-                  il = ISTEP + chpt_step -1
-!     shift checkpointing
-                  if(mod(il,chpt_step).lt.(chpt_step-chpm_nsnap))then
-                     NSTEPS = ISTEP+chpm_nsnap
-                     chpt_step = NSTEPS
-                     chpm_nstep = ISTEP
-                     if (NIO.eq.0)
-     $                   write(*,*) 'Checkpoint: shift checkpointing'
-                  else
-!     shortent the run
-                     il = chpt_step - mod(il,chpt_step) - 1
-                     if (il.eq.0) then
-                        LASTEP = 1 ! it is a last step
-                     else
-                        NSTEPS = ISTEP+il
-                        chpm_nstep = ISTEP - chpm_nsnap
-                     endif
-                     if (NIO.eq.0)
-     $                   write(*,*) 'Checkpoint: shorten simulation'
-                  endif
-               endif
-            endif
-
-         endif
-      endif
-
 !     no regular mesh
       ifreguol= IFREGUO
       IFREGUO = .false.
 
 !     do we write a snapshot
       ifile = 0
-      itmp = ISTEP + chpt_step -1
-      if (ISTEP.gt.(NSTEPS-chpm_nsnap)) then
-         ifile = chpm_nsnap + ISTEP - NSTEPS
-      elseif (ISTEP.gt.chpm_nsnap.and.ISTEP.lt.chpm_nstep.and.
-     $        mod(itmp,chpt_step).ge.(chpt_step-chpm_nsnap)) then
-         ifile = chpm_nsnap + mod(itmp,chpt_step) + 1 - chpt_step
-      endif
+      if (chpt_stepc.gt.0.and.chpt_stepc.le.chpm_nsnap) then
+!     timing
+         ltim = dnekclock()
 
-      if (ifile.gt.0) then
-
-         if (ifile.eq.1.and.NIO.eq.0) write(*,*)
-     $              'Writing checkpoint snapshot'
+!     file number
+         ifile = chpm_nsnap - chpt_stepc +1
+         if (ifile.eq.1) call mntr_log(chpm_id,lp_inf,
+     $                             'Writing checkpoint snapshot')
 
 !     initialise I/O data
          call io_init
 
 !     get set of file names in the snapshot
-         call chkpt_set_name(fname, fnum, chpm_set_o, ifile)
+         call chkpt_set_name(fname, fnum, chpt_set_o, ifile)
 
 !     do we wtrite coordinates; we save coordinates in DNS files only
          if (IFMVBD) then  ! moving boundaries save in every file
@@ -221,13 +178,14 @@
 !     update output set number
 !     we do it after the last file in the set was sucsesfully written
          if (ifile.eq.chpm_nsnap) then
-            if (NIO.eq.0) write(*,*)
-     $              'Written checkpoint snapshot number: ',chpm_set_o+1
-            chpm_reset = mod(chpm_set_o+1,chpm_nset)
+            write(str,'(I2)') chpt_set_o+1
+            lstring = 'Written checkpoint snapshot number: '//trim(str)
+            call mntr_log(chpm_id,lp_prd,lstring)
          endif
-      elseif (chpm_reset.ge.0) then
-         chpm_set_o = chpm_reset
-         chpm_reset = -1
+
+!     timing
+         ltim = dnekclock() - ltim
+         call mntr_tmr_add(chpm_twrite_id,1,ltim)
       endif
 
 !     put parameters back
@@ -240,21 +198,26 @@
 !! @ingroup chkpoint_mstep
 !! @note This interface is defined in @ref chkpt_main
 !! @note This is version of @ref full_restart routine.
-      subroutine chkpt_read()
+      subroutine chkpts_read()
       implicit none
 
       include 'SIZE'            !
       include 'TSTEP'           ! ISTEP
       include 'INPUT'           ! IFREGUO, INITC
-      include 'CHKPOINTD'       ! chpt_ifrst
-      include 'CHKPTMSTPD'      ! chpm_nsnap, CHKPTNFMAX
+      include 'FRAMELP'
+      include 'CHKPOINTD'
+      include 'CHKPTMSTPD'
 
 !     local variables
       integer ifile, fnum, fnuml, il
-      real dtratio, epsl
+      real dtratio, epsl, ltim
       parameter (epsl = 0.0001)
       logical ifreguol
       character*132 fname(CHKPTNFMAX),fnamel(CHKPTNFMAX)
+      character*200 lstring
+
+!     functions
+      real dnekclock
 !-----------------------------------------------------------------------
 !     no regular mesh; important for file name generation
       ifreguol= IFREGUO
@@ -262,13 +225,16 @@
 
       if (chpt_ifrst.and.(ISTEP.lt.chpm_nsnap)) then
 
+!     timing
+         ltim = dnekclock()
+
          ifile = ISTEP+1  ! snapshot number
 
 !     initialise I/O data
          call io_init
 
 !     get set of file names in the snapshot
-         call chkpt_set_name(fname, fnum, chpm_set_i, ifile)
+         call chkpt_set_name(fname, fnum, chpt_set_i, ifile)
 
 ! perturbation mode with constant base flow - only 1 rsX written
          if (ifpert.and.(.not.ifbase)) then
@@ -288,13 +254,17 @@
 !     check time step consistency
          if(ifile.gt.1.and.chpm_dtstep(ifile).gt.0.0) then
             dtratio = abs(DT-chpm_dtstep(ifile))/chpm_dtstep(ifile)
-            if (dtratio.gt.epsl.and.NIO.eq.0) then
-               write(*,*) 'WARNING: chkpt_read; DT inconsistent, new=',
+            if (dtratio.gt.epsl) then
+                write(lstring,*) 'Time step inconsistent, new=',
      $            DT,', old=',chpm_dtstep(ifile)
+               call mntr_warn(chpm_id,lstring)
 !     possible place to exit if this should be trerated as error
             endif
          endif
 
+!     timing
+         ltim = dnekclock() - ltim
+         call mntr_tmr_add(chpm_tread_id,1,ltim)
       endif
 
 !     put parameters back
@@ -312,6 +282,8 @@
       include 'INPUT'
       include 'RESTART'
       include 'TSTEP'
+      include 'FRAMELP'
+      include 'CHKPOINTD'
       include 'CHKPTMSTPD'
 
 !     local variables
@@ -332,13 +304,8 @@
 
 !     collect simulation time from file headers
       do ifile=1,chpm_nsnap
-         call chkpt_fname(fname, prefix, chpm_set_i, ifile, ierr)
-
-         if (ierr.ne.0) then
-            if (NIO.eq.0) write(*,*)
-     $            'ERROR: chkpt_dt_check; file name error'
-            call exitt
-         endif
+         call chkpt_fname(fname, prefix, chpt_set_i, ifile, ierr)
+         call mntr_check_abort(chpm_id,ierr,'dt get; file name error')
 
          ierr = 0
          if (NID.eq.pid00) then
@@ -355,16 +322,13 @@
 !     close the file
             if (ierr.eq.0) call byte_close(ierr)
          endif
-         call err_chk(ierr,
-     $               'ERROR: chkpt_dt_check; error reading header$')
+         call mntr_check_abort(chpm_id,ierr,
+     $       'dt get; error reading header')
 
          call bcast(header,iHeaderSize)
          call mfi_parse_hdr(header,ierr)
-         if (ierr.ne.0) then
-            if (NIO.eq.0) write(*,*) 'ERROR: chkpt_dt_check; ',
-     $         'error extracting timer.'
-            call exitt
-         endif
+         call mntr_check_abort(chpm_id,ierr,
+     $       'dt get; error extracting timer')
 
          timerl(ifile) = timer
       enddo
@@ -388,7 +352,8 @@
 
       include 'SIZE'            ! NIO
       include 'INPUT'           ! IFMHD, IFPERT, IFBASE
-      include 'CHKPTMSTPD'      ! CHKPTNFMAX
+      include 'FRAMELP'
+      include 'CHKPTMSTPD'
 
 !     argument list
       character*132 fname(CHKPTNFMAX)
@@ -485,7 +450,8 @@
 
       include 'SIZE'            ! NIO
       include 'INPUT'           ! SESSION
-      include 'CHKPTMSTPD'      ! chpm_nsnap, chpm_nset
+      include 'CHKPOINTD'
+      include 'CHKPTMSTPD'
 
 !     argument list
       character*132 fname
@@ -507,7 +473,7 @@
 !     create prefix and name for DNS
       ierr = 0
       prefixl(1:2) = prefix(1:2)
-      itmp=min(17,chpm_nset*chpm_nsnap) + 1
+      itmp=min(17,chpt_nset*chpm_nsnap) + 1
       prefixl(3:3)=kst(itmp:itmp)
 
 !     get base name (SESSION)
@@ -704,6 +670,7 @@
       include 'TSTEP'
       include 'GEOM'
       include 'SOLN'
+      include 'FRAMELP'
 
 !     argumnt list
       character*132 fname
@@ -1017,6 +984,7 @@ c      if (ibsw_out.ne.0) call set_bytesw_write(ibsw_out)
       include 'TSTEP'
       include 'GEOM'
       include 'SOLN'
+      include 'FRAMELP'
 
 !     argumnt list
       character*132 fname

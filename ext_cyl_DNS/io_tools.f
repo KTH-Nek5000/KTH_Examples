@@ -129,7 +129,7 @@
       elseif ((itmp+ndigit+2+5).gt.132) then
          write(*,*) 'ERROR: io_mfo_fname; fname too long.'
          write(*,*) 'Fname: ',trim(fname)
-         ierr = 1
+         ierr = 2
          return
       endif
 

@@ -4,38 +4,52 @@
 !! @author Adam Peplinski
 !! @date Mar 7, 2016
 !=======================================================================
-!     parameter section
-!     Do we restart form the checkpoint
+!     module id and name
+      integer chpt_id
+      character*(*) chpt_name
+      parameter(chpt_name='CHKPOINT')
+
+!     timer id
+      integer chpt_ttot_id, chpt_tini_id
+
+!     initialisation flag
+      logical chpt_ifinit
+
+!     runtime parameter part
+!     section id
+      integer chpt_sec_id
+
+!     Do we restart form the checkpoint + parameter id
       logical chpt_ifrst
+      integer chpt_ifrst_id
 
-!     checkpoint frequency
-      integer chpt_step
+!     restart file number + parameter id
+      integer chpt_fnum, chpt_fnum_id
 
-!     restart file number
-      integer chpt_fnum
-      
-!     simulation wall time
-      real chpt_wtime
+!     checkpoint frequency + parameter id
+      integer chpt_step, chpt_step_id
 
-!     runtime parameter name section
-      integer chpt_nkeys
-      parameter (chpt_nkeys = 5)
-      character*132 chpt_dictkey(chpt_nkeys)
-      data
-     $  chpt_dictkey(1)  / '_CHKPOINT' /    ! section name
-     $  chpt_dictkey(2)  / 'CHKPINTERVAL' / ! chpt_ifrst
-     $  chpt_dictkey(3)  / 'READCHKPT' /    ! chpt_step
-     $  chpt_dictkey(4)  / 'CHKPFNUMBER' /  ! chpt_fnum
-     $  chpt_dictkey(5)  / 'CHKPWALLTIME' / ! chpt_wtime
-     
-!     runtime parameters used for 3D run only
-      integer chpt_n3dkeys
-      parameter (chpt_n3dkeys = 0)
-      integer chpt_l3dkey(chpt_n3dkeys)
+!     module variables
+!     number of restart files or restart file sets to keep
+      integer chpt_nset
+      parameter (chpt_nset=2)
+
+!     write and read reastart file set number, the reset marker and the step count in 
+!     writing stage (otherwise -1)
+!     the reset marker is necessayr for dependencies between checkpointing routines
+!     form different modules; the only rule should be that chkpt_main should
+!     called first
+      integer chpt_set_o, chpt_set_i, chpt_reset, chpt_stepc
+
+!     min and max ISTEP for cyclic checkpoint writning
+!     timesteps outside this boud require special treatment to avoid collisions
+!     these variables are expecially important for multi-step checkpointing
+      integer chpt_istep, chpt_nstep
 
 !     common blocks
-      common /CHKPNTI/ chpt_step, chpt_fnum
-      
-      common /CHKPNTR/ chpt_wtime
+      common /CHKPNTI/ chpt_id, chpt_ttot_id, chpt_tini_id, 
+     $  chpt_sec_id, chpt_ifrst_id, chpt_fnum, chpt_fnum_id, 
+     $  chpt_step, chpt_step_id, chpt_set_o, chpt_set_i, 
+     $  chpt_reset, chpt_stepc, chpt_istep, chpt_nstep
 
-      common /CHKPNTL/ chpt_ifrst
+      common /CHKPNTL/ chpt_ifinit, chpt_ifrst

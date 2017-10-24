@@ -45,11 +45,19 @@ viscosity = -100
 advection = yes
 writeToFieldFile = yes
 
-[_CHKPOINT]
-chkpInterval = 25
-readchkpt = no
-chkpFnumber = 0
-chkpWallTime = 02:05
+#
+[_RUNPAR]               # Runtime parameter section for rprm module
+PARFWRITE            = no                     # Do we write runtime parameter file
+PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
+#
+[_MONITOR]              # Runtime parameter section for monitor module
+LOGLEVEL             = 4                      # Logging threshold for toolboxes
+WALLTIME             = 02:05                  # Simulation wall time
+#
+[_CHKPOINT]             # Runtime paramere section for checkpoint module
+READCHKPT            = no                     # Restat from checkpoint
+CHKPFNUMBER          = 2                      # Restart file number
+CHKPINTERVAL         = 25                     # Checkpiont saving frequency (number of time steps)
 
 [_SPONGEBX]
 strength = 1.0
