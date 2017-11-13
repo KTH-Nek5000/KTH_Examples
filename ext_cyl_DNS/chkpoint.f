@@ -200,8 +200,6 @@
          if (mod(itmp,chpt_step).ge.(chpt_step-lstdl)) then
             itmp = lstdl + mod(itmp,chpt_step) + 1 - chpt_step
             chpt_nstep = chpt_nstep - itmp
-         else
-            itmp = -1
          endif
 
 !     count steps to the end of wrting stage
@@ -231,7 +229,7 @@
       return
       end
 !=======================================================================
-!> @brief Main checkpoint interface
+!> @brief Get step count to the checkpoint and a set number
 !! @ingroup chkpoint
 !! @param[out] step_cnt   decreasing step count in checkpoint writinh phase (otherwise -1)
 !! @param[out] set_out    set number

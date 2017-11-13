@@ -197,7 +197,7 @@
 !     first let read all checkpointing files (necessary for multi file
 !     checkpointing)
          if (ISTEP.gt.lstdl) then
-   !     it should be enough for the master to check condition
+!     it should be enough for the master to check condition
             if (NID.eq.mntr_pid0) rtmp = 2.0*mntr_wtstep(1) -
      $         mntr_wtstep(lstdl)
 !     broadcast predicted time
@@ -219,47 +219,6 @@
          NSTEPS = ISTEP+lstdl
       endif
 
-
-#if 0
-!     check if simulation is going to exceed wall time
-         if (ISTEP.gt.chpt_istep) then
-!     it should be enough for the master to check condition
-            if (NID.eq.0) rtmp = 2.0*chpm_wtstep(1) -
-     $         chpm_wtstep(chpm_nsnap)
-!     broadcast predicted time
-            il = WDSIZE
-            call bcast(rtmp,il)
-
-            if (rtmp.gt.mntr_wtime) then
-               call mntr_log(chpm_id,lp_inf,'Wall clock reached')
-
-!     should we shift checkpointing or shorten the run
-               if (ISTEP.lt.chpt_nstep) then
-                  il = ISTEP + chpt_step -1
-!     shift checkpointing
-                  if(mod(il,chpt_step).lt.(chpt_step-chpm_nsnap))then
-                     NSTEPS = ISTEP+chpm_nsnap
-                     chpt_step = NSTEPS
-                     chpt_nstep = ISTEP
-                     call mntr_log(chpm_id,lp_inf,'shift checkpointing')
-                  else
-!     shortent the run
-                     il = chpt_step - mod(il,chpt_step) - 1
-                     if (il.eq.0) then
-                        LASTEP = 1 ! it is a last step
-                     else
-                        NSTEPS = ISTEP+il
-                        chpt_nstep = ISTEP - chpm_nsnap
-                     endif
-                     call mntr_log(chpm_id,lp_inf,'shorten simulation')
-                  endif
-               endif
-            endif
-
-         endif
-#endif
-
-
       return
       end subroutine
 !=======================================================================
@@ -280,7 +239,7 @@
       if (dstep.gt.mntr_stdl_max) then
          call mntr_abort(mntr_id,"Step delay exceeds mntr_stdl_max")
       else
-         mntr_stdl = dstep
+         mntr_stdl = max(mntr_stdl,dstep)
       endif
 
       return
