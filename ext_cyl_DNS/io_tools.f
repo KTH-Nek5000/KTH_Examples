@@ -251,7 +251,7 @@
      $     lvz(lnx,lny,lnz,lnel)
 
 !     local variables
-      integer*8 loffs
+      integer*8 loffs, wdsizo8
       integer il, ik, itmp
 
       real rvx(lxo*lxo*(1 + (ldim-2)*(lxo-1))*lelt),
@@ -301,24 +301,28 @@
 
 !     shift offset taking onto account elements on processes with smaller id
          itmp = 1 + (lndim-2)*(nrg-1)
-         loffs = offs + lndim*nelB*wdsizo*nrg*nrg*itmp
+!     to ensure proper integer prolongation
+         wdsizo8 = wdsizo
+         loffs = offs + lndim*nelB*wdsizo8*nrg*nrg*itmp
          call byte_set_view(loffs,ifh_mbyte)
 
 !     write vector
          call mfo_outv(rvx,rvy,rvz,lnel,nrg,nrg,itmp)
 
 !     update offset
-         offs = offs + lndim*lnelg*wdsizo*nrg*nrg*itmp
+         offs = offs + lndim*lnelg*wdsizo8*nrg*nrg*itmp
       else
 !     shift offset taking onto account elements on processes with smaller id
-         loffs = offs + lndim*nelB*wdsizo*lnx*lny*lnz
+!     to ensure proper integer prolongation
+         wdsizo8 = wdsizo
+         loffs = offs + lndim*nelB*wdsizo8*lnx*lny*lnz
          call byte_set_view(loffs,ifh_mbyte)
 
 !     write vector
          call mfo_outv(lvx,lvy,lvz,lnel,lnx,lny,lnz)
 
 !     update offset
-         offs = offs + lndim*lnelg*wdsizo*lnx*lny*lnz
+         offs = offs + lndim*lnelg*wdsizo8*lnx*lny*lnz
       endif
 
       return
@@ -348,7 +352,7 @@
       real lvs(lnx,lny,lnz,lnel)
 
 !     local variables
-      integer*8 loffs
+      integer*8 loffs, wdsizo8
       integer il, ik, itmp
 
       real rvs(lxo*lxo*(1 + (ldim-2)*(lxo-1))*lelt)
@@ -381,24 +385,28 @@
 
 !     shift offset taking onto account elements on processes with smaller id
          itmp = 1 + (lndim-2)*(nrg-1)
-         loffs = offs + nelB*wdsizo*nrg*nrg*itmp
+!     to ensure proper integer prolongation
+         wdsizo8 = wdsizo
+         loffs = offs + nelB*wdsizo8*nrg*nrg*itmp
          call byte_set_view(loffs,ifh_mbyte)
 
 !     write vector
          call mfo_outs(rvs,lnel,nrg,nrg,itmp)
 
 !     update offset
-         offs = offs + lnelg*wdsizo*nrg*nrg*itmp
+         offs = offs + lnelg*wdsizo8*nrg*nrg*itmp
       else
 !     shift offset taking onto account elements on processes with smaller id
-         loffs = offs + nelB*wdsizo*lnx*lny*lnz
+!     to ensure proper integer prolongation
+         wdsizo8 = wdsizo
+         loffs = offs + nelB*wdsizo8*lnx*lny*lnz
          call byte_set_view(loffs,ifh_mbyte)
 
 !     write vector
          call mfo_outs(lvs,lnel,lnx,lny,lnz)
 
 !     update offset
-         offs = offs + lnelg*wdsizo*lnx*lny*lnz
+         offs = offs + lnelg*wdsizo8*lnx*lny*lnz
       endif
 
       return
@@ -429,7 +437,7 @@
       logical ifskip
 
 !     local variables
-      integer*8 loffs
+      integer*8 loffs, wdsizr8
       integer il, ik, itmp
       integer lnx1, lny1, lnz1
 
@@ -454,14 +462,16 @@
       NZ1 = NZR
 
 !     shift offset taking onto account elements on processes with smaller id
-      loffs = offs + ndim*nelBr*wdsizr*nxr*nyr*nzr
+!     to ensure proper integer prolongation
+      wdsizr8 = wdsizr
+      loffs = offs + ndim*nelBr*wdsizr8*nxr*nyr*nzr
       call byte_set_view(loffs,ifh_mbyte)
 
 !     write vector
       call mfi_getv(lvx,lvy,lvz,wk,lwk,ifskip)
 
 !     update offset
-      offs = offs + ndim*nelgr*wdsizr*nxr*nyr*nzr
+      offs = offs + ndim*nelgr*wdsizr8*nxr*nyr*nzr
 
 !     put element size back
       NX1 = lnx1
@@ -495,7 +505,7 @@
       logical ifskip
 
 !     local variables
-      integer*8 loffs
+      integer*8 loffs, wdsizr8
       integer il, ik, itmp
       integer lnx1, lny1, lnz1
 
@@ -520,14 +530,16 @@
       NZ1 = NZR
 
 !     shift offset taking onto account elements on processes with smaller id
-      loffs = offs + nelBr*wdsizr*nxr*nyr*nzr
+!     to ensure proper integer prolongation
+      wdsizr8 = wdsizr
+      loffs = offs + nelBr*wdsizr8*nxr*nyr*nzr
       call byte_set_view(loffs,ifh_mbyte)
 
 !     write vector
       call mfi_gets(lvs,wk,lwk,ifskip)
 
 !     update offset
-      offs = offs + nelgr*wdsizr*nxr*nyr*nzr
+      offs = offs + nelgr*wdsizr8*nxr*nyr*nzr
 
 !     put element size back
       NX1 = lnx1
