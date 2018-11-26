@@ -7,6 +7,7 @@ c
       integer lelx,lely,lelz,mxprev,lgmres,lorder,lhis
       integer maxobj,lpert,nsessmax,lxo
       integer lfdm
+      integer ldimt_proj
 
       ! BASIC
       parameter (ldim=2)               ! domain dimension (2 or 3)
@@ -35,7 +36,8 @@ c
       parameter (lbelt=1)              ! mhd
       parameter (lpelt=1)              ! linear stability
       parameter (lcvelt=1)             ! cvode
-      parameter (lfdm=0)  ! == 1 for fast diagonalization method
+      parameter (lfdm=0)               ! == 1 for fast diagonalization method
+      parameter (ldimt_proj = 1)       ! max auxiliary fields residual projection
 
       ! INTERNALS
       include 'SIZE.inc'

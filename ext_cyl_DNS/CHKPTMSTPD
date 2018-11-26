@@ -1,5 +1,5 @@
 !> @file CHKPTMSTPD
-!! @ingroup chkpoint_dns_lin
+!! @ingroup chkpoint_mstep
 !! @brief Include file for multistep checkpointing
 !! @author Adam Peplinski
 !! @date Feb 6, 2017
@@ -26,6 +26,9 @@
 !     time step for old simulation (used during restart)
       real chpm_dtstep(chpm_snmax)
 
+!     marker of the pressure mesh      
+      logical chpm_if_pmesh
+
 !     max number of files in a snapshot (DNS, perturbation, mhd..)
       integer chkptnfmax
       parameter (chkptnfmax=2)
@@ -36,4 +39,4 @@
 
       common /CHKPTMFR/ chpm_dtstep
 
-      common /CHKPTMFL/ chpm_ifinit
+      common /CHKPTMFL/ chpm_ifinit, chpm_if_pmesh

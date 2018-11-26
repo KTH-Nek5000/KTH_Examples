@@ -21,21 +21,21 @@
       include 'MNTRTMRD'
       include 'FRAMELP'
 
-!     argument list
+      ! argument list
       integer mid, pmid, modid
       character*(*) mname, mdscr
       logical ifsum
 
-!     local variables
+      ! local variables
       character*10  lname
       character*132 ldscr
       integer slen,slena
 
       integer il, ipos
 !-----------------------------------------------------------------------
-!     check name length
+      ! check name length
       slena = len_trim(adjustl(mname))
-!     remove trailing blanks
+      ! remove trailing blanks
       slen = len_trim(mname) - slena + 1
       if (slena.gt.mntr_lstl_mnm) then
          call mntr_log(mntr_id,lp_deb,
@@ -46,9 +46,9 @@
       lname= mname(slen:slen+slena- 1)
       call capit(lname,slena)
 
-!     check description length
+      ! check description length
       slena = len_trim(adjustl(mdscr))
-!     remove trailing blanks
+      ! remove trailing blanks
       slen = len_trim(mdscr) - slena + 1
       if (slena.ge.mntr_lstl_mds) then
          call mntr_log(mntr_id,lp_deb,
@@ -58,13 +58,13 @@
       call blank(ldscr,mntr_lstl_mds)
       ldscr= mdscr(slen:slen + slena - 1)
 
-!     find empty space
+      ! find empty space
       ipos = 0
 
-!     to ensure consistency I do it on master and broadcast result
+      ! to ensure consistency I do it on master and broadcast result
       if (nid.eq.mntr_pid0) then
 
-!     check if module is already registered
+         ! check if module is already registered
          do il=1,mntr_tmr_mpos
             if (mntr_tmr_id(mntr_tmr_mark,il).ge.0.and.
      $         mntr_tmr_name(il).eq.lname) then
@@ -73,7 +73,7 @@
             endif
          enddo
 
-!     find empty spot
+         ! find empty spot
          if (ipos.eq.0) then
             do il=1,mntr_tmr_id_max
                if (mntr_tmr_id(mntr_tmr_mark,il).eq.-1) then
@@ -84,23 +84,23 @@
          endif
       endif
 
-!     broadcast mid
+      ! broadcast mid
       call bcast(ipos,isize)
 
-!     error; no free space found
+      ! error; no free space found
       if (ipos.eq.0) then
          mid = ipos
          call mntr_abort(mntr_id,
      $        'timer ['//trim(lname)//'] cannot be registered')
-!     module already registered
+      ! module already registered
       elseif (ipos.lt.0) then
          mid = abs(ipos)
          call mntr_abort(mntr_id,
      $    'timer ['//trim(lname)//'] is already registered')
-!     new module
+      ! new module
       else
          mid = ipos
-!        check if parent timer is registered
+         ! check if parent timer is registered
          if (pmid.gt.0) then
             if (mntr_tmr_id(mntr_tmr_mark,pmid).ge.0) then
                mntr_tmr_id(mntr_tmr_mark,ipos) = pmid
@@ -113,7 +113,7 @@
             mntr_tmr_id(mntr_tmr_mark,ipos) = 0
          endif
 
-!        check if registerring module is registered
+         ! check if registerring module is registered
          if (modid.gt.0) then
             if (mntr_mod_id(modid).ge.0) then
                mntr_tmr_id(mntr_tmr_mod,ipos) = modid
@@ -151,20 +151,20 @@
       include 'MNTRTMRD'
       include 'FRAMELP'
 
-!     argument list
+      ! argument list
       integer mid
       character*(*) mname
 
-!     local variables
+      ! local variables
       character*10  lname
       character*3 str
       integer slen,slena
 
       integer il, ipos
 !-----------------------------------------------------------------------
-!     check name length
+      ! check name length
       slena = len_trim(adjustl(mname))
-!     remove trailing blanks
+      ! remove trailing blanks
       slen = len_trim(mname) - slena + 1
       if (slena.gt.mntr_lstl_mnm) then
          call mntr_log(mntr_id,lp_deb,
@@ -175,12 +175,12 @@
       lname= mname(slen:slen+slena- 1)
       call capit(lname,slena)
 
-!     find module
+      ! find module
       ipos = 0
 
-!     to ensure consistency I do it on master and broadcast result
+      ! to ensure consistency I do it on master and broadcast result
       if (nid.eq.mntr_pid0) then
-!     check if module is already registered
+         ! check if module is already registered
          do il=1,mntr_tmr_mpos
             if (mntr_tmr_id(mntr_tmr_mark,il).ge.0.and.
      $         mntr_tmr_name(il).eq.lname) then
@@ -190,7 +190,7 @@
          enddo
       endif
 
-!     broadcast ipos
+      ! broadcast ipos
       call bcast(ipos,isize)
 
       if (ipos.eq.0) then
@@ -220,7 +220,7 @@
       include 'MNTRTMRD'
       include 'FRAMELP'
 
-!     argument list
+      ! argument list
       integer mid
 !-----------------------------------------------------------------------
       mntr_tmr_is_id_reg = mntr_tmr_id(mntr_tmr_mark,mid).ge.0
@@ -241,11 +241,11 @@
       include 'MNTRTMRD'
       include 'FRAMELP'
 
-!     argument list
+      ! argument list
       integer mid, icount
       real time
 
-!     local variables
+      ! local variables
       character*3 str
 !-----------------------------------------------------------------------
       if (mntr_tmr_id(mntr_tmr_mark,mid).ge.0) then
@@ -273,7 +273,7 @@
       include 'MNTRTMRD'
       include 'FRAMELP'
 
-!     local variables
+      ! local variables
       integer il, jl, maxlev, stride
       parameter (stride=2)
       integer olist(2,mntr_tmr_id_max), ierr, itmp
@@ -281,18 +281,18 @@
       character*35 ftm
       character*3 str
 
-!     functions
+      ! functions
       integer iglmax
       real glmax, glmin, dnekclock
 !-----------------------------------------------------------------------
       call mntr_log(mntr_id,lp_prd,
      $         'Summary of registered timers')
 
-!     finalise framework timing
+      ! finalise framework timing
       mntr_frame_tmini = dnekclock() - mntr_frame_tmini
       call mntr_tmr_add(mntr_frame_tmr_id,1,mntr_frame_tmini)
 
-!     get ordered list
+      ! get ordered list
       call mntr_tmr_get_olist(olist, ierr)
       ierr = iglmax(ierr,1)
       if (ierr.gt.0) then
@@ -300,8 +300,8 @@
          return
       endif
 
-!     sum contributions from children if they are marked with mntr_tmr_sum
-!     find max level for this run
+      ! sum contributions from children if they are marked with mntr_tmr_sum
+      ! find max level for this run
       maxlev = 1
       do il=1,mntr_tmr_num
          maxlev = max(maxlev,olist(2,il))
@@ -311,11 +311,11 @@
          do jl=1,mntr_tmr_num
             if (olist(2,jl).eq.il.and.mntr_tmr_sum(olist(1,jl))) then
                itmp = mntr_tmr_id(mntr_tmr_mark,olist(1,jl))
-!     sum iteration count
+               ! sum iteration count
                mntr_tmrv_timer(mntr_tmr_count,itmp) =
      $             mntr_tmrv_timer(mntr_tmr_count,itmp) +
      $             mntr_tmrv_timer(mntr_tmr_count,olist(1,jl))
-!     sum timer
+               ! sum timer
                mntr_tmrv_timer(mntr_tmr_time,itmp) =
      $             mntr_tmrv_timer(mntr_tmr_time,itmp) +
      $             mntr_tmrv_timer(mntr_tmr_time,olist(1,jl))
@@ -324,7 +324,7 @@
       enddo
 
 
-!     get max, min timers
+      ! get max, min timers
       do il=1,mntr_tmr_mpos
          if (mntr_tmr_id(mntr_tmr_mark,il).ge.0) then
             timmin(il) = glmin(mntr_tmrv_timer(mntr_tmr_time,il),1)
@@ -336,10 +336,10 @@
 
          if(ierr.eq.0.and.mntr_lp_def.le.lp_prd) then
 
-!     modify max level
+            ! modify max level
             maxlev = maxlev + 1
 
-!     print description
+            ! print description
             if (mntr_iftdsc) then
                write (*,*) ' '
                do il=1,mntr_tmr_num
@@ -354,7 +354,7 @@
                enddo
             endif
 
-!     print values
+            ! print values
             write(*,*) ' '
             write(str,'(I3)') mntr_lstl_mnm +stride*maxlev-1
             ftm='(A11,1X,A'//trim(adjustl(str))//',1X,":",4A15)'
@@ -390,10 +390,10 @@
       include 'MNTRLOGD'
       include 'MNTRTMRD'
 
-!     argument list
+      ! argument list
       integer olist(2,mntr_tmr_id_max), ierr
 
-!     local variables
+      ! local variables
       integer ind(mntr_tmr_id_max), level, parent, ipos
       integer slist(2,mntr_tmr_id_max), itmp1(2)
       integer npos, key
@@ -402,8 +402,8 @@
 !-----------------------------------------------------------------------
       ierr = 0
 
-!     sort timer index array
-!     copy data removing possible empty slots
+      ! sort timer index array
+      ! copy data removing possible empty slots
       npos=0
       do il=1,mntr_tmr_mpos
          if (mntr_tmr_id(mntr_tmr_mark,il).ge.0) then
@@ -419,11 +419,11 @@
          return
       endif
 
-!     sort with respect to parent id
+      ! sort with respect to parent id
       key = 1
       call ituple_sort(slist,2,npos,key,1,ind,itmp1)
 
-!     sort within children of single parent with respect to child id
+      ! sort within children of single parent with respect to child id
       istart = 1
       itest = slist(1,istart)
       do il=1,npos

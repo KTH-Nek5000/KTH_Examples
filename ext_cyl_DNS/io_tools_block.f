@@ -8,9 +8,8 @@
 !! @date Mar 7, 2016
 !=======================================================================
       block data io_common_init
-!     keeep track of max iunit generated
-      integer io_iunit_min, io_iunit_max
-      common /io_iunit/ io_iunit_min, io_iunit_max
+      include 'IOTOOLD'
+
       data io_iunit_min/200/
       data io_iunit_max/200/
       end

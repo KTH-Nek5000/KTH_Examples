@@ -8,17 +8,17 @@ stopAt = numSteps #endTime
 numSteps = 102.0
 
 dt = 1.000000E-02
-timeStepper = bdf #char #steady
-tOrder = 3.00000
+timeStepper = bdf3
 variableDt = no
-maxCFL = 1.00000
+targetCFL = 1.00000
 
 writeControl = timeStep #runTime
 writeInterval = 20.0
 
 dealiasing = yes
-filtering = yes  
+filtering = explicit
 filterWeight = 0.100000E-01
+filterCutoffRatio = 0.84
 
 userParam01 = 5 # use in .usr uparam(01)
 
@@ -32,7 +32,7 @@ userParam01 = 5 # use in .usr uparam(01)
 writeToFieldFile = yes
 
 [PRESSURE]
-preconditioner = semg
+preconditioner = semg_xxt
 residualTol = 0.100000E-08
 residualProj = no
 writeToFieldFile = yes
