@@ -1215,11 +1215,10 @@
      $            ':'//trim(adjustl(mod_dictkey(ip)))
                if(index(key,trim(lkey)).eq.1) then
                   ifvar = .TRUE.
-!                  exit
-                  goto 20
+                  exit
                endif
             enddo
- 20         continue
+
             if (ifvar) then
                ! check 2D versus 3D
                if (.not.IF3D) then
@@ -1227,11 +1226,10 @@
                   do jl=1,mod_n3dkeys
                      if (ip.eq.mod_l3dkey(jl)) then
                         if3dkey = .TRUE.
-!                        exit
-                        goto 40
+                        exit
                      endif
                   enddo
- 40               continue
+
                   if (if3dkey) then
                      call mntr_log(rprm_id,lp_inf,
      $                   'Module '//trim(mod_dictkey(1)))

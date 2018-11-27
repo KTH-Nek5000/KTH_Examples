@@ -16,37 +16,47 @@
       include 'FRAMELP'
       include 'NOISEBXD'
 
-!     local variables
+      ! local variables
       integer lpmid
       real ltim
 
-!     functions
+      ! functions
       real dnekclock
 !-----------------------------------------------------------------------
-!     timing
+      ! timing
       ltim = dnekclock()
 
-!     find parent module
-      call mntr_mod_is_name_reg(lpmid,'FRAME')
-!     register module
-      call mntr_mod_reg(nseb_id,lpmid,nseb_name,
-     $      'Adding noise in rectangular domain')
-      if (lpmid.le.0) then
-         call mntr_log(nseb_id,lp_vrb,
-     $        'ERROR: parent module ['//'FRAME'//'] not registered')
+      ! check if the current module was already registered
+      call mntr_mod_is_name_reg(lpmid,nseb_name)
+      if (lpmid.gt.0) then
+         call mntr_warn(lpmid,
+     $        'module ['//trim(nseb_name)//'] already registered')
+         return
       endif
 
-!     register timer
+      ! find parent module
+      call mntr_mod_is_name_reg(lpmid,'FRAME')
+      if (lpmid.le.0) then
+         lpmid = 1
+         call mntr_abort(lpmid,
+     $        'Parent module ['//'FRAME'//'] not registered')
+      endif
+
+      ! register module
+      call mntr_mod_reg(nseb_id,lpmid,nseb_name,
+     $                 'Adding white noise in rectangular domain')
+
+      ! register timer
       call mntr_tmr_is_name_reg(lpmid,'FRM_TOT')
       call mntr_tmr_reg(nseb_tmr_id,lpmid,nseb_id,
      $      'NSEB_TOT','Noise box total time',.false.)
 
-!     register and set active section
+      ! register and set active section
       call rprm_sec_reg(nseb_sec_id,nseb_id,'_'//adjustl(nseb_name),
      $     'Runtime paramere section for noise_box module')
       call rprm_sec_set_act(.true.,nseb_sec_id)
 
-!     register parameters
+      ! register parameters
       call rprm_rp_reg(nseb_tim_id,nseb_sec_id,'TIME',
      $     'Time to add noise',rpar_real,0,0.0,.false.,' ')
 
@@ -77,12 +87,12 @@
      $     'BOXMAXZ','Position of upper right box corner; dimension Z ',
      $     rpar_real,0,0.0,.false.,' ')
 
-!     timing
+      ! timing
       ltim = dnekclock() - ltim
       call mntr_tmr_add(nseb_tmr_id,1,ltim)
 
       return
-      end
+      end subroutine
 !=======================================================================
 !> @brief Initilise noise_box module
 !! @ingroup noise_box
@@ -97,20 +107,27 @@
       include 'FRAMELP'
       include 'NOISEBXD'
 
-!     local variables
+      ! local variables
       integer ierr, nhour, nmin
       integer itmp
       real rtmp, ltim
       logical ltmp
       character*20 ctmp
 
-!     functions
+      ! functions
       real dnekclock
 !-----------------------------------------------------------------------
-!     timing
+      ! check if the module was already initialised
+      if (nseb_ifinit) then
+         call mntr_warn(nseb_id,
+     $        'module ['//trim(nseb_name)//'] already initiaised.')
+         return
+      endif
+
+      ! timing
       ltim = dnekclock()
 
-!     get runtime parameters
+      ! get runtime parameters
       call rprm_rp_get(itmp,rtmp,ltmp,ctmp,nseb_tim_id,rpar_real)
       nseb_tim = rtmp
 
@@ -145,15 +162,15 @@
          nseb_bmax(ndim) = rtmp
       endif
 
-!     is everything initialised
+      ! is everything initialised
       nseb_ifinit=.true.
 
-!     timing
+      ! timing
       ltim = dnekclock() - ltim
       call mntr_tmr_add(nseb_tmr_id,1,ltim)
 
       return
-      end
+      end subroutine
 !=======================================================================
 !> @brief Check if module was initialised
 !! @ingroup noise_box
@@ -183,21 +200,21 @@
       include 'FRAMELP'
       include 'NOISEBXD'
 
-!     local variables
+      ! local variables
       integer iel, ieg, il, jl, kl, nl
       real xl(LDIM)
       logical ifadd
       real fcoeff(3)            !< coefficients for random distribution
       real ltim
 
-!     functions
+      ! functions
       real dnekclock, mth_rand
 !-----------------------------------------------------------------------
-!     add noise
+      ! add noise
       if (nseb_amp.gt.0.0) then
          if (nseb_tim.ge.TIME.and.nseb_tim.le.(TIME+DT)) then
 
-!     timing
+      ! timing
             ltim = dnekclock()
             call mntr_log(nseb_id,lp_inf,
      $          "Adding noise to velocity field")
@@ -215,11 +232,9 @@
                            if (xl(nl).lt.nseb_bmin(nl).or.
      $                          xl(nl).gt.nseb_bmax(nl)) then
                               ifadd = .FALSE.
-!                              exit
-                              goto 20
+                              exit
                            endif
                         enddo
- 20                     continue
 
                         if (ifadd) then
                            fcoeff(1)=  3.0e4
@@ -247,12 +262,11 @@
                enddo
             enddo
 
-
-!     face averaging
+      ! face averaging
             call opdssum(VX,VY,VZ)
             call opcolv (VX,VY,VZ,VMULT)
 
-!     timing
+      ! timing
             ltim = dnekclock() - ltim
             call mntr_tmr_add(nseb_tmr_id,1,ltim)
 
@@ -260,5 +274,5 @@
       endif
 
       return
-      end
+      end subroutine
 !=======================================================================

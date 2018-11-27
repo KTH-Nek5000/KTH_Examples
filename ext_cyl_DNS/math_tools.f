@@ -20,14 +20,14 @@
       real function mth_stepf(x)
       implicit none
 
-!     argument list
+      ! argument list
       real x
 
-!     local variables
+      ! local variables
       real xdmin, xdmax
       parameter (xdmin = 0.001, xdmax = 0.999)
 !-----------------------------------------------------------------------
-!     get function vale
+      ! get function vale
       if (x.le.xdmin) then
          mth_stepf = 0.0
       else if (x.le.xdmax) then
@@ -56,12 +56,10 @@
       include 'SIZE'
       include 'INPUT'       ! IF3D
 
-!     argument list
+      ! argument list
       integer ix,iy,iz,ieg
       real xl(LDIM)
       real fcoeff(3)
-
-!     local variables
 !-----------------------------------------------------------------------
       mth_rand = fcoeff(1)*(ieg+xl(1)*sin(xl(2))) + fcoeff(2)*ix*iy +
      $     fcoeff(3)*ix

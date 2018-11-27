@@ -65,11 +65,9 @@
          if(ifcnnd) then
             iunit = iunit +1
          else
-!            exit
-            goto 20
+            exit
          endif
       enddo
- 20   continue
 
       if (iunit.gt.io_iunit_max) io_iunit_max = iunit
 
