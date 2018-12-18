@@ -8,17 +8,17 @@ stopAt = numSteps #endTime
 numSteps = 102.0
 
 dt = 1.000000E-02
-timeStepper = bdf #char #steady
-tOrder = 3.00000
+timeStepper = bdf3
 variableDt = no
-maxCFL = 1.00000
+targetCFL = 1.00000
 
 writeControl = timeStep #runTime
 writeInterval = 20.0
 
 dealiasing = yes
-filtering = yes  
+filtering = explicit
 filterWeight = 0.100000E-01
+filterCutoffRatio = 0.84
 
 userParam01 = 5 # use in .usr uparam(01)
 
@@ -32,7 +32,7 @@ userParam01 = 5 # use in .usr uparam(01)
 writeToFieldFile = yes
 
 [PRESSURE]
-preconditioner = semg
+preconditioner = semg_xxt
 residualTol = 0.100000E-08
 residualProj = no
 writeToFieldFile = yes
@@ -45,15 +45,24 @@ viscosity = -100
 advection = yes
 writeToFieldFile = yes
 
-[_CHKPOINT]
-chkpInterval = 25
-readchkpt = no
-chkpFnumber = 0
-chkpWallTime = 02:05
+#
+[_RUNPAR]               # Runtime parameter section for rprm module
+PARFWRITE            = no                     # Do we write runtime parameter file
+PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
+#
+[_MONITOR]              # Runtime parameter section for monitor module
+LOGLEVEL             = 4                      # Logging threshold for toolboxes
+WALLTIME             = 02:05                  # Simulation wall time
+#
+[_CHKPOINT]             # Runtime paramere section for checkpoint module
+READCHKPT            = no                     # Restat from checkpoint
+CHKPFNUMBER          = 2                      # Restart file number
+CHKPINTERVAL         = 25                     # Checkpiont saving frequency (number of time steps)
+#
+[_SFD]                  # Runtime paramere section for SFD module
+FILTERWDTH           = 0.40500000E+01         # SFD filter width
+CONTROLCFF           = 0.50000000E+00         # SFD control coefficient
+RESIDUALTOL          = 0.10000000E-06         # SFD tolerance for residual
+LOGINTERVAL          = 5                      # SFD frequency for logging convegence data
+SFDREADCHKPT         = no                     # SFD; restat from checkpoint
 
-[_SFD]
-runsfd = yes
-filtwdth = 4.05
-controlcff = 0.5
-residualtol = 0.1E-06
-loginterval = 5

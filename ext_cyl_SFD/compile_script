@@ -1,0 +1,24 @@
+#!/bin/bash
+export CASE="ext_cyl"
+export SOURCE_ROOT="/home/adam/Work/Run/Wing/stat_my/stat_new/Nek5000"
+#export SOURCE_ROOT="/home/adam/Work/Run/KTH_framework/Nek5000"
+export FC="/home/adam/SRC/OpenMPI/4.0.0/exec/bin/mpifort"
+export CC="/home/adam/SRC/OpenMPI/4.0.0/exec/bin/mpicc"
+#export PPLIST="NOMPIIO"
+export PPLIST=""
+export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o chkpoint.o chkpt_mstp.o sfd.o"
+
+for il in "$@"
+do
+case $il in
+        --clean)
+                ${SOURCE_ROOT}/bin/makenek clean
+                shift
+                ;;
+        --all)
+                ${SOURCE_ROOT}/bin/makenek ${CASE}
+                shift
+                ;;
+esac
+done
+
