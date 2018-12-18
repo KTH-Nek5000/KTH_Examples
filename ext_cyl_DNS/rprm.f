@@ -1104,7 +1104,7 @@
             endif
          enddo
 
-         if (mntr_lp_def_get.le.lp_prd.or.unit.ne.6) then
+         if (mntr_lp_def_get().le.lp_prd.or.unit.ne.6) then
            if (unit.ne.6) then
              write(unit,'(A)') cmnt
              write(unit,'(A,A)') cmnt,

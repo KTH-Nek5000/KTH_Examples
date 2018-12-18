@@ -470,9 +470,8 @@
 
       character*6  str
 
-      character*17 kst
-      save         kst
-      data         kst / '0123456789abcdefx' /
+      character*(*) kst
+      parameter(kst='0123456789abcdefx')
 !-----------------------------------------------------------------------
       ! create prefix and name for DNS
       ierr = 0

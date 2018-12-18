@@ -108,7 +108,7 @@
          call mntr_warn(chpt_id,
      $        'module ['//trim(chpt_name)//'] already initiaised.')
          ! check submodule intialisation
-         if (.not.chkpts_is_initialised) then
+         if (.not.chkpts_is_initialised()) then
             call mntr_abort(chpt_id,
      $        'required submodule module not initiaised.')
          endif
@@ -170,7 +170,7 @@
       call chkpts_init
 
       ! is everything initialised
-      if (chkpts_is_initialised) chpt_ifinit=.true.
+      if (chkpts_is_initialised()) chpt_ifinit=.true.
 
       ! timing
       ltim = dnekclock() - ltim

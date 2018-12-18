@@ -302,6 +302,7 @@
 !! @ingroup monitor
 !! @return mntr_lp_def_get
       integer function mntr_lp_def_get()
+      implicit none
 
       include 'SIZE'
       include 'FRAMELP'

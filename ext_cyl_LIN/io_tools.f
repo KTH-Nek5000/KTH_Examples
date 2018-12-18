@@ -124,9 +124,8 @@
       integer ndigit, itmp
       real rfileo
 
-      character*6  six
-      save         six
-      data         six / "??????" /
+      character*(*)  six
+      parameter(six='??????')
 !-----------------------------------------------------------------------
       ! initialise variables
       ierr = 0
