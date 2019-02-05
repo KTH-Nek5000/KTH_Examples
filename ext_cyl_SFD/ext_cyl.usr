@@ -54,13 +54,6 @@
       include 'TSTEP'
       include 'INPUT'
       include 'SOLN'
-
-!     local variables
-      real scale
-      real x0(3)
-      save x0
-      data x0 /3*0/
-
       
       if (ISTEP.eq.0) call frame_start
 
