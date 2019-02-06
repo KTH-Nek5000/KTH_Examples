@@ -1,0 +1,22 @@
+#!/bin/bash
+export CASE="phill"
+export SOURCE_ROOT="../../Nek5000"
+export FC="mpifort"
+export CC="mpicc"
+export PPLIST=""
+export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o chkpoint.o chkpt_mstp.o trip.o"
+
+for il in "$@"
+do
+case $il in
+        --clean)
+                ${SOURCE_ROOT}/bin/makenek clean
+                shift
+                ;;
+        --all)
+                ${SOURCE_ROOT}/bin/makenek ${CASE}
+                shift
+                ;;
+esac
+done
+

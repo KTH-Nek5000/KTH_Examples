@@ -1,0 +1,82 @@
+#
+# nek parameter file
+#
+[GENERAL] 
+stopAt = numSteps #endTime
+#endTime = 30.0
+numSteps = 1003
+
+dt = -2.0e-04
+timeStepper = bdf3 #char #steady
+variableDt = no
+targetCFL = 0.3
+
+writeControl = timeStep #runTime
+writeInterval = 100  
+
+dealiasing = yes
+filtering = explicit
+filterWeight = 0.02
+filterCutoffRatio = 0.67
+
+userParam01 = 1		 # param(54) fixed flow rate dir.
+userParam02 = 9.1575     # param(55) vol. flow rate
+
+[PROBLEMTYPE]
+stressFormulation = no
+variableProperties = no
+
+[PRESSURE]
+residualTol = 1e-8
+residualProj = no
+
+[VELOCITY]
+residualTol = 1e-8
+residualProj = no
+density = 1.0
+viscosity = -700
+advection = yes
+
+#
+[_RUNPAR]               # Runtime parameter section for rprm module
+PARFWRITE            = no                     # Do we write runtime parameter file
+PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
+#
+[_MONITOR]              # Runtime parameter section for monitor module
+LOGLEVEL             = 4                      # Logging threshold for toolboxes
+WALLTIME             = 23:45                  # Simulation wall time
+#
+[_CHKPOINT]             # Runtime paramere section for checkpoint module
+READCHKPT            = no                     # Restat from checkpoint
+CHKPFNUMBER          = 1                      # Restart file number
+CHKPINTERVAL         = 250                    # Checkpiont saving frequency (number of time steps)
+#
+[_TRIPPING]             # Runtime paramere section for tripping module
+NLINE                = 2                      # Number of tripping lines
+TIAMP                = 0.00000000E+00         # Time independent amplitude
+TDAMP                = 1.00000000E+01         # Time dependent amplitude
+SPOSX01              = 8.30000000E+00         # Starting pont X
+SPOSY01              = 3.03500000E+00         # Starting pont Y
+SPOSZ01              = 0.00000000E+00         # Starting pont Z
+EPOSX01              = 8.30000000E+00         # Ending pont X
+EPOSY01              = 3.03500000E+00         # Ending pont Y
+EPOSZ01              = 4.50000000E+00         # Ending pont Z
+SMTHX01              = 1.36000000E+00         # Smoothing length X
+SMTHY01              = 0.34000000E+00         # Smoothing length Y
+SMTHZ01              = 0.00000000E+00         # Smoothing length Z
+ROTA01               = 0.00000000E+00         # Rotation angle in radians
+NMODE01		     = 16		      # Number of Fourier modes
+TDT01		     = 0.14000000E+00	      # Time step for tripping
+SPOSX02              = 8.80000000E+00         # Starting pont X
+SPOSY02              = 0.99430000E+00         # Starting pont Y
+SPOSZ02              = 0.00000000E+00         # Starting pont Z
+EPOSX02              = 8.80000000E+00         # Ending pont X
+EPOSY02              = 0.99430000E+00         # Ending pont Y
+EPOSZ02              = 4.50000000E+00         # Ending pont Z
+SMTHX02              = 0.28000000E+00         # Smoothing length X
+SMTHY02              = 0.07000000E+00         # Smoothing length Y
+SMTHZ02              = 0.00000000E+00         # Smoothing length Z
+ROTA02               = 0.12300000E+00         # Rotation angle in radians
+NMODE02		     = 76		      # Number of Fourier modes
+TDT02		     = 0.14000000E+00	      # Time step for tripping
+
