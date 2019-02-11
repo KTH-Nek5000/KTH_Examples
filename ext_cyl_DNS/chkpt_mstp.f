@@ -1184,13 +1184,13 @@
       end subroutine
 !=======================================================================
 !> @brief Interpolate input on velocity mesh
-!! @details This is version of @ref mapb with corrected array sizes.
+!! @details This is version of @ref mapab with corrected array sizes.
 !!    It iterpolates fields defined on GLL points. Like
 !!    the orginal routine I assume NXR=NYR=NZR, or NXR=NYR, NZR=1
 !! @ingroup chkpoint_mstep
 !! @param[out]   xf           output field on velocity mesh
 !! @param[in]    yf           input field on velocity mesh
-!! @param[in]    nxr          number of grid points
+!! @param[in]    nxr, nzr     array sizes
 !! @param[in]    nel          element number
 !! @remarks This routine uses global scratch space CTMP0, CTMPABM1
       subroutine chkpt_map_gll(xf,yf,nxr,nzr,nel)
@@ -1253,13 +1253,13 @@
       end subroutine
 !=======================================================================
 !> @brief Interpolate pressure input
-!! @details This is version of @ref mapb modified to work with pressure
+!! @details This is version of @ref mapab modified to work with pressure
 !!    mesh. It iterpolates fields defined on GL points. Like
 !!    the orginal routine I assume NXR=NYR=NZR, or NXR=NYR, NZR=1
 !! @ingroup chkpoint_mstep
 !! @param[out]   xf           output field on pressure mesh
 !! @param[in]    yf           input field on pressure mesh
-!! @param[in]    nxr          number of grid points
+!! @param[in]    nxr, nzr     array sizes
 !! @param[in]    nel          element number
 !! @remarks This routine uses global scratch space CTMP0, CTMPABM2
       subroutine chkpt_map_gl(xf,yf,nxr,nzr,nel)
@@ -1323,7 +1323,6 @@
 !=======================================================================
 !> @brief Map loaded variables from velocity to axisymmetric mesh
 !! @ingroup chkpoint_mstep
-!! @param[in] pm1    pressure loaded form the file
 !! @note This is version of @ref axis_interp_ic taking into account fact
 !! pressure does not have to be written on velocity mesh.
 !! @remark This routine uses global scratch space \a CTMP0.
