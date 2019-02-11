@@ -332,8 +332,8 @@
 !! @ingroup sponge_box
 !! @param[inout] ffx,ffy,ffz     forcing; x,y,z component
 !! @param[in]    ix,iy,iz        GLL point index
-!! @param[in]    iel             local element number
-      subroutine spng_forcing(ffx,ffy,ffz,ix,iy,iz,iel)
+!! @param[in]    iel             global element number
+      subroutine spng_forcing(ffx,ffy,ffz,ix,iy,iz,ieg)
       implicit none
 
       include 'SIZE'            !
@@ -344,11 +344,12 @@
 
       ! argument list
       real ffx, ffy, ffz
-      integer ix,iy,iz,iel
+      integer ix,iy,iz,ieg
 
       ! local variables
-      integer ip
+      integer iel, ip
 !-----------------------------------------------------------------------
+      iel=GLLEL(ieg)
       if (SPNG_STR.gt.0.0) then
          ip=ix+NX1*(iy-1+NY1*(iz-1+NZ1*(iel-1)))
 
