@@ -75,26 +75,26 @@
          write(str,'(I2.2)') il
 
          call rprm_rp_reg(trip_spos_id(1,il),trip_sec_id,'SPOSX'//str,
-     $     'Starting pont X',rpar_real,0,0.0,.false.,' ')
+     $     'Starting point X',rpar_real,0,0.0,.false.,' ')
          
          call rprm_rp_reg(trip_spos_id(2,il),trip_sec_id,'SPOSY'//str,
-     $     'Starting pont Y',rpar_real,0,0.0,.false.,' ')
+     $     'Starting point Y',rpar_real,0,0.0,.false.,' ')
 
          if (IF3D) then
             call rprm_rp_reg(trip_spos_id(ldim,il),trip_sec_id,
-     $           'SPOSZ'//str,'Starting pont Z',
+     $           'SPOSZ'//str,'Starting point Z',
      $           rpar_real,0,0.0,.false.,' ')
          endif
         
          call rprm_rp_reg(trip_epos_id(1,il),trip_sec_id,'EPOSX'//str,
-     $     'Ending pont X',rpar_real,0,0.0,.false.,' ')
+     $     'Ending point X',rpar_real,0,0.0,.false.,' ')
          
          call rprm_rp_reg(trip_epos_id(2,il),trip_sec_id,'EPOSY'//str,
-     $     'Ending pont Y',rpar_real,0,0.0,.false.,' ')
+     $     'Ending point Y',rpar_real,0,0.0,.false.,' ')
 
          if (IF3D) then
             call rprm_rp_reg(trip_epos_id(ldim,il),trip_sec_id,
-     $           'EPOSZ'//str,'Ending pont Z',
+     $           'EPOSZ'//str,'Ending point Z',
      $           rpar_real,0,0.0,.false.,' ')
          endif
 
@@ -238,6 +238,20 @@
 
       return
       end subroutine
+!=======================================================================
+!> @brief Check if module was initialised
+!! @ingroup trip_line
+!! @return trip_is_initialised
+      logical function trip_is_initialised()
+      implicit none
+
+      include 'SIZE'
+      include 'TRIPD'
+!-----------------------------------------------------------------------
+      trip_is_initialised = trip_ifinit
+
+      return
+      end function
 !=======================================================================
 !> @brief Update tripping
 !! @ingroup trip_line
@@ -422,7 +436,7 @@
             
             rtmp = (xr*trip_ismth(1,il))**2 + (yr*trip_ismth(2,il))**2
             ! Gauss
-            !trip_fsmth(itmp,jtmp,ktmp,eltmp,il) = exp(-rtmp)
+            !trip_fsmth(itmp,jtmp,ktmp,eltmp,il) = exp(-4.0*rtmp)
             ! limited support
             if (rtmp.lt.1.0) then
                trip_fsmth(itmp,jtmp,ktmp,eltmp,il) =
