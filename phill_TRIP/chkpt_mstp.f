@@ -214,7 +214,7 @@
       implicit none
 
       include 'SIZE'            !
-      include 'TSTEP'           ! ISTEP
+      include 'TSTEP'           ! ISTEP, IF_FULL_PRES
       include 'INPUT'           ! IFREGUO, INITC
       include 'FRAMELP'
       include 'CHKPOINTD'
@@ -281,6 +281,7 @@
 
       ! put parameters back
       IFREGUO = ifreguol
+      IF_FULL_PRES=.false.
 
       return
       end subroutine
@@ -635,7 +636,7 @@
          call sioflag(ndumps,fnamel,fname(fnum))
          call chkpt_mfi(fnamel,chktype,ipert)
       else ! DNS
-         ! write only one set of files
+         ! read only one set of files
          if (fnum.ne.1) call mntr_abort(chpm_id,
      $        'chkpt_restart_read; too meny files for DNS')
 
