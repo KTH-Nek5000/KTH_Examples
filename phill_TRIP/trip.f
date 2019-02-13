@@ -5,6 +5,9 @@
 !!   I'm in a hurry and I want to save some time writing the code. So
 !!   I reuse already tested code and focuse important parts. For the
 !!   same reason for now only lines parallel to z axis are considered. 
+!!   The tripping is based on a similar implementation in the SIMSON code
+!!   (Chevalier et al. 2007, KTH Mechanics), and is described in detail 
+!!   in the paper Schlatter & Örlü, JFM 2012, DOI 10.1017/jfm.2012.324.
 !! @author Adam Peplinski
 !! @date May 03, 2018
 !=======================================================================
