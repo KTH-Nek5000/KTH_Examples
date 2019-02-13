@@ -332,7 +332,7 @@
 !! @ingroup sponge_box
 !! @param[inout] ffx,ffy,ffz     forcing; x,y,z component
 !! @param[in]    ix,iy,iz        GLL point index
-!! @param[in]    iel             global element number
+!! @param[in]    ieg             global element number
       subroutine spng_forcing(ffx,ffy,ffz,ix,iy,iz,ieg)
       implicit none
 
