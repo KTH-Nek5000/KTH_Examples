@@ -19,9 +19,6 @@ filtering = explicit
 filterWeight = 0.02
 filterCutoffRatio = 0.67
 
-userParam01 = 1		 # param(54) fixed flow rate dir.
-userParam02 = 9.1575     # param(55) vol. flow rate
-
 [PROBLEMTYPE]
 stressFormulation = no
 variableProperties = no
