@@ -161,7 +161,7 @@
       ! check if checkpointing module was registered and take parameters
       ierr = 0
       call mntr_mod_is_name_reg(lmid,'CHKPOINT')
-      lmod : if (lmid.gt.0) then
+      if (lmid.gt.0) then
          call rprm_sec_is_name_reg(lsid,lmid,'_CHKPOINT')
          if (lsid.gt.0) then
             ! restart flag
@@ -182,15 +182,17 @@
                   sfd_fnum = itmp
                else
                   ierr = 1
-                  exit lmod
+                  goto 30
                endif
             endif
          else
             ierr = 1
          endif
-      else lmod
+      else
          ierr = 1
-      endif lmod
+      endif
+
+ 30   continue
 
       ! check for errors
       call mntr_check_abort(sfd_id,ierr,
