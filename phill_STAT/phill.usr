@@ -1,0 +1,379 @@
+!-----------------------------------------------------------------------
+!
+!     user subroutines required by nek5000
+!
+!     Parameters used by this set of subroutines:
+!
+!-----------------------------------------------------------------------
+      subroutine uservp (ix,iy,iz,ieg)
+      include 'SIZE'
+      include 'NEKUSE'          ! UDIFF, UTRANS
+
+      UDIFF =0.0
+      UTRANS=0.0
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userf  (ix,iy,iz,ieg)
+      
+      include 'SIZE'
+      include 'NEKUSE'          ! FF[XYZ]
+      include 'PARALLEL'
+
+      integer ix,iy,iz,ieg
+
+      ffx = 0.0
+      ffy = 0.0
+      ffz = 0.0
+
+!     tripping
+      call trip_forcing(ffx,ffy,ffz,ix,iy,iz,ieg) 
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userq  (ix,iy,iz,ieg)
+      include 'SIZE'
+      include 'NEKUSE'          ! QVOL
+
+      QVOL   = 0.0
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userchk
+      implicit none
+      include 'SIZE'            !
+      include 'TSTEP'           ! ISTEP, lastep, time
+      include 'INPUT'           ! IF3D, PARAM
+      
+!     start framework
+      if (ISTEP.eq.0) call frame_start
+
+!     monitor simulation
+      call frame_monitor
+
+!     save/load files for full-restart
+      call chkpt_main
+
+!     for tripping
+      call trip_update
+
+!     finalise framework
+      if (ISTEP.eq.NSTEPS.or.LASTEP.eq.1) then
+         call frame_end
+      endif
+     
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine userbc (ix,iy,iz,iside,eg)
+      include 'SIZE'
+      include 'NEKUSE'          ! UX, UY, UZ, TEMP, X, Y
+
+!     velocity
+      ux =  0.0
+      uy =  0.0
+      uz =  0.0
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine useric (ix,iy,iz,ieg)
+      include 'SIZE'
+      include 'NEKUSE'          ! UX, UY, UZ, TEMP, Z
+
+      ux = 1.
+      uy = 0.
+      uz = 0.
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine usrdat
+      include 'SIZE'
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine usrdat2
+      include 'SIZE'
+      include 'SOLN'            ! vx,vy,vz,pr,t
+      
+      integer iel
+c     mesh stretching
+      real Betax, Betay
+c     Hill parameters
+      real Lx, Ly, Lz, W, H
+      common /hill_param/ Lx, Ly, Lz, W, H, Betax, Betay
+      
+      Betax = 2.0
+      Betay = 2.4
+      Lx = 9.
+      Ly = 3.035
+      Lz = 4.5
+      W  = 1.929
+      H = 1.
+
+c               Lx      
+c      <----------------->
+c      ___________________ 
+c                           ^
+c                           |
+c                           |
+c      _                 _  | Ly
+c   ^   \               /   |
+c H |    \             /    |
+c   v     \___________/     v
+c      <-->
+c       W
+      
+c     Transform box mesh to periodic hill (only for the conforming mesh!!)
+      call box2phill
+
+c      call gen_re2(0)
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine usrdat3
+      include 'SIZE'
+      include 'INPUT'           ! param, if3d
+      include 'MASS'            ! volvm1      
+      
+c     Local variables
+      real Ubulk
+      
+      real Betax,Betay
+c     Hill parameters
+      real Lx, Ly, Lz, W, H
+      common /hill_param/ Lx, Ly, Lz, W, H, Betax, Betay
+
+c     apply mass flux to drive the flow such that
+c     - Ubulk = velocity averaged over the whole domain
+c     - Ubar_inlet = velocity averaged over the inlet plane = 1.
+      if (if3d) then
+         Ubulk = (Lx*(Ly-H)*Lz)/volvm1
+      else
+         Ubulk = (Lx*(Ly-H))/volvm1
+      endif
+
+      if (nid.eq.0) write(6,*) 'U_bulk = ', Ubulk, ' Ubar_inlet = 1'
+      
+      param(54) = -1            ! x-direction
+      param(55) = Ubulk         ! Ubulk
+      
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine box2phill
+      implicit none
+      include 'SIZE'
+      include 'GEOM'            ! {x,y,z}m1
+      include 'INPUT'           ! param
+      include 'SOLN'
+
+      integer i, ntot
+      real Betax, Betay
+      real Lx, Ly, Lz, Wh, H    ! x dimension, y dimension, hill half width, hill height
+      common /hill_param/ Lx, Ly, Lz, Wh, H, Betax ,Betay
+      real shift, amp
+      real xscale, yscale, zscale, yh, xx, yy, zz
+      real hill_step,hill_height,xfac,glmax,glmin
+      real xmin, xmax, ymin, ymax, zmin, zmax
+      save xmin, xmax, ymin, ymax, zmin, zmax
+      logical ifminmax
+      save ifminmax
+      data ifminmax /.false./
+      
+      ntot = nx1*ny1*nz1*nelt
+
+      if (.not.ifminmax) then
+         ifminmax = .true.
+         xmin = glmin(xm1,ntot)
+         xmax = glmax(xm1,ntot)
+         ymin = glmin(ym1,ntot)
+         ymax = glmax(ym1,ntot)
+         if (if3d) then
+            zmin = glmin(zm1,ntot)
+            zmax = glmax(zm1,ntot)
+         endif
+      endif
+      
+C     decrease resolution in the high velocity regions (increase CFL)
+      do i=1,ntot
+         xm1(i,1,1,1) = 0.5*(sinh(Betax*(xm1(i,1,1,1)-0.5))/
+     $    sinh(Betax*0.5) + 1.0)
+      enddo
+
+c     increase resolution near the wall
+      do i=1,ntot
+         ym1(i,1,1,1) = 0.5*(tanh(Betay*(2*ym1(i,1,1,1)-1.0))/
+     $    tanh(Betay) + 1.0)
+      enddo
+      
+c     rescale rectangular domain [0,Lx]x[0,Ly]x[0,Lz]
+      xscale = Lx/(xmax-xmin)
+      yscale = Ly/(ymax-ymin)
+      do i=1,ntot
+         xx = xm1(i,1,1,1)
+         yy = ym1(i,1,1,1)
+         xm1(i,1,1,1) = (xx - xmin) * xscale
+         ym1(i,1,1,1) = (yy - ymin) * yscale
+      enddo
+      if (if3d) then
+         zscale = Lz/(zmax-zmin)
+         do i=1,ntot
+            zz = zm1(i,1,1,1)
+            zm1(i,1,1,1) = (zz - zmin) * zscale
+         enddo
+      endif
+c     Shift points in x
+      amp = 0.25
+      do i=1,ntot
+         xx = xm1(i,1,1,1)
+         yy = ym1(i,1,1,1)
+         xm1(i,1,1,1) = xx + amp*shift(xx,yy,Lx,Ly,Wh)
+      enddo
+      
+c     Add hill
+      do i=1,ntot
+         xx = xm1(i,1,1,1)
+         yy = ym1(i,1,1,1)
+         yh = hill_height(xx,Lx,Wh,H)
+         yscale = 1-yh/Ly
+         ym1(i,1,1,1) = yh + yy * yscale
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
+C     Step function for the hill
+C
+C          x=0
+C           | 
+C      _____|  
+C   ^       \
+C   |        \     x->
+C h |         \
+C   v          \_____
+C           <-->
+C            w     
+      function hill_step(x,w,h)
+      implicit none
+
+      real x,xs,w,h
+      real y,hill_step
+
+      xs = x/w
+
+      if (xs.le.0) then
+         y = h
+      elseif (xs.gt.0.and.xs.le.9./54.) then
+         y = h*min(1.,1.+7.05575248e-1*xs**2-1.1947737203e1*xs**3)
+      elseif (xs.gt.9./54.and.xs.le.14./54.) then
+         y = h*(0.895484248+1.881283544*xs-10.582126017*xs**2
+     $        +10.627665327*xs**3)
+      elseif (xs.gt.14./54.and.xs.le.20./54.) then
+         y = h*(0.92128609+1.582719366*xs-9.430521329*xs**2
+     $        +9.147030728*xs**3)
+      elseif (xs.gt.20./54..and.xs.le.30./54.) then
+         y = h*(1.445155365-2.660621763*xs+2.026499719*xs**2
+     $        -1.164288215*xs**3)
+      elseif (xs.gt.30./54..and.xs.le.40./54.) then
+         y = h*(0.640164762+1.6863274926*xs-5.798008941*xs**2
+     $        +3.530416981*xs**3)
+      elseif (xs.gt.40./54..and.xs.le.1.) then
+         y = h*(2.013932568-3.877432121*xs+1.713066537*xs**2
+     $        +0.150433015*xs**3)
+      else
+         y = 0.
+      endif
+
+      hill_step = y
+      
+      return
+      end
+c-----------------------------------------------------------------------
+      function hill_height(x,Lx,w,H)
+      implicit none
+      real hill_height,hill_step,x,Lx,w,h
+      real xx
+
+      if (x.lt.0) then
+         xx = Lx + mod(x, Lx)
+      elseif (x.gt.Lx) then
+         xx = mod(x, Lx)
+      else
+         xx = x
+      endif
+
+      hill_height = hill_step(xx,w,h) + hill_step(Lx-xx,w,h)
+      
+      return
+      end          
+c-----------------------------------------------------------------------      
+      function shift(x,y,Lx,Ly,W)
+      implicit none
+      real x,y,Lx,Ly,W
+      real xfac,yfac,shift
+
+      yfac = (1-y/Ly)**3
+
+      if (x.le.W/2) then
+         xfac = -2./W * x
+      elseif (x.gt.W/2.and.x.le.Lx-W/2) then
+         xfac = 2./(Lx-W) * x -1-W/(Lx-W)
+      elseif (x.gt.Lx-W/2) then
+         xfac = -2./W * x + 2*Lx/W
+      endif
+
+      shift = xfac*yfac
+
+      return
+      end
+!======================================================================
+!> @brief Register user specified modules
+      subroutine frame_usr_register
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+!-----------------------------------------------------------------------
+!     register modules
+      call io_register
+      call chkpt_register
+      call trip_register
+
+      return
+      end subroutine
+!======================================================================
+!> @brief Initialise user specified modules
+      subroutine frame_usr_init
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+      include 'SOLN'
+!-----------------------------------------------------------------------
+!     initialise modules
+      call chkpt_init
+      call trip_init
+
+      return
+      end subroutine
+!======================================================================
+!> @brief Finalise user specified modules
+      subroutine frame_usr_end
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+!-----------------------------------------------------------------------
+!     finalise modules
+      
+      return
+      end subroutine
+!======================================================================
+
