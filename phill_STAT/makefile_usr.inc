@@ -9,4 +9,8 @@ $(OBJDIR)/io_tools_block.o  :io_tools_block.f IOTOOLD;               $(F77) -c $
 $(OBJDIR)/io_tools.o        :io_tools.f IOTOOLD;                     $(F77) -c $(FL2) -I./ $< -o $@
 $(OBJDIR)/chkpoint.o        :chkpoint.f CHKPOINTD;                   $(F77) -c $(FL2) -I./ $< -o $@
 $(OBJDIR)/chkpt_mstp.o      :chkpt_mstp.f CHKPTMSTPD CHKPOINTD;      $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/trip.o            :trip.f TRIPD FRAMELP;                   $(F77) -c $(FL2) -I./ $< -o $@
+$(OBJDIR)/map2D.o           :map2D.f MAP2D FRAMELP;                  $(F77) -c $(FL2) -I./ $< -o $@
+$(OBJDIR)/stat.o            :stat.f STATD MAP2D FRAMELP;             $(F77) -c $(FL2) -I./ $< -o $@
+$(OBJDIR)/stat_IO.o         :stat_IO.f STATD MAP2D FRAMELP;          $(F77) -c $(FL2) -I./ $< -o $@
+$(OBJDIR)/math_tools.o      :math_tools.f;                           $(F77) -c $(FL2) -I./ $< -o $@
+
