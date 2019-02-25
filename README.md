@@ -2,8 +2,8 @@
 
 This repository contains set of examples demonstrating the use of Nek5000 framework and toolboxes developed at KTH.
 The more in-depth description of the framework can be found at its [doxygen documentation page](https://kth-nek5000.github.io/KTH_Framework/index.html), 
-which contains variety of important information starting at
-downloading options and ending with detailed code description.
+which contains variety of important information starting at downloading options and ending with detailed code description.
+List of all available tools can be found [here](https://kth-nek5000.github.io/KTH_Framework/modules.html).
 
 ## Usage
 
