@@ -13,12 +13,12 @@ of the same file, so e.g. `ext_cyl.re2` exists only under `ext_cyl_DNS` and it h
 
 Each example consists of:
 * required tools source and include files
-* setup source file (e.g. `ext_cyl.usr`)
+* setup source file `###.usr`
 * required `SIZE` file containing definitions of static arrays dimensions
 * compilation script `compile_script`
 * `makefile_usr.inc` describing compilation rules for tools files
-* runtime parameters file (e.g. `ext_cyl.par`)
-* mesh description; it can be `setup.box` or `setup.re2`
+* runtime parameters file `###.par`
+* mesh description; it can be `###.box` or `###.re2`
 * `README.md` listing all the tools
 
 To compile the code:
@@ -35,6 +35,6 @@ To run the code:
 ## Example list
 * `ext_cyl_DNS` - nonlinear simulation of the flow past circular cylinder
 * `ext_cyl_LIN` - linear simulation of the flow past circular cylinder
-* `ext_cyl_SFD` - nonlinear simulation of the flow past circular cylinder with Sequential Frequency Damping to calculate base flow
+* `ext_cyl_SFD` - nonlinear simulation of the flow past circular cylinder with Selective Frequency Damping to calculate base flow
 * `phill_STAT`  - nonlinear simulation of flow over periodic hill to calculate turbulence statistics
 * `phill_TRIP`  - nonlinear simulation of flow over periodic hill with tripping line
