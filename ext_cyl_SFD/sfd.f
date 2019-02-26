@@ -171,7 +171,7 @@
                sfd_chifrst = ltmp
             else
                ierr = 1
-               exit lmod
+               goto 30
             endif
             if (sfd_chifrst) then
                ! checkpoint set number
