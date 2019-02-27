@@ -8,8 +8,7 @@
 !=======================================================================
 !> @brief Register 2D mapping routines
 !! @ingroup map2d
-!! @note This routine should be called in userchk during first step
-!!  between calls to frame_start and frame_rparam
+!! @note This routine should be called in frame_usr_register
       subroutine map2D_register()
       implicit none
 
@@ -66,8 +65,7 @@
 !=======================================================================
 !> @brief Initilise map2d module
 !! @ingroup map2d
-!! @note This routine should be called in userchk during first step
-!!    after call to frame_rparam
+!! @note This routine should be called in frame_usr_init
       subroutine map2d_init()
       implicit none
 

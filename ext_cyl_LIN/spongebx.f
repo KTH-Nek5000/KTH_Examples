@@ -6,8 +6,7 @@
 !=======================================================================
 !> @brief Register sponge_box module
 !! @ingroup sponge_box
-!! @note This routine should be called in userchk during first step
-!!  between calls to frame_start and frame_rparam
+!! @note This routine should be called in frame_usr_register
       subroutine spng_register()
       implicit none
 
@@ -118,8 +117,7 @@
 !> @brief Initilise sponge_box module
 !! @ingroup sponge_box
 !! @param[in] lvx, lvy, lvz   velocity field to be stored as reference field
-!! @note This routine should be called in userchk during first step
-!!    after call to frame_rparam
+!! @note This routine should be called in frame_usr_init
 !! @remark This routine uses global scratch space \a SCRUZ
       subroutine spng_init(lvx,lvy,lvz)
       implicit none

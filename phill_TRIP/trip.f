@@ -13,8 +13,7 @@
 !=======================================================================
 !> @brief Register tripping module
 !! @ingroup trip_line
-!! @note This routine should be called in userchk during first step
-!!  between calls to frame_start and frame_rparam
+!! @note This routine should be called in frame_usr_register
       subroutine trip_register()
       implicit none
 
@@ -133,8 +132,7 @@
 !=======================================================================
 !> @brief Initilise tripping module
 !! @ingroup trip_line
-!! @note This routine should be called in userchk during first step
-!!    after call to frame_rparam
+!! @note This routine should be called in frame_usr_init
       subroutine trip_init()
       implicit none
 

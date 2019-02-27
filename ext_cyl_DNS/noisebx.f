@@ -6,8 +6,7 @@
 !=======================================================================
 !> @brief Register noise_box module
 !! @ingroup noise_box
-!! @note This routine should be called in userchk during first step
-!!  between calls to frame_start and frame_rparam
+!! @note This routine should be called in frame_usr_register
       subroutine nseb_register()
       implicit none
 
@@ -96,8 +95,7 @@
 !=======================================================================
 !> @brief Initilise noise_box module
 !! @ingroup noise_box
-!! @note This routine should be called in userchk during first step
-!!    after call to frame_rparam
+!! @note This routine should be called in frame_usr_init
 !! @remark This routine uses global scratch space \a SCRUZ
       subroutine nseb_init()
       implicit none

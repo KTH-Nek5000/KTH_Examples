@@ -8,8 +8,7 @@
 !=======================================================================
 !> @brief Register 2D and 3D statistics module
 !! @ingroup stat
-!! @note This routine should be called in userchk during first step
-!!  between calls to frame_start and frame_rparam
+!! @note This routine should be called in frame_usr_register
       subroutine stat_register()
       implicit none
 
@@ -104,8 +103,7 @@
 !=======================================================================
 !> @brief Initilise statistics module
 !! @ingroup stat
-!! @note This routine should be called in userchk during first step
-!!    after call to frame_rparam
+!! @note This routine should be called in frame_usr_init
       subroutine stat_init()
       implicit none
 
@@ -169,6 +167,20 @@
       
       return
       end subroutine
+!=======================================================================
+!> @brief Check if module was initialised
+!! @ingroup stat
+!! @return stat_is_initialised
+      logical function stat_is_initialised()
+      implicit none
+
+      include 'SIZE'
+      include 'STATD'
+!-----------------------------------------------------------------------
+      stat_is_initialised = stat_ifinit
+
+      return
+      end function
 !=======================================================================
 !> @brief Main interface of statistics module
 !! @ingroup stat
