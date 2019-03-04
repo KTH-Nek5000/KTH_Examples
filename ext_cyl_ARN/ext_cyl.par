@@ -8,13 +8,13 @@ numSteps = 100
 
 userparam01 = 1.0e-08 # initial noise amplitude
 
-dt = 1.000000E-02
+dt = 5.000000E-03
 timeStepper = bdf2
 variableDt = no
 targetCFL = 1.00000
 
 writeControl = timeStep #runTime
-writeInterval = 50.0
+writeInterval = 500.0
 
 dealiasing = yes
 filtering = explicit
@@ -54,7 +54,7 @@ WALLTIME             = 02:05                  # Simulation wall time
 #
 [_CHKPOINT]             # Runtime paramere section for checkpoint module
 READCHKPT            = no                     # Restat from checkpoint
-CHKPFNUMBER          = 2                      # Restart file number
+CHKPFNUMBER          = 1                      # Restart file number
 CHKPINTERVAL         = 25                     # Checkpiont saving frequency (number of time steps)
 #
 [_SPONGEBX]             # Runtime paramere section for sponge_box module
@@ -70,8 +70,8 @@ DROPRY               = 0.00000000E+00         # Sponge right drop/rise section w
 #
 [_TSTEPPER]             # Runtime paramere section for time stepper module
 MODE                 = DIR                    # Simulation mode
-STEPS                = 40                     # Length of stepper phase
-MAXCYC               = 10                     # Max number of stepper cycles
+STEPS                = 80                     # Length of stepper phase
+MAXCYC               = 20                     # Max number of stepper cycles
 TOL                  = 0.10000000E-05         # Convergence threshold
 #
 [_ARN_ARP]              # Runtime paramere section for Arnoldi ARPACK module

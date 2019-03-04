@@ -101,7 +101,7 @@
          ! create file name
          call io_mfo_fname(fname,SESSION,prefix,ierr)
          if (ierr.eq.0) then
-            write(str,'(i5.5)') arna_fnum + 1
+            write(str,'(i5.5)') mod(arna_fnum,2) + 1
             fname = trim(fname)//trim(str)
             ! open file
             call io_mbyte_open(fname,ierr)
@@ -576,7 +576,7 @@
          ! create file name
          call io_mfo_fname(fname,SESSION,prefix,ierr)
          if (ierr.eq.0) then
-            write(str,'(i5.5)') arna_fnum + 1
+            write(str,'(i5.5)') mod(arna_fnum,2) + 1
             fname = trim(fname)//trim(str)
             call io_mbyte_open(fname,ierr)
          endif
