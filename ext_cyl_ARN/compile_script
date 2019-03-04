@@ -20,7 +20,7 @@ export CC="mpicc"
 export PPLIST=""
 export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o"
 USR+=" math_tools.o spongebx.o io_tools_block.o io_tools.o chkpoint.o chkptd.o tstepper.o"
-USR+=" arn_arp.o arn_arp_io.o"
+USR+=" conht_tools.o arn_arp.o arn_arp_io.o"
 export USR_LFLAGS="-L./ -lparpack_MPI-gcc_rst -larpack_gcc_rst"
 
 # arguments

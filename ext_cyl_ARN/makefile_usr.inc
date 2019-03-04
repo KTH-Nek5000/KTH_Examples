@@ -12,6 +12,6 @@ $(OBJDIR)/io_tools.o        :io_tools.f IOTOOLD;                     $(F77) -c $
 $(OBJDIR)/chkpoint.o        :chkpoint.f CHKPOINTD;                   $(F77) -c $(FL2) -I./ $< -o $@
 $(OBJDIR)/chkptd.o          :chkptd.f CHKPOINTD;                     $(F77) -c $(FL2) -I./ $< -o $@
 $(OBJDIR)/tstepper.o        :tstepper.f TSTEPPERD;                   $(F77) -c $(FL2) -I./ $< -o $@
+$(OBJDIR)/conht_tools.o     :conht_tools.f CONHTD;                   $(F77) -c $(FL2) -I./ $< -o $@
 $(OBJDIR)/arn_arp.o         :arn_arp.f ARN_ARPD TSTEPPERD;           $(F77) -c $(FL2) -I./ $< -o $@
 $(OBJDIR)/arn_arp_io.o      :arn_arp_io.f ARN_ARPD TSTEPPERD;        $(F77) -c $(FL2) -I./ $< -o $@
-

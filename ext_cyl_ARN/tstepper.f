@@ -35,6 +35,15 @@
          return
       endif
 
+      ! check if conjugated heat transfer module was registered
+      call mntr_mod_is_name_reg(lpmid,'CONJHT')
+      if (lpmid.gt.0)  then
+         call mntr_warn(lpmid,
+     $        'module ['//'CONJHT'//'] already registered')
+      else
+         call cht_register()
+      endif
+
       ! find parent module
       call mntr_mod_is_name_reg(lpmid,'FRAME')
       if (lpmid.le.0) then
@@ -115,7 +124,8 @@
       character*20 ctmp
 
       ! functions
-      real dnekclock!, cht_glsc2_wt    ??????
+      real dnekclock, cht_glsc2_wt
+      logical cht_is_initialised
 !-----------------------------------------------------------------------
       ! check if the module was already initialised
       if (tst_ifinit) then
@@ -126,6 +136,9 @@
 
       ! timing
       ltim = dnekclock()
+
+      ! intialise conjugated heat transfer
+      if (IFHEAT.and.(.not.cht_is_initialised())) call cht_init
 
       ! get runtime parameters
       call rprm_rp_get(itmp,rtmp,ltmp,ctmp,tst_mode_id,rpar_str)
@@ -181,9 +194,7 @@
       endif
       tst_np  = NX2*NY2*NZ2*NELV ! presure
 
-!      ! place for submodule initialisation
-!      ! conjugated heat transfer
-!      !if (IFHEAT) call cht_init
+      ! place for submodule initialisation
       ! arnoldi or power iterations
       call stepper_init
 
@@ -202,8 +213,8 @@
          ! Is it adjoint mode
          IFADJ = .TRUE.
       elseif  (tst_mode.eq.3) then
-!         ! If it is optimal initial condition save initial L2 norm
-!         tst_L2ini = cht_glsc2_wt(VXP,VYP,VZP,TP,VXP,VYP,VZP,TP,BM1)
+         ! If it is optimal initial condition save initial L2 norm
+         tst_L2ini = cht_glsc2_wt(VXP,VYP,VZP,TP,VXP,VYP,VZP,TP,BM1)
 
          if (tst_L2ini.eq.0.0) call mntr_abort(tst_id,
      $   'tst_init, tst_L2ini = 0')
@@ -212,15 +223,12 @@
      $  'Optimal initial condition; direct phase start')
       endif
 
-!      ! set cpfld for conjugated heat transfer
-!      !if (IFHEAT) call cht_cpfld_set
-
-
+      ! set cpfld for conjugated heat transfer
+      if (IFHEAT) call cht_cpfld_set
 
 !     should be the first step of every cycle performed with Uzawa
 !     turned on?
 !         IFUZAWA = tst_ifuz
-
 
       ! everything is initialised
       tst_ifinit=.true.
@@ -270,7 +278,7 @@
       real ltim        ! timing
 
       ! functions
-      real dnekclock!, cht_glsc2_wt ???????
+      real dnekclock, cht_glsc2_wt
 !-----------------------------------------------------------------------
       if (ISTEP.eq.0) return
 
@@ -305,18 +313,18 @@
             TIME=0.0
             ISTEP=0
 
-!            ! get L2 norm after direct phase
-!            tst_L2dir = cht_glsc2_wt(VXP,VYP,VZP,TP,
-!     $         VXP,VYP,VZP,TP,BM1)
-!             ! normalise vector
-!             grw = sqrt(tst_L2ini/tst_L2dir)
-!             call cht_opcmult (VXP,VYP,VZP,TP,grw)
+            ! get L2 norm after direct phase
+            tst_L2dir = cht_glsc2_wt(VXP,VYP,VZP,TP,
+     $         VXP,VYP,VZP,TP,BM1)
+             ! normalise vector
+             grw = sqrt(tst_L2ini/tst_L2dir)
+             call cht_opcmult (VXP,VYP,VZP,TP,grw)
 
             ! zero presure
             call rzero(PRP,tst_np)
 
-!            ! set cpfld for conjugated heat transfer
-!               if (IFHEAT) call cht_cpfld_set
+            ! set cpfld for conjugated heat transfer
+               if (IFHEAT) call cht_cpfld_set
          else
             !stepper phase counting
             tst_istep = 0
@@ -330,12 +338,12 @@
                call mntr_log(tst_id,lp_prd,
      $         'Optimal initial condition; rescaling solution')
 
-!               ! get L2 norm after direct phase
-!               tst_L2adj = cht_glsc2_wt(VXP,VYP,VZP,TP,
-!     $                 VXP,VYP,VZP,TP,BM1)
-!               ! normalise vector after whole cycle
-!               grw = sqrt(tst_L2dir/tst_L2ini)! add direct growth
-!               call cht_opcmult (VXP,VYP,VZP,TP,grw)
+               ! get L2 norm after direct phase
+               tst_L2adj = cht_glsc2_wt(VXP,VYP,VZP,TP,
+     $                 VXP,VYP,VZP,TP,BM1)
+               ! normalise vector after whole cycle
+               grw = sqrt(tst_L2dir/tst_L2ini)! add direct growth
+               call cht_opcmult (VXP,VYP,VZP,TP,grw)
 
             endif
 
@@ -362,11 +370,11 @@
 
                   IFADJ = .FALSE.
 
-!                  ! get initial L2 norm
-!                  tst_L2ini = cht_glsc2_wt(VXP,VYP,VZP,TP,
-!     $                    VXP,VYP,VZP,TP,BM1)
-!                  ! set cpfld for conjugated heat transfer
-!                  if (IFHEAT) call cht_cpfld_set
+                  ! get initial L2 norm
+                  tst_L2ini = cht_glsc2_wt(VXP,VYP,VZP,TP,
+     $                    VXP,VYP,VZP,TP,BM1)
+                  ! set cpfld for conjugated heat transfer
+                  if (IFHEAT) call cht_cpfld_set
 
                endif
             endif

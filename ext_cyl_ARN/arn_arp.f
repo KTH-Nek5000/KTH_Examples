@@ -575,11 +575,11 @@
                call col3(workda(ipntarp(2)+NDIM*tst_nv),
      $              BM1,TMASK,tst_nt)
 
-!               !coefficients
-!               call cht_weight_fun (workda(ipntarp(2)),
-!     $              workda(ipntarp(2)+tst_nv),
-!     $              workda(ipntarp(2)+2*tst_nv),
-!     $              workda(ipntarp(2)+NDIM*tst_nv),1.0)
+               !coefficients
+               call cht_weight_fun (workda(ipntarp(2)),
+     $              workda(ipntarp(2)+tst_nv),
+     $              workda(ipntarp(2)+2*tst_nv),
+     $              workda(ipntarp(2)+NDIM*tst_nv),1.0)
             endif
 
             call col2(workda(ipntarp(2)),workda(ipntarp(1)),arna_ns)
