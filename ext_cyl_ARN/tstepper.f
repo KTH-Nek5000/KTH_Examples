@@ -87,8 +87,7 @@
       call rprm_rp_reg(tst_tol_id,tst_sec_id,'TOL',
      $    'Convergence threshold',rpar_real,0,1.0d-6,.false.,' ')
 
-!      ! place for submodule registration
-!      ! conjugated heat transfer
+      ! place for submodule registration
       ! register arnoldi or power iterations
       call stepper_register()
 
@@ -138,7 +137,7 @@
       ltim = dnekclock()
 
       ! intialise conjugated heat transfer
-      if (IFHEAT.and.(.not.cht_is_initialised())) call cht_init
+      if (.not.cht_is_initialised()) call cht_init
 
       ! get runtime parameters
       call rprm_rp_get(itmp,rtmp,ltmp,ctmp,tst_mode_id,rpar_str)
