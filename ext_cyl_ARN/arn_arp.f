@@ -155,7 +155,8 @@
      $   'arna_negv > arna_nkrl/2')
 
       ! make sure NSTEPS is bigger than the possible number of iteration in arnoldi
-      NSTEPS = max(NSTEPS,tst_step*arna_nkrl*tst_cmax+10)
+      ! multiplication by 2 for OIC
+      NSTEPS = max(NSTEPS,tst_step*arna_nkrl*tst_cmax*2+10)
 
       ! related to restart
       nparp = 0
