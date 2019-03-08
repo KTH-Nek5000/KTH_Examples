@@ -83,10 +83,6 @@
      $         'only single perturbation supported')
       endif
 
-      ! this is multi step restart so check for timestep consistency is necessary
-      ! this routine gets the information of pressure mesh as well
-      if (chpt_ifrst) call chkpt_dt_get
-
       chpm_ifinit = .true.
 
       return
@@ -227,6 +223,9 @@
       logical ifreguol
       character*132 fname(CHKPTNFMAX),fnamel(CHKPTNFMAX)
       character*200 lstring
+      integer icalld
+      save icalld
+      data icalld /0/
 
       !functions
       real dnekclock
@@ -234,6 +233,13 @@
       ! no regular mesh; important for file name generation
       ifreguol= IFREGUO
       IFREGUO = .false.
+
+      ! this is multi step restart so check for timestep consistency is necessary
+      ! this routine gets the information of pressure mesh as well
+      if (chpt_ifrst.and.icalld.eq.0) then
+         call chkpt_dt_get
+         icalld = 1
+      endif
 
       if (chpt_ifrst.and.(ISTEP.lt.chpm_nsnap)) then
 
