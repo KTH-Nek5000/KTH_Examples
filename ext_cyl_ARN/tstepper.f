@@ -204,8 +204,8 @@
       TIME=0.0
 
       ! make sure NSTEPS is bigger than the possible number of iterations
-      ! in time stepper phase
-      NSTEPS = max(NSTEPS,tst_step*tst_cmax+10)
+      ! in time stepper phase; multiplication by 2 for OIC
+      NSTEPS = max(NSTEPS,tst_step*tst_cmax*2+10)
 
       IFADJ = .FALSE.
       if (tst_mode.eq.2) then
