@@ -193,6 +193,9 @@
       NZO   = 1
       nxyzo = NXO*NYO*NZO
 
+!     if this is AMR run, one has to cast 3D mesh to 2D nonconforming counterpart
+      call stat_mfo_AMR2D
+
 !     open files on i/o nodes
       prefix='sts'
       ierr=0
@@ -382,8 +385,8 @@
 
          if(ifmpiio) then
 !     only rank0 (pid00) will write hdr + test_pattern + time list
-            call byte_write_mpi(hdr,iHeaderSize/4,PID00,IFH_MBYTE,ierr)
-            call byte_write_mpi(test_pattern,1,PID00,IFH_MBYTE,ierr)
+            call byte_write_mpi(hdr,iHeaderSize/4,pid00,ifh_mbyte,ierr)
+            call byte_write_mpi(test_pattern,1,pid00,ifh_mbyte,ierr)
          else
             call byte_write(hdr,iHeaderSize/4,ierr)
             call byte_write(test_pattern,1,ierr)
@@ -466,3 +469,276 @@
       return
       end subroutine
 !=======================================================================
+!> @brief Write nonconforming data to the file
+!! @ingroup stat
+      subroutine stat_mfo_AMR2D
+      implicit none
+#ifdef NEKP4EST
+      include 'SIZE'
+      include 'INPUT'
+      include 'RESTART'
+      include 'PARALLEL'
+      include 'TSTEP'
+      include 'WZ'
+      include 'MAP2D'
+      include 'STATD'
+      include 'NEKP4EST'
+
+      ! local variables
+      character*3 prefix        ! file prefix
+
+      real*4 test_pattern       ! byte key
+      integer lglist(0:LELT), itmp(LELT)    ! dummy array
+      integer nxl               ! number of grid points for interpolation operator
+      parameter (nxl=3)
+      real zgml(nxl), wgtl(nxl) ! gll points and weights for interpolation mesh
+      real iresl(nxl,lx1), itresl(lx1,nxl) ! interpolation operators
+      real rtmp1(nxl,lx1), rtmp2(nxl,nxl)  ! temporary arrays for interpolation
+      real rglist(2,0:LELT)
+      integer noutl             ! number of bytes to write
+      integer idum, inelp
+      integer nelo              ! number of elements to write
+      integer nfileoo           ! number of files to create
+
+      integer il, jl, kl        ! loop index
+      integer mtype             ! tag
+
+      integer ierr              ! error mark
+      integer ibsw_out, len
+      integer*8 ioff            ! offset
+      logical if_press_mesh     ! pessure mesh mark
+
+      character*132 hdr         ! header
+!-----------------------------------------------------------------------
+      ! open files on i/o nodes
+      prefix='A2D'
+      ierr=0
+      if (nid.eq.pid0) call mfo_open_files(prefix,ierr)
+
+      call mntr_check_abort(stat_id,ierr,
+     $     'Error opening file in stat_mfo_AMRd2D.')
+
+      ! master-slave communication
+      if(ifmpiio) then
+         nfileoo = 1            ! all data into one file
+         nelo = map2d_gnum
+      else
+         nfileoo = nfileo
+         if(nid.eq.pid0) then   ! how many elements to dump
+            nelo = map2d_lown
+            do jl = pid0+1,pid1
+               mtype = jl
+               call csend(mtype,idum,isize,jl,0) ! handshake
+               call crecv(mtype,inelp,isize)
+               nelo = nelo + inelp
+            enddo
+         else
+            mtype = nid
+            call crecv(mtype,idum,isize) ! hand-shake
+            call csend(mtype,map2d_lown,isize,pid0,0) ! u4 :=: u8
+         endif
+      endif
+
+      ! write header
+      ierr = 0
+      if(nid.eq.pid0) then
+         call blank(hdr,132)
+
+         call blank(rdcode1,10)
+
+           write(hdr,1) wdsizo,nelo,map2d_gnum,time,istep,
+     $        fid0, nfileoo
+ 1       format('#amr',1x,i2,1x,i10,1x,i10,1x,
+     $        e20.13,1x,i9,1x,i6,1x,i6)
+
+         ! write test pattern for byte swap
+         test_pattern = 6.54321
+
+         if(ifmpiio) then
+            ! only rank0 (pid00) will write hdr + test_pattern + time list
+            call byte_write_mpi(hdr,iHeaderSize/4,pid00,ifh_mbyte,ierr)
+            call byte_write_mpi(test_pattern,1,pid00,ifh_mbyte,ierr)
+         else
+            call byte_write(hdr,iHeaderSize/4,ierr)
+            call byte_write(test_pattern,1,ierr)
+         endif
+      endif
+
+      call mntr_check_abort(stat_id,ierr,
+     $     'Error writing header in stat_mfo_AMR2D.')
+
+      ! write global 2D elements numbering for this group
+      ! copy data
+      lglist(0) = map2d_lown
+      kl = 0
+      do il=1,map2d_lnum
+         if(map2d_own(il).eq.nid) then
+            kl = kl +1
+            lglist(kl) = map2d_gmap(il)
+         endif
+      enddo
+      ! check consistency
+      ierr = 0
+      if (kl.ne.map2d_lown) ierr=1
+
+      call mntr_check_abort(stat_id,ierr,'inconsistent map2d_lown 4')
+
+      if(nid.eq.pid0) then
+         noutl = lglist(0)*isize/4
+         if(ifmpiio) then
+            ioff = iHeaderSize + 4 + int(nelb,8)*isize
+            call byte_set_view (ioff,ifh_mbyte)
+            call byte_write_mpi (lglist(1),noutl,-1,ifh_mbyte,ierr)
+         else
+            call byte_write(lglist(1),noutl,ierr)
+         endif
+
+         do jl = pid0+1,pid1
+            mtype = jl
+            call csend(mtype,idum,isize,jl,0) ! handshake
+            len = isize*(lelt+1)
+            call crecv(mtype,lglist,len)
+            if(ierr.eq.0) then
+               noutl = lglist(0)*isize/4
+               if(ifmpiio) then
+                  call byte_write_mpi(lglist(1),noutl,-1,ifh_mbyte,ierr)
+               else
+                  call byte_write(lglist(1),noutl,ierr)
+               endif
+            endif
+         enddo
+      else
+         mtype = nid
+         call crecv(mtype,idum,isize) ! hand-shake
+
+         len = isize*(map2d_lown+1)
+         call csend(mtype,lglist,len,pid0,0)
+      endif
+
+      call mntr_check_abort(stat_id,ierr,
+     $     'Error writing global nums in stat_mfo_AMR2D')
+
+      ! write refinement level; this code is not optimal, but I don't do it often
+      do il = 1,NELV
+         itmp(map2d_lmap(il)) = NP4_LEVEL(il)
+      enddo
+      ! copy data
+      lglist(0) = map2d_lown
+      kl = 0
+      do il=1,map2d_lnum
+         if(map2d_own(il).eq.nid) then
+            kl = kl +1
+            lglist(kl) = itmp(il)
+         endif
+      enddo
+
+      if(nid.eq.pid0) then
+         noutl = lglist(0)*isize/4
+         if(ifmpiio) then
+            ioff = iHeaderSize + 4 + (int(map2d_gnum,8) + int(nelb,8))
+     $             *isize
+            call byte_set_view (ioff,ifh_mbyte)
+            call byte_write_mpi (lglist(1),noutl,-1,ifh_mbyte,ierr)
+         else
+            call byte_write(lglist(1),noutl,ierr)
+         endif
+
+         do jl = pid0+1,pid1
+            mtype = jl
+            call csend(mtype,idum,isize,jl,0) ! handshake
+            len = isize*(lelt+1)
+            call crecv(mtype,lglist,len)
+            if(ierr.eq.0) then
+               noutl = lglist(0)*isize/4
+               if(ifmpiio) then
+                  call byte_write_mpi(lglist(1),noutl,-1,ifh_mbyte,ierr)
+               else
+                  call byte_write(lglist(1),noutl,ierr)
+               endif
+            endif
+         enddo
+      else
+         mtype = nid
+         call crecv(mtype,idum,isize) ! hand-shake
+
+         len = isize*(map2d_lown+1)
+         call csend(mtype,lglist,len,pid0,0)
+      endif
+
+      call mntr_check_abort(stat_id,ierr,
+     $     'Error writing refinement level in stat_mfo_AMR2D')
+
+      ! get 2D elements cell centres
+      ! get interpolation operators
+      call zwgll(zgml,wgtl,nxl)
+      call igllm(iresl,itresl,zgm1,zgml,lx1,nxl,lx1,nxl)
+
+      ! interpolate mesh and extract element centre
+      rglist(1,0) = real(map2d_lown)
+      kl = 0
+      do il=1,map2d_lnum
+         if(map2d_own(il).eq.nid) then
+            kl = kl +1
+            call mxm(iresl,nxl,map2d_xm1(1,1,il),lx1,rtmp1,lx1)
+            call mxm (rtmp1,nxl,itresl,lx1,rtmp2,nxl)
+            rglist(1,kl) = rtmp2(2,2)
+            call mxm(iresl,nxl,map2d_ym1(1,1,il),lx1,rtmp1,lx1)
+            call mxm (rtmp1,nxl,itresl,lx1,rtmp2,nxl)
+            rglist(2,kl) = rtmp2(2,2)
+         endif
+      enddo
+
+      ! write down cell centres
+      if(nid.eq.pid0) then
+         noutl = 2*int(rglist(1,0))*wdsizo/4
+         if(ifmpiio) then
+            ioff = iHeaderSize + 4 + int(map2d_gnum,8)*2*isize
+     $             + int(nelb,8)*2*wdsizo
+            call byte_set_view (ioff,ifh_mbyte)
+            call byte_write_mpi (rglist(1,1),noutl,-1,ifh_mbyte,ierr)
+         else
+            call byte_write(rglist(1,1),noutl,ierr)
+         endif
+
+         do jl = pid0+1,pid1
+            mtype = jl
+            call csend(mtype,idum,isize,jl,0) ! handshake
+            len = 2*wdsize*(lelt+1)
+            call crecv(mtype,rglist,len)
+            if(ierr.eq.0) then
+               noutl = 2*int(rglist(1,0))*wdsizo/4
+               if(ifmpiio) then
+                  call byte_write_mpi
+     $                 (rglist(1,1),noutl,-1,ifh_mbyte,ierr)
+               else
+                  call byte_write(rglist(1,1),noutl,ierr)
+               endif
+            endif
+         enddo
+      else
+         mtype = nid
+         call crecv(mtype,idum,isize) ! hand-shake
+
+         len = 2*wdsize*(map2d_lown+1)
+         call csend(mtype,rglist,len,pid0,0)
+      endif
+
+      call mntr_check_abort(stat_id,ierr,
+     $     'Error writing element centres in stat_mfo_AMR2D')
+
+      ierr = 0
+      if (nid.eq.pid0) then
+         if(ifmpiio) then
+            call byte_close_mpi(ifh_mbyte,ierr)
+         else
+            call byte_close(ierr)
+         endif
+      endif
+      call mntr_check_abort(stat_id,ierr,
+     $     'Error closing file in stat_mfo_AMR2D.')
+
+#endif
+      return
+      end subroutine
+!=======================================================================
+
