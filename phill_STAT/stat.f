@@ -17,18 +17,18 @@
       include 'FRAMELP'
       include 'STATD'
 
-!     local variables
+      ! local variables
       integer lpmid, il
       real ltim
       character*2 str
 
-!     functions
+      ! functions
       real dnekclock
 !-----------------------------------------------------------------------
-!     timing
+      ! timing
       ltim = dnekclock()
 
-!     check if the current module was already registered
+      ! check if the current module was already registered
       call mntr_mod_is_name_reg(lpmid,stat_name)
       if (lpmid.gt.0) then
          call mntr_warn(lpmid,
@@ -36,7 +36,7 @@
          return
       endif
       
-!     find parent module
+      ! find parent module
       call mntr_mod_is_name_reg(lpmid,'FRAME')
       if (lpmid.le.0) then
          lpmid = 1
@@ -44,57 +44,57 @@
      $        'parent module ['//'FRAME'//'] not registered')
       endif
       
-!     register module
+      ! register module
       call mntr_mod_reg(stat_id,lpmid,stat_name,
      $      '2D and 3D statistics')
 
-!     check if 2D mapping module is registered
+      ! check if 2D mapping module is registered
       if (stat_rdim.eq.1) then
          call mntr_mod_is_name_reg(lpmid,'MAP2D')
-!     if not, register module
+         ! if not, register module
          if (lpmid.le.0) then
             call map2D_register()
          endif
       endif
 
-!     register timers
+      ! register timers
       call mntr_tmr_is_name_reg(lpmid,'FRM_TOT')
-!     total time
+      ! total time
       call mntr_tmr_reg(stat_tmr_tot_id,lpmid,stat_id,
      $     'STAT_TOT','Statistics total time',.false.)
       lpmid = stat_tmr_tot_id
-!     initialisation
+      ! initialisation
       call mntr_tmr_reg(stat_tmr_ini_id,lpmid,stat_id,
      $     'STAT_INI','Statistics initialisation time',.true.)
-!     averagign
+      ! averagign
       call mntr_tmr_reg(stat_tmr_avg_id,lpmid,stat_id,
      $     'STAT_AVG','Statistics averaging time',.true.)
 
       if (stat_rdim.eq.1) then
-!     communication
+      ! communication
          call mntr_tmr_reg(stat_tmr_cmm_id,lpmid,stat_id,
      $        'STAT_CMM','Statistics communication time',.true.)
       endif
-!     IO
+      ! IO
       call mntr_tmr_reg(stat_tmr_io_id,lpmid,stat_id,
      $     'STAT_IO','Statistics IO time',.true.)
-      
-!     register and set active section
+
+      ! register and set active section
       call rprm_sec_reg(stat_sec_id,stat_id,'_'//adjustl(stat_name),
      $     'Runtime paramere section for statistics module')
       call rprm_sec_set_act(.true.,stat_sec_id)
 
-!     register parameters
+      ! register parameters
       call rprm_rp_reg(stat_avstep_id,stat_sec_id,'AVSTEP',
      $     'Frequency of averaging',rpar_int,10,0.0,.false.,' ')
 
       call rprm_rp_reg(stat_IOstep_id,stat_sec_id,'IOSTEP',
      $     'Frequency of filed saving',rpar_int,100,0.0,.false.,' ')
       
-!     set initialisation flag
+      ! set initialisation flag
       stat_ifinit=.false.
-      
-!     timing
+
+      ! timing
       ltim = dnekclock() - ltim
       call mntr_tmr_add(stat_tmr_tot_id,1,ltim)
 
@@ -113,55 +113,55 @@
       include 'MAP2D'
       include 'STATD'
 
-!     local variables
+      ! local variables
       integer itmp, il
       real rtmp, ltim
       logical ltmp
       character*20 ctmp
 
-!     functions
+      ! functions
       real dnekclock
 !-----------------------------------------------------------------------
-!     check if the module was already initialised
+      ! check if the module was already initialised
       if (stat_ifinit) then
          call mntr_warn(stat_id,
      $        'module ['//trim(stat_name)//'] already initiaised.')
          return
       endif
 
-!     check if map2d module is initialised
+      ! check if map2d module is initialised
       if (stat_rdim.eq.1) then
          if (.not.map2d_ifinit) call map2d_init()
       endif
-      
-!     timing
+
+      ! timing
       ltim = dnekclock()
       
-!     get runtime parameters
+      ! get runtime parameters
       call rprm_rp_get(itmp,rtmp,ltmp,ctmp,stat_avstep_id,rpar_int)
       stat_avstep = itmp
       call rprm_rp_get(itmp,rtmp,ltmp,ctmp,stat_IOstep_id,rpar_int)
       stat_IOstep = itmp
 
-!     initialise time averaging variables for a given statistics file
+      ! initialise time averaging variables for a given statistics file
       stat_atime = 0.0
       stat_tstart = time
 
       if (stat_rdim.eq.1) then
-!     finish 3D => 2D mapping operations
-!     get local integration coefficients
+         ! finish 3D => 2D mapping operations
+         ! get local integration coefficients
          call mntr_log(stat_id,lp_vrb,'Getting loacal int. coeff.')
          call stat_init_int1D
       endif
 
-!     reset statistics variables
+      ! reset statistics variables
       itmp = lx1**(LDIM-stat_rdim)*lelt*stat_lvar
       call rzero(stat_ruavg,itmp)
       
-!     everything is initialised
+      ! everything is initialised
       stat_ifinit=.true.
 
-!     timing
+      ! timing
       ltim = dnekclock() - ltim
       call mntr_tmr_add(stat_tmr_ini_id,1,ltim)
       
@@ -194,27 +194,27 @@
       include 'TSTEP'
       include 'STATD'
 
-!     local variables
+      ! local variables
       integer itmp
 
-!     simple timing
+      ! simple timing
       real ltim
 
-!     functions
+      ! functions
       real dnekclock
 !-----------------------------------------------------------------------
-!     average
+      ! average
       if (ISTEP.gt.0.and.mod(ISTEP,stat_avstep).eq.0) then
-!     simple timing
+         ! simple timing
          ltim = dnekclock()
          call mntr_log(stat_id,lp_inf,'Average compute')
          call stat_compute
-!     timing
+         ! timing
          ltim = dnekclock() - ltim
          call mntr_tmr_add(stat_tmr_avg_id,1,ltim)
       endif
 
-!     save statistics file and restart statistics variables
+      ! save statistics file and restart statistics variables
       if (ISTEP.gt.0.and.mod(ISTEP,stat_IOstep).eq.0) then            
          if (stat_rdim.eq.1) then
 
@@ -232,11 +232,11 @@
          call mntr_tmr_add(stat_tmr_io_id,1,ltim)
 
 
-!     clean up array
+         ! clean up array
          itmp = lx1**(LDIM-stat_rdim)*lelt*stat_lvar
          call rzero(stat_ruavg,itmp)
 
-!     reset averagign parameters
+         ! reset averagign parameters
          stat_atime = 0.0
          stat_tstart = time
       endif
@@ -249,6 +249,7 @@
 !! @details This version does 1D integration over one of the directions
 !!  R,S,T. It supports curved coordinate systems, however 
 !!  axisymmetric 2.5D cases are not supported
+!! @remark This routine uses global scratch space \a SCRSF
       subroutine stat_init_int1D()
       implicit none
 
@@ -261,31 +262,32 @@
       include 'MAP2D'
       include 'STATD'
 
-!     scratch space
+      ! global variables
+      integer mid,mp,nekcomm,nekgroup,nekreal
+      common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
+      ! scratch space
       real lxyzd(lx1,ly1,lz1,lelt,3)
       common /SCRSF/ lxyzd      ! coordinate derivatives
 
-!     local variables
+      ! local variables
       integer il, jl, kl, el    ! loop index
       integer el2               ! index of 2D element
       real lwm1(lx1)            ! wieghts for 1D integration
 
-!     global communication
-      integer mid,mp,nekcomm,nekgroup,nekreal
-      common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
+      ! global communication
       integer gs_handle         ! gather-scatter handle
       integer*8 unodes(lx1*lz1*lelt)    ! unique local nodes
 !-----------------------------------------------------------------------
       if(ifaxis) call mntr_abort(stat_id,
      $        'stat_init_int1D; IFAXIS not supported')
 
-!     copy wieghts depending on the uniform direction
+      ! copy wieghts depending on the uniform direction
       if (map2d_idir.eq.1) then
          call copy(lwm1,wxm1,nx1)
          stat_nm1 = nx1
          stat_nm2 = ny1
          stat_nm3 = nz1
-!     get coordinates derivatives d[XYZ]/dr
+         ! get coordinates derivatives d[XYZ]/dr
          il = ny1*nz1
          do el = 1, nelt
             if(map2d_lmap(el).ne.-1) then
@@ -300,7 +302,7 @@
          stat_nm1 = ny1
          stat_nm2 = nx1
          stat_nm3 = nz1
-!     get coordinates derivatives d[XYZ]/ds
+         ! get coordinates derivatives d[XYZ]/ds
          do el = 1, nelt
             if(map2d_lmap(el).ne.-1) then
                do il=1, nz1
@@ -319,7 +321,7 @@
             stat_nm1 = nz1
             stat_nm2 = nx1
             stat_nm3 = ny1
-!     get coordinates derivatives d[XYZ]/dt
+            ! get coordinates derivatives d[XYZ]/dt
             il = nx1*ny1
             do el = 1, nelt
                if(map2d_lmap(el).ne.-1) then
@@ -336,8 +338,8 @@
          endif
       endif
 
-!     for now I assume lx1=stat_nm1=stat_nm2=stat_nm3
-!     check if that is true
+      ! for now I assume lx1=stat_nm1=stat_nm2=stat_nm3
+      ! check if that is true
       if (if3d) then
          if(lx1.ne.stat_nm1.or.lx1.ne.stat_nm2.or.lx1.ne.stat_nm3) then
             call mntr_abort(stat_id,
@@ -350,10 +352,10 @@
          endif
       endif
 
-!     get 1D mass matrix ordering directions in such a way that 
-!     the uniform direction corresponds to the the first index
+      ! get 1D mass matrix ordering directions in such a way that
+      ! the uniform direction corresponds to the the first index
       il = stat_nm1*stat_nm2*stat_nm3
-!     get arc length
+      ! get arc length
       do el = 1, nelt
          if(map2d_lmap(el).ne.-1) then
             call vsq(lxyzd(1,1,1,el,1),il)
@@ -370,10 +372,10 @@
       il=il*nelt
       call rzero(stat_bm1d,il)
 
-!     reshuffle array
+      ! reshuffle array
       call stat_reshufflev(stat_bm1d,lxyzd,nelt)
 
-!     multiply by wieghts
+      ! multiply by wieghts
       do el=1, nelt
          if(map2d_lmap(el).ne.-1) then
             do kl=1, stat_nm3
@@ -387,9 +389,9 @@
          endif
       enddo
 
-!     get total line length
-!     sum contributions from different 3D elements to get 
-!     local arc length
+      ! get total line length
+      ! sum contributions from different 3D elements to get
+      ! local arc length
 
       il = stat_nm2*stat_nm3*nelt
       call rzero(stat_abm1d,il)
@@ -408,8 +410,8 @@
          endif
       enddo
 
-!     Global communication to sum local contributions for arc lenght
-!     set up communicator
+      ! Global communication to sum local contributions for arc lenght
+      ! set up communicator
       el = stat_nm2*stat_nm3
       do il = 1,map2d_lnum
          kl = map2d_gmap(il) - 1
@@ -422,7 +424,7 @@
 
       call fgslib_gs_op(gs_handle,stat_abm1d,1,1,0)
 
-!     destroy communicator
+      ! destroy communicator
       call fgslib_gs_free (gs_handle)
 
       return
@@ -442,20 +444,20 @@
       include 'MAP2D'
       include 'STATD'
 
-!     argument list
+      ! argument list
       real rvar(lx1,ly1,lz1,lelt) !reshuffled array
       real var(lx1,ly1,lz1,lelt) ! input array
       integer nl                ! element number to reshuffle
 
-!     local variables
+      ! local variables
       integer il, jl, kl, el    ! loop index
 !-----------------------------------------------------------------------
-!     if no space averaging copy
+      ! if no space averaging copy
       if (stat_rdim.eq.0) then
          el = lx1*ly1*lz1*lelt
          call copy(rvar,var,el)
       else
-!     if space averagign swap data
+         ! if space averagign swap data
          if (map2d_idir.eq.1) then
             do el=1, nl
                if(map2d_lmap(el).ne.-1) then
@@ -503,6 +505,7 @@
 !! @param[in]   lvar        integrated variable
 !! @param[in]   npos        position in stat_ruavg
 !! @param[in]   alpha,beta  time averaging parameters
+!! @remark This routine uses global scratch space \a CTMP0
       subroutine stat_compute_1Dav1(lvar,npos,alpha,beta)
       implicit none
 
@@ -511,27 +514,29 @@
       include 'MAP2D'
       include 'STATD'
 
-!     argument list
+      ! argument list
       real lvar(lx1,ly1,lz1,lelt)
       integer npos
       real alpha, beta
 
-!     local variables
-      integer il, jl, kl, el    ! loop index
-      integer el2               ! index of 2D element
+      ! global variables
       real rtmp(lx1,lz1,lelt) ! dummy array
       common /CTMP0/ rtmp
+
+      ! local variables
+      integer il, jl, kl, el    ! loop index
+      integer el2               ! index of 2D element
 !-----------------------------------------------------------------------
-!     consistency check
+      ! consistency check
       if(npos.gt.stat_lvar)
      $     call mntr_abort(stat_id,'inconsistent npos ')
 
       if (stat_rdim.eq.1) then
-!     zero work array
+         ! zero work array
          el = lx1*lz1*lelt
          call rzero(rtmp,el)
 
-!     perform 1D integral
+         ! perform 1D integral
          do el = 1, nelv
             el2 = map2d_lmap(el)
             if(el2.gt.0) then
@@ -546,7 +551,7 @@
             endif
          enddo
 
-!     time average
+         ! time average
          el = stat_nm2*stat_nm3*map2d_lnum
          call add2sxy(stat_ruavg(1,1,npos),alpha,rtmp,beta,el)
       else
@@ -562,6 +567,7 @@
 !! @param[in]   lvar1,lvar2 integrated variable
 !! @param[in]   npos        position in stat_ruavg
 !! @param[in]   alpha,beta  time averaging parameters
+!! @remark This routine uses global scratch space \a CTMP0
       subroutine stat_compute_1Dav2(lvar1,lvar2,npos,alpha,beta)
       implicit none
 
@@ -570,28 +576,30 @@
       include 'MAP2D'
       include 'STATD'
 
-!     argument list
+      ! argument list
       real lvar1(lx1,ly1,lz1,lelt), lvar2(lx1,ly1,lz1,lelt)
       integer npos
       real alpha, beta
 
-!     local variables
-      integer il, jl, kl, el    ! loop index
-      integer el2               ! index of 2D element
+      ! global variables
       real rtmp(lx1,lz1,lelt)   ! dummy array
       real rtmp2(lx1,ly1,lz1,lelt) ! dummy array
       common /CTMP0/ rtmp, rtmp2
+
+      ! local variables
+      integer il, jl, kl, el    ! loop index
+      integer el2               ! index of 2D element
 !-----------------------------------------------------------------------
-!     consistency check
+      ! consistency check
       if(npos.gt.stat_lvar)
      $     call mntr_abort(stat_id,'inconsistent npos ')
 
       if (stat_rdim.eq.1) then
-!     zero work array
+         ! zero work array
          el = lx1*lz1*lelt
          call rzero(rtmp,el)
 
-!     perform 1D integral
+         ! perform 1D integral
          do el = 1, nelv
             el2 = map2d_lmap(el)
             if(el2.gt.0) then
@@ -607,7 +615,7 @@
             endif
          enddo
 
-!     time average
+         ! time average
          el = stat_nm2*stat_nm3*map2d_lnum
          call add2sxy(stat_ruavg(1,1,npos),alpha,rtmp,beta,el)
       else
@@ -631,21 +639,23 @@
       include 'MAP2D'
       include 'STATD'
 
-!     local variables
+      ! global variables
       integer mid,mp,nekcomm,nekgroup,nekreal
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
+
+      ! local variables
       integer gs_handle         ! gather-scatter handle
       integer*8 unodes(lx1*lz1*lelt) ! unique local nodes
       integer il, jl
       integer itmp1, itmp2
 !-----------------------------------------------------------------------
-!     if no space averaging return
+      ! if no space averaging return
       if (stat_rdim.eq.0) return
       
-!     stamp logs
+      ! stamp logs
       call mntr_log(stat_id,lp_vrb,'Global statistics summation.')
 
-!     set up communicator
+      ! set up communicator
       itmp1 = stat_nm2*stat_nm3
       do il = 1, map2d_lnum
          itmp2 = map2d_gmap(il) - 1
@@ -656,15 +666,15 @@
       itmp2 = itmp1*map2d_lnum
       call fgslib_gs_setup(gs_handle,unodes,itmp2,nekcomm,mp)
 
-!     sum variables
+      ! sum variables
       do il=1,stat_lvar
          call fgslib_gs_op(gs_handle,stat_ruavg(1,1,il),1,1,0)
       enddo
 
-!     destroy communicator
+      ! destroy communicator
       call fgslib_gs_free (gs_handle)
 
-!     divide data by arc length
+      ! divide data by arc length
       if (if3d) then
          itmp1=stat_nm2*stat_nm3
          do il=1, map2d_lnum
@@ -682,6 +692,7 @@
 !=======================================================================
 !> @brief Compute statistics
 !! @ingroup stat
+!! @remark This routine uses global scratch space \a SCRMG, \a SCRUZ, \a SCRNS, \a SCRSF
       subroutine stat_compute()
       implicit none
 
@@ -692,7 +703,19 @@
       include 'STATD'           ! Variables from the statistics
       include 'INPUT'           ! if3d
 
-!     local variables
+      ! global variables
+      ! work arrays
+      real slvel(LX1,LY1,LZ1,LELT,3), slp(LX1,LY1,LZ1,LELT)
+      common /SCRMG/ slvel, slp
+      real tmpvel(LX1,LY1,LZ1,LELT,3), tmppr(LX1,LY1,LZ1,LELT)
+      common /SCRUZ/ tmpvel, tmppr
+      real dudx(LX1,LY1,LZ1,LELT,3) ! du/dx, du/dy and du/dz
+      real dvdx(LX1,LY1,LZ1,LELT,3) ! dv/dx, dv/dy and dv/dz
+      real dwdx(LX1,LY1,LZ1,LELT,3) ! dw/dx, dw/dy and dw/dz
+      common /SCRNS/ dudx, dvdx
+      common /SCRSF/ dwdx
+
+      ! local variables
       integer npos              ! position in STAT_RUAVG
       real alpha, beta,dtime    ! time averaging parameters
       integer lnvar             ! count number of variables
@@ -700,297 +723,286 @@
       integer itmp              ! dummy variable
       real rtmp                 ! dummy variable
       integer ntot
-      
-!     work arrays
-      real slvel(LX1,LY1,LZ1,LELT,3), slp(LX1,LY1,LZ1,LELT)
-      common /SCRMG/ slvel, slp
-      real tmpvel(LX1,LY1,LZ1,LELT,3), tmppr(LX1,LY1,LZ1,LELT)
-      common /SCRUZ/ tmpvel, tmppr
 
-      real dudx(LX1,LY1,LZ1,LELT,3) ! du/dx, du/dy and du/dz
-      real dvdx(LX1,LY1,LZ1,LELT,3) ! dv/dx, dv/dy and dv/dz
-      real dwdx(LX1,LY1,LZ1,LELT,3) ! dw/dx, dw/dy and dw/dz
-      common /SCRNS/ dudx, dvdx
-      common /SCRSF/ dwdx
 !-----------------------------------------------------------------------
-!     stamp logs
+      ! stamp logs
       call mntr_log(stat_id,lp_vrb,'Average fields.')
       
-!     Calculate time span of current statistical sample
+      ! Calculate time span of current statistical sample
       dtime=time-stat_atime-stat_tstart
 
-!     Update total time over which the current stat file is averaged
+      ! Update total time over which the current stat file is averaged
       stat_atime=time-stat_tstart
 
-!     Time average is compuated as:
-!     Accumulated=alpha*Accumulated+beta*New
-!     Calculate alpha and beta
+      ! Time average is compuated as:
+      ! Accumulated=alpha*Accumulated+beta*New
+      ! Calculate alpha and beta
       beta=dtime/STAT_ATIME
       alpha=1.0-beta
       
-!     Map pressure to velocity mesh
+      ! Map pressure to velocity mesh
       call mappr(tmppr,PR,tmpvel(1,1,1,1,2),tmpvel(1,1,1,1,3))
 
-!     Compute derivative tensor
+      ! Compute derivative tensor
       call user_stat_trnsv(tmpvel,dudx,dvdx,dwdx,slvel)
 
-!     call time series
-!     adding time series here
-!     notice I use tmpvel, so the mean pressure is subtracted from 
-!     pressure
-      if (if3d) then               ! #2D
+      ! call time series
+      ! adding time series here
+      ! notice I use tmpvel, so the mean pressure is subtracted from
+      ! pressure
+      if (if3d) then
 !          call stat_pts_compute(tmpvel,slvel,tmppr)
       endif
 
-!     reset varaible counter
+      ! reset varaible counter
       lnvar = 0
-      
-!     reshuffle arrays
-!     velocity
+
+      ! reshuffle arrays
+      ! velocity
       call stat_reshufflev(slvel(1,1,1,1,1),tmpvel(1,1,1,1,1),NELV)
       call stat_reshufflev(slvel(1,1,1,1,2),tmpvel(1,1,1,1,2),NELV)
       if (if3d) call stat_reshufflev(slvel(1,1,1,1,3),
      $     tmpvel(1,1,1,1,3),NELV)
 
-!     pressure
+      ! pressure
       call stat_reshufflev(slp,tmppr,NELV)
 
-!     reshuffle velocity derivatives
-!     VX
+      ! reshuffle velocity derivatives
+      ! VX
       call stat_reshufflev(tmpvel(1,1,1,1,1),dudx(1,1,1,1,1),NELV)
       call stat_reshufflev(tmpvel(1,1,1,1,2),dudx(1,1,1,1,2),NELV)
       if (if3d) call stat_reshufflev(tmpvel(1,1,1,1,3),
      $     dudx(1,1,1,1,3),NELV)
-!     copy
+      ! copy
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call copy(dudx,tmpvel,itmp)
 
-!     VY
+      ! VY
       call stat_reshufflev(tmpvel(1,1,1,1,1),dvdx(1,1,1,1,1),NELV)
       call stat_reshufflev(tmpvel(1,1,1,1,2),dvdx(1,1,1,1,2),NELV)
       if (if3d) call stat_reshufflev(tmpvel(1,1,1,1,3),
      $     dvdx(1,1,1,1,3),NELV)
-!     copy
+      ! copy
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call copy(dvdx,tmpvel,itmp)
 
-!     VZ
+      ! VZ
       if (if3d) then
          call stat_reshufflev(tmpvel(1,1,1,1,1),dwdx(1,1,1,1,1),NELV)
          call stat_reshufflev(tmpvel(1,1,1,1,2),dwdx(1,1,1,1,2),NELV)
          call stat_reshufflev(tmpvel(1,1,1,1,3),dwdx(1,1,1,1,3),NELV)
-!     copy
+      ! copy
          itmp = LX1*LY1*LZ1*LELT*LDIM
          call copy(dwdx,tmpvel,itmp)
       endif
 
 !=======================================================================
-!     Computation of statistics
+      ! Computation of statistics
       
-!     <u>t
+      ! <u>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav1(slvel(1,1,1,1,1),npos,alpha,beta)
 
-!     <v>t
+      ! <v>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav1(slvel(1,1,1,1,2),npos,alpha,beta)
 
-!     <w>t
+      ! <w>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav1(slvel(1,1,1,1,3),npos,alpha,beta)
 
-!     <p>t
+      ! <p>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav1(slp(1,1,1,1),npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <uu>t
+      ! <uu>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,1),slvel(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <vv>t
+      ! <vv>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,2),slvel(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <ww>t
+      ! <ww>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,3),slvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
-!     <pp>t
+      ! <pp>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),slp(1,1,1,1),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <uv>t
+      ! <uv>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,1),slvel(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <vw>t
+      ! <vw>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,2),slvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
-!     <uw>t
+      ! <uw>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,1),slvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <pu>t
+      ! <pu>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),slvel(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <pv>t
+      ! <pv>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),slvel(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <pw>t
+      ! <pw>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),slvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <pdudx>t
+      ! <pdudx>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dudx(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <pdudy>t
+      ! <pdudy>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dudx(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <pdudz>t
+      ! <pdudz>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dudx(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <pdvdx>t
+      ! <pdvdx>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dvdx(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <pdvdy>t
+      ! <pdvdy>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dvdx(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <pdvdz>t
+      ! <pdvdz>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dvdx(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <pdwdx>t
+      ! <pdwdx>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dwdx(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <pdwdy>t
+      ! <pdwdy>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dwdx(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <pdwdz>t
+      ! <pdwdz>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slp(1,1,1,1),dwdx(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     UU, VV, WW
+      ! UU, VV, WW
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call col3(tmpvel(1,1,1,1,1),slvel(1,1,1,1,1),slvel(1,1,1,1,1),
      $     itmp)
 
-!     <uuu>t
+      ! <uuu>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,1),tmpvel(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <vvv>t
+      ! <vvv>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,2),tmpvel(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <www>t
+      ! <www>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(slvel(1,1,1,1,3),tmpvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <uuv>t
+      ! <uuv>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,1),slvel(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <uuw>t
+      ! <uuw>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,1),slvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
-!     <vvu>t
+      ! <vvu>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,2),slvel(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <vvw>t
+      ! <vvw>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,2),slvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <wwu>t
+      ! <wwu>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,3),slvel(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <wwv>t
+      ! <wwv>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,3),slvel(1,1,1,1,2),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <ppp>t
+      ! <ppp>t
       lnvar = lnvar + 1
       npos = lnvar
       itmp = LX1*LY1*LZ1*LELT
@@ -1000,17 +1012,17 @@
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <pppp>t
+      ! <pppp>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmppr(1,1,1,1),tmppr(1,1,1,1),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <uvw>t
+      ! <uvw>t
       lnvar = lnvar + 1
       npos = lnvar
-!     copy uv to tmppr (do not need pp anymore) 
+      ! copy uv to tmppr (do not need pp anymore)
       itmp = LX1*LY1*LZ1*LELT
       call col3(tmppr(1,1,1,1),slvel(1,1,1,1,1),slvel(1,1,1,1,2),
      $     itmp) 
@@ -1018,26 +1030,26 @@
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <uuuu>t
+      ! <uuuu>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,1),tmpvel(1,1,1,1,1),
      $     npos,alpha,beta)
 
-!     <vvvv>t
+      ! <vvvv>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,2),tmpvel(1,1,1,1,2),
      $     npos,alpha,beta)
 
-!     <wwww>t
+      ! <wwww>t
       lnvar = lnvar + 1
       npos = lnvar
       call stat_compute_1Dav2(tmpvel(1,1,1,1,3),tmpvel(1,1,1,1,3),
      $     npos,alpha,beta)
 
 !-----------------------------------------------------------------------
-!     <e11>t : (du/dx)^2 + (du/dy)^2 + (du/dz)^2
+      ! <e11>t : (du/dx)^2 + (du/dy)^2 + (du/dz)^2
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call col3(tmpvel(1,1,1,1,1),dudx(1,1,1,1,1),dudx(1,1,1,1,1),
      $     itmp)
@@ -1048,7 +1060,7 @@
       npos = lnvar
       call stat_compute_1Dav1(tmpvel(1,1,1,1,1),npos,alpha,beta)
 
-!     <e22>t: (dv/dx)^2 + (dv/dy)^2 + (dv/dz)^2
+      ! <e22>t: (dv/dx)^2 + (dv/dy)^2 + (dv/dz)^2
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call col3(tmpvel(1,1,1,1,1),dvdx(1,1,1,1,1),dvdx(1,1,1,1,1),
      $     itmp)
@@ -1059,7 +1071,7 @@
       npos = lnvar
       call stat_compute_1Dav1(tmpvel(1,1,1,1,1),npos,alpha,beta)
       
-!     <e33>t: (dw/dx)^2 + (dw/dy)^2 + (dw/dz)^2
+      ! <e33>t: (dw/dx)^2 + (dw/dy)^2 + (dw/dz)^2
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call col3(tmpvel(1,1,1,1,1),dwdx(1,1,1,1,1),dwdx(1,1,1,1,1),
      $     itmp)
@@ -1071,7 +1083,7 @@
       call stat_compute_1Dav1(tmpvel(1,1,1,1,1),npos,alpha,beta)
       
 !-----------------------------------------------------------------------
-!     <e12>t: (du/dx)*(dv/dx) + (du/dy)*(dv/dy) + (du/dz)*(dv/dz)
+      ! <e12>t: (du/dx)*(dv/dx) + (du/dy)*(dv/dy) + (du/dz)*(dv/dz)
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call col3(tmpvel(1,1,1,1,1),dudx(1,1,1,1,1),dvdx(1,1,1,1,1),
      $     itmp)
@@ -1082,7 +1094,7 @@
       npos = lnvar
       call stat_compute_1Dav1(tmpvel(1,1,1,1,1),npos,alpha,beta)
 
-!     <e13>t: (du/dx)*(dw/dx) + (du/dy)*(dw/dy) + (du/dz)*(dw/dz)
+      ! <e13>t: (du/dx)*(dw/dx) + (du/dy)*(dw/dy) + (du/dz)*(dw/dz)
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call col3(tmpvel(1,1,1,1,1),dudx(1,1,1,1,1),dwdx(1,1,1,1,1),
      $     itmp)
@@ -1093,7 +1105,7 @@
       npos = lnvar
       call stat_compute_1Dav1(tmpvel(1,1,1,1,1),npos,alpha,beta)
       
-!     <e23>t: (dv/dx)*(dw/dx) + (dv/dy)*(dw/dy) + (dv/dz)*(dw/dz)
+      ! <e23>t: (dv/dx)*(dw/dx) + (dv/dy)*(dw/dy) + (dv/dz)*(dw/dz)
       itmp = LX1*LY1*LZ1*LELT*LDIM
       call col3(tmpvel(1,1,1,1,1),dvdx(1,1,1,1,1),dwdx(1,1,1,1,1),
      $     itmp)
@@ -1105,9 +1117,9 @@
       call stat_compute_1Dav1(tmpvel(1,1,1,1,1),npos,alpha,beta)
       
 !=======================================================================
-!     End of local compute
+      !End of local compute
 
-!     save number of variables
+      ! save number of variables
       stat_nvar = lnvar
 
       return
