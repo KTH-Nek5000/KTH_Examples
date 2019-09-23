@@ -254,7 +254,6 @@
             endif
          enddo
 
-!
          ! check consistency
          ierr = 0
          if (kl.ne.map2d_lown) ierr=1

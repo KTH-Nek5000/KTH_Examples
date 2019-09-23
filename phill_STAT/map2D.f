@@ -142,7 +142,7 @@
       integer ierr              ! error flag
 
       real ltol                 ! tolerance for detection of section borders
-      parameter (ltol = 1.0e-8)
+      parameter (ltol = 1.0e-4)
       
 !     simple timing
       real ltim
@@ -536,7 +536,7 @@
             do il=nsort + 1,nsort + cnsort
                cell(il) = -1
             enddo
-         
+
 !     update number of elements to sort
             nsort = nsort + cnsort
 
