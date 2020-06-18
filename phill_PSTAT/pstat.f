@@ -268,6 +268,8 @@
       integer ninseg(lelt)    ! elements in segment
       logical ifseg(lelt)     ! segment borders
 
+      integer ibuf(2)
+
       ! functions
       integer iglsum
 
@@ -281,7 +283,7 @@
       data icalld /0/
 #endif
 !-----------------------------------------------------------------------
-#ifdef NEKP4EST
+#ifdef AMR
       ! reset amr level falg
       do il = 1, lelt
          pstat_refl(il) = 0
@@ -289,7 +291,7 @@
 
       ! initial refinement
       do il=1,pstat_amr_irnr
-         call nekp4est_refinement
+         call amr_refinement()
       enddo
 #endif
 
@@ -493,14 +495,14 @@
          call mntr_check_abort(pstat_id,ierr,
      $     'Inconsistent segment number in pstat_mesh_manipulate')
 
-#ifdef NEKP4EST
+#ifdef AMR
          ! transfer data for refinement mark
          do il = 1, nseg
             pstat_refl(isort(2,il)) = isort(3,il)
          enddo
 
          ! perform refinement
-         call nekp4est_refinement
+         call amr_refinement()
 
          inf_cnt = inf_cnt + 1
          if (inf_cnt.gt.99) call mntr_abort(pstat_id,
@@ -522,6 +524,24 @@
          pstat_gnel(isort(2,il)) = isort(4,il)
       enddo
 
+#ifdef AMR
+      ! recalculate new local to glpbal mappings from PARALLEL include file
+      ! zero arrays
+      call izero(lglel,lelt)
+      call dProcmapInit()
+      ! fill in array parts
+      do il = 1, nelt
+         kl =pstat_gnel(il)
+         lglel(il) = kl
+         ibuf(1) = il
+         ibuf(1) = nid
+         call dProcmapPut(ibuf,2,0,kl)
+      enddo
+#else
+#ifdef DPROCMAP
+      call mntr_abort(pstat_id,
+     $        'DPROCMAP not supported for non AMR runs')
+#else
       ! recalculate new local to glpbal mappings from PARALLEL include file
       ! zero arrays
       call izero(lglel,lelt)
@@ -545,6 +565,8 @@
          endif
          kl = kl + jl
       enddo
+#endif
+#endif
 
 #undef DEBUG
       return

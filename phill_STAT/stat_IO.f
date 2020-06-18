@@ -486,8 +486,8 @@
       include 'WZ'
       include 'MAP2D'
       include 'STATD'
-#ifdef NEKP4EST
-      include 'NEKP4EST'
+#ifdef AMR
+      include 'AMR'
 #endif
 
       ! local variables
@@ -623,10 +623,10 @@
       call mntr_check_abort(stat_id,ierr,
      $     'Error writing global nums in stat_mfo_crd2D')
 
-#ifdef NEKP4EST
+#ifdef AMR
       ! write refinement level; this code is not optimal, but I don't do it often
       do il = 1,NELV
-         itmp(map2d_lmap(il)) = NP4_LEVEL(il)
+         itmp(map2d_lmap(il)) = AMR_LEVEL(il)
       enddo
 #else
       do il = 1,NELT

@@ -14,7 +14,7 @@ function error_quit {
 
 #parameters
 export CASE="ext_cyl"
-export SOURCE_ROOT="../../Nek5000"
+export NEK_SOURCE_ROOT="../../Nek5000"
 export FC="mpifort"
 export CC="mpicc"
 export PPLIST=""
@@ -36,11 +36,11 @@ for il in "$@"
 do
 case $il in
         --clean)
-                ${SOURCE_ROOT}/bin/makenek clean
+                ${NEK_SOURCE_ROOT}/bin/makenek clean
                 shift
                 ;;
         --all)
-                ${SOURCE_ROOT}/bin/makenek ${CASE}
+                ${NEK_SOURCE_ROOT}/bin/makenek ${CASE}
                 shift
                 ;;
         *) 

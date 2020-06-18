@@ -206,7 +206,7 @@
       real ltim
 
       ! functions
-      real dnekclock, mth_rand
+      real dnekclock, mth_ran_dst
 !-----------------------------------------------------------------------
       ! add noise
       if (nseb_amp.gt.0.0) then
@@ -239,19 +239,19 @@
                            fcoeff(2)= -1.5e3
                            fcoeff(3)=  0.5e5
                            VX(il,jl,kl,iel)=VX(il,jl,kl,iel)+nseb_amp*
-     $                          mth_rand(il,jl,kl,ieg,xl,fcoeff)
+     $                          mth_ran_dst(il,jl,kl,ieg,xl,fcoeff)
                            fcoeff(1)=  2.3e4
                            fcoeff(2)=  2.3e3
                            fcoeff(3)= -2.0e5
                            VY(il,jl,kl,iel)=VY(il,jl,kl,iel)+nseb_amp*
-     $                          mth_rand(il,jl,kl,ieg,xl,fcoeff)
+     $                          mth_ran_dst(il,jl,kl,ieg,xl,fcoeff)
                            if (IF3D) then
                               fcoeff(1)= 2.e4
                               fcoeff(2)= 1.e3
                               fcoeff(3)= 1.e5
                               VZ(il,jl,kl,iel)=VZ(il,jl,kl,iel)+
      $                             nseb_amp*
-     $                             mth_rand(il,jl,kl,ieg,xl,fcoeff)
+     $                             mth_ran_dst(il,jl,kl,ieg,xl,fcoeff)
                            endif
                         endif
 

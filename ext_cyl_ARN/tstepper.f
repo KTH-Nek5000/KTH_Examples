@@ -406,8 +406,8 @@
       ! element faces and edges
       ifield_tmp = IFIELD
       IFIELD = 1
-#ifdef NEKP4EST
-      call oph1_proj(vxp,vyp,vzp)
+#ifdef AMR
+      call amr_oph1_proj(vxp,vyp,vzp,nx1,ny1,nz1,nelv)
 #else
       call opdssum(VXP,VYP,VZP)
       call opcolv (VXP,VYP,VZP,VMULT)
@@ -415,7 +415,7 @@
 
       if(IFHEAT) then
          IFIELD = 2
-#ifdef NEKP4EST
+#ifdef AMR
          call h1_proj(tp,nx1,ny1,nz1)
 #else
          call dssum(TP,NX1,NY1,NZ1)

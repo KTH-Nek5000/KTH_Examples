@@ -811,14 +811,20 @@
       character*(*) logs
 
       ! local variables
-      integer itest
+      integer imax, imin, itest
       character*5 str
       ! functions
-      integer iglmax
+      integer iglmax, iglmin
 !-----------------------------------------------------------------------
-      itest = iglmax(ierr,1)
+      imax = iglmax(ierr,1)
+      imin = iglmin(ierr,1)
+      if (imax.gt.0) then
+         itest = imax
+      else
+         itest = imin
+      endif
 
-      if (itest.gt.0) then
+      if (itest.ne.0) then
          write(str,'(I3)') itest
          call mntr_log(mid,lp_err,
      $         'ABORT: '//trim(logs)//' ierr='//trim(str))
