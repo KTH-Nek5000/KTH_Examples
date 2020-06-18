@@ -41,3 +41,4 @@ To run the code:
 * `phill_STAT`  - nonlinear simulation of flow over periodic hill to calculate turbulence statistics
 * `phill_PSTAT`  - postprocessing of files produced by `phill_STAT`
 * `phill_TRIP`  - nonlinear simulation of flow over periodic hill with tripping line
+* `pipe_gSyEM`  - generalsed synthetic eddy method for pipe inflow
