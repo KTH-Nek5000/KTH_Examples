@@ -200,43 +200,62 @@
       ! simple timing
       real ltim
 
+      ! number of steps to bescarded in the simulation beginning
+      ! This is necessary due to multistep restart scheme as 2-3 first steps
+      ! are in general repeated from the previous simulation.
+      ! It does not produce any problem in case of AMR, as in this case
+      ! those first steps are skept anyway.
+      ! For now the number is simply hard-coded to the max of time integration
+      ! order
+      integer step_skip
+      parameter (step_skip=lorder)
+
       ! functions
       real dnekclock
 !-----------------------------------------------------------------------
-      ! average
-      if (ISTEP.gt.0.and.mod(ISTEP,stat_avstep).eq.0) then
-         ! simple timing
-         ltim = dnekclock()
-         call mntr_log(stat_id,lp_inf,'Average compute')
-         call stat_compute
-         ! timing
-         ltim = dnekclock() - ltim
-         call mntr_tmr_add(stat_tmr_avg_id,1,ltim)
-      endif
+      ! skip initial steps
+      if (ISTEP.gt.step_skip) then
+        itmp = ISTEP - step_skip
 
-      ! save statistics file and restart statistics variables
-      if (ISTEP.gt.0.and.mod(ISTEP,stat_IOstep).eq.0) then            
-         if (stat_rdim.eq.1) then
+        ! average
+        if (mod(itmp,stat_avstep).eq.0) then
+          ! simple timing
+          ltim = dnekclock()
+          call mntr_log(stat_id,lp_inf,'Average compute')
+          call stat_compute
+          ! timing
+          ltim = dnekclock() - ltim
+          call mntr_tmr_add(stat_tmr_avg_id,1,ltim)
+        endif
 
-            ltim = dnekclock()
-            call mntr_log(stat_id,lp_inf,'Global sum')
-            call stat_gs_sum
-            ltim = dnekclock() - ltim
-            call mntr_tmr_add(stat_tmr_cmm_id,1,ltim)
-         endif
+        ! save statistics file and restart statistics variables
+        if (mod(itmp,stat_IOstep).eq.0) then
+          if (stat_rdim.eq.1) then
 
-         ltim = dnekclock()
-         call mntr_log(stat_id,lp_inf,'Writing stat file')
-         call stat_mfo
-         ltim = dnekclock() - ltim
-         call mntr_tmr_add(stat_tmr_io_id,1,ltim)
+              ltim = dnekclock()
+              call mntr_log(stat_id,lp_inf,'Global sum')
+              call stat_gs_sum
+              ltim = dnekclock() - ltim
+              call mntr_tmr_add(stat_tmr_cmm_id,1,ltim)
+          endif
+
+          ltim = dnekclock()
+          call mntr_log(stat_id,lp_inf,'Writing stat file')
+          call stat_mfo
+          ltim = dnekclock() - ltim
+          call mntr_tmr_add(stat_tmr_io_id,1,ltim)
 
 
-         ! clean up array
-         itmp = lx1**(LDIM-stat_rdim)*lelt*stat_lvar
-         call rzero(stat_ruavg,itmp)
+          ! clean up array
+          itmp = lx1**(LDIM-stat_rdim)*lelt*stat_lvar
+          call rzero(stat_ruavg,itmp)
 
-         ! reset averagign parameters
+          ! reset averaging parameters
+          stat_atime = 0.0
+          stat_tstart = time
+        endif
+      else
+         ! set averaging parameters
          stat_atime = 0.0
          stat_tstart = time
       endif
