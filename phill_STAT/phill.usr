@@ -122,7 +122,6 @@
 !-----------------------------------------------------------------------
       subroutine usrdat2
       include 'SIZE'
-      include 'SOLN'            ! vx,vy,vz,pr,t
       
       integer iel
 c     mesh stretching

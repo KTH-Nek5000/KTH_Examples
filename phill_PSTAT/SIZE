@@ -17,11 +17,11 @@ c
       parameter (lelg=8398)            ! max total number of elements
       parameter (lpmin=8)              ! min MPI ranks
       parameter (lpmax=32)             ! max MPI ranks
-      parameter (ldimt=1)              ! max auxiliary fields (temperature + scalars)
+      parameter (ldimt=69)             ! max auxiliary fields (temperature + scalars)
 
       ! OPTIONAL
       parameter (ldimt_proj=1)         ! max auxiliary fields residual projection
-      parameter (lhis=100)             ! max history points
+      parameter (lhis=3500)            ! max history points
       parameter (maxobj=4)             ! max number of objects
       parameter (lpert=1)              ! max perturbation modes
       parameter (toteq=1)              ! max number of conserved scalars in cmt

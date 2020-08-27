@@ -197,6 +197,7 @@
       include 'SIZE'
       include 'INPUT'
       include 'PARALLEL'
+      include 'FRAMELP'
       include 'PSTATD'
 
       ! global data structures
@@ -246,6 +247,10 @@
          pstat_npt1 = pstat_nptot
       endif
       if (nid.lt.pstat_npt1) pstat_npt = pstat_npt +1
+
+      ! stamp logs
+      call mntr_logi(pstat_id,lp_prd,
+     $          'Interpolation point number :', pstat_npt)
 
       ierr = 0
       if (pstat_npt.gt.lhis) ierr = 1
