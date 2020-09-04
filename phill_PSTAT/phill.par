@@ -34,7 +34,11 @@ density = 1.0
 viscosity = -700
 advection = yes
 
-#
+[_MONITOR]              # Runtime parameter section for monitor module
+LOGLEVEL             = 2                      # Logging threshold for toolboxes
+IFTIMDSCR            = no                     # Write timer description in the summary
+WALLTIME             = 04:00                  # Simulation wall time
+
 [_PSTAT]                # Runtime paramere section for pstat module
 CRD_FNUM             = 1                      # CRD file number
 AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)

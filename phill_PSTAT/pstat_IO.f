@@ -62,7 +62,7 @@
       call io_mfo_fname(fname,bname,prefix,ierr)
 
       write(str,'(i5.5)') pstat_crd_fnr
-      fname = trim(fname)//trim(str)
+      fname = 'DATA/'//trim(fname)//trim(str)
 
       fid0 = 0
       call addfid(fname,fid0)
@@ -213,6 +213,16 @@
       integer npass        ! number of messages to send
       real rtmp_pts(ldim,lhis)
       real rtmp1, rtmp2
+
+!#define DEBUG
+#ifdef DEBUG
+      character*3 str1, str2
+      integer iunit
+      ! call number
+      integer icalld
+      save icalld
+      data icalld /0/
+#endif
 !-----------------------------------------------------------------------
       ! master opens files and gets point number
       ierr = 0
@@ -223,10 +233,10 @@
          inquire(iolength=jl) rtmp1
          call io_file_freeid(uidx, ierr)
          open(unit=uidx,form='unformatted',access='direct',recl=jl,
-     $        file='ZSTAT/x.fort')
+     $        file='DATA/x.fort')
          call io_file_freeid(uidy, ierr)
          open(unit=uidy,form='unformatted',access='direct',recl=jl,
-     $        file='ZSTAT/y.fort')
+     $        file='DATA/y.fort')
          read(uidx,rec=1) il,npx
          read(uidy,rec=1) il,npy
          if (npx.ne.npy) ierr = 1
@@ -250,7 +260,7 @@
 
       ! stamp logs
       call mntr_logi(pstat_id,lp_prd,
-     $          'Interpolation point number :', pstat_npt)
+     $          'Interpolation point number :', pstat_nptot)
 
       ierr = 0
       if (pstat_npt.gt.lhis) ierr = 1
@@ -300,6 +310,24 @@
         close (uidy)
       endif
 
+#ifdef DEBUG
+      ! for testing
+      ! to output refinement
+      icalld = icalld+1
+      call io_file_freeid(iunit, ierr)
+      write(str1,'(i3.3)') NID
+      write(str2,'(i3.3)') icalld
+      open(unit=iunit,file='INTpos.txt'//str1//'i'//str2)
+
+      write(iunit,*) pstat_nptot, pstat_npt
+      do il=1, pstat_npt
+         write(iunit,*) il, (pstat_int_pts(jl,il),jl=1,ldim)
+      enddo
+
+      close(iunit)
+#endif
+#undef DEBUG
+
       return
       end subroutine
 !=======================================================================
@@ -310,6 +338,7 @@
 
       include 'SIZE'
       include 'INPUT'
+      include 'RESTART'
       include 'PARALLEL'
       include 'GEOM'
       include 'PSTATD'
@@ -321,20 +350,32 @@
       ! local variables
       integer il, jl, kl   ! loop index
       integer ierr         ! error flag
-      integer uid          ! unit id
-      character*532 head   ! file header
-      character*532 ftm    ! header format
+      character*132 fname       ! file name
+      character*500 head   ! file header
+      character*500 ftm    ! header format
+      real*4 test
+      parameter (test=6.54321)
+
       integer npass        ! number of messages to send for single field
       integer npts         ! number of points for transfer
       integer itmp         ! temporary variables
-      real rtmpv(lhis), rtmp
+      real rtmpv(lhis*ldim), rtmpv1(lhis*ldim), rtmp
+      real*4 rtmpv2(2*lhis*ldim)
+      equivalence (rtmpv1,rtmpv2)
+
       real lx,ly,lz        ! box dimensions
       integer nlx,nly,nlz  ! for tensor product meshes
       integer iavfr
 
+      integer wdsl, isl    ! double and integer sizes
+
       ! functions
       real glmin, glmax
 !-----------------------------------------------------------------------
+      ! double and integer sizes
+      wdsl = wdsize/4
+      isl = isize/4
+
       ! gether information for file header
       il = lx1*ly1*lz1*nelt
       lx = glmax(xm1,il) - glmin(xm1,il)
@@ -355,24 +396,94 @@
       ! this is far from optimal, but for post-processing I do not care
       ! master opens files and writes header
       ierr = 0
-      if (nid.eq.0) then
-         call io_file_freeid(uid, ierr)
-         open(unit=uid,form='unformatted',file='ZSTAT/int_fld')
+      if (nid.eq.pid00) then
+         !open the file
+         fname='int_fld'
+         call byte_open(fname,ierr)
+
+         if (ierr.ne.0) goto 20
 
          ! write file's header
-         ftm="(1p,'(Re =',e17.9,') (Lx, Ly, Lz =',3e17.9,"//
+         ftm="('#iv1',1x,i1,1x,"//
+     $   "1p,'(Re =',e17.9,') (Lx, Ly, Lz =',3e17.9,"//
      $   "') (nelx, nely, nelz =',3i9,') (Polynomial order =',3i9,"//
      $   "') (Nstat =',i9,') (Nderiv =',i9,') (start time =',e17.9,"//
      $   "') (end time =',e17.9,') (effective average time =',e17.9,"//
      $   "') (time step =',e17.9,') (nrec =',i9"//
      $   "') (time interval =',e17.9,') (npoints =',i9,')')"
-         write(head,ftm) 1.0/param(2),lx,ly,lz,nlx,nly,nlz,lx1,ly1,lz1,
+         write(head,ftm) wdsize,
+     $    1.0/param(2),lx,ly,lz,nlx,nly,nlz,lx1,ly1,lz1,
      $    pstat_svar,pstat_dvar,pstat_stime,pstat_etime,rtmp/iavfr,
      $    rtmp/pstat_istepr,pstat_istepr/iavfr,rtmp,pstat_nptot
-         write(uid) trim(head)
-         write(uid) 1.0/param(2),lx,ly,lz,nlx,nly,nlz,lx1,ly1,lz1,
-     $    pstat_svar,pstat_dvar,pstat_stime,pstat_etime,rtmp/iavfr,
-     $    rtmp/pstat_istepr,pstat_istepr/iavfr,rtmp,pstat_nptot
+         call byte_write(head,115,ierr)
+
+         ! write big/little endian test
+         call byte_write(test,1,ierr)
+
+         if (ierr.ne.0) goto 20
+
+         ! write parameter set with all the digits
+         call byte_write(1.0/param(2),wdsl,ierr)
+         call byte_write(lx,wdsl,ierr)
+         call byte_write(ly,wdsl,ierr)
+         call byte_write(lz,wdsl,ierr)
+         call byte_write(nlx,isl,ierr)
+         call byte_write(nly,isl,ierr)
+         call byte_write(nlz,isl,ierr)
+         call byte_write(lx1,isl,ierr)
+         call byte_write(ly1,isl,ierr)
+         call byte_write(lz1,isl,ierr)
+         call byte_write(pstat_svar,isl,ierr)
+         call byte_write(pstat_dvar,isl,ierr)
+         call byte_write(pstat_stime,wdsl,ierr)
+         call byte_write(pstat_etime,wdsl,ierr)
+         call byte_write(rtmp/iavfr,wdsl,ierr)
+         call byte_write(rtmp/pstat_istepr,wdsl,ierr)
+         call byte_write(pstat_istepr/iavfr,isl,ierr)
+         call byte_write(rtmp,wdsl,ierr)
+         call byte_write(pstat_nptot,isl,ierr)
+      endif
+
+ 20   continue
+      call mntr_check_abort(pstat_id,ierr,
+     $     'Error opening interpolation file in pstat_mfo_interp.')
+
+      ! write down point coordinates
+      if (nid.eq.0) then
+         ! first master writes its own data
+         if (wdsl.eq.2) then
+            call copy(rtmpv1,pstat_int_pts,pstat_npt*ldim)
+            call byte_write(rtmpv2,pstat_npt*ldim*wdsl,ierr)
+         else
+            call copyX4(rtmpv2,pstat_int_pts,pstat_npt*ldim)
+            call byte_write(rtmpv2,pstat_npt*ldim,ierr)
+         endif
+
+         ! geather data from slaves
+         npass = min(mp,pstat_nptot)
+         do jl = 1,npass-1
+            npts = pstat_npt
+            if (pstat_npt1.gt.0.and.jl.ge.pstat_npt1) then
+               npts = pstat_npt -1
+            endif
+            call csend(jl,itmp,isize,jl,kl) ! hand shaiking
+            call crecv2(jl,rtmpv,npts*ldim*wdsize,jl)
+
+            ! write data
+            if (wdsl.eq.2) then
+               call copy(rtmpv1,rtmpv,npts*ldim)
+               call byte_write(rtmpv2,npts*ldim*wdsl,ierr)
+            else
+               call copyX4(rtmpv2,rtmpv,npts*ldim)
+               call byte_write(rtmpv2,npts*ldim,ierr)
+            endif
+         enddo
+      else
+         ! slaves send their data
+         if (pstat_npt.gt.0) then
+            call crecv2(nid,itmp,isize,0) ! hand shaiking
+            call csend(nid,pstat_int_pts,pstat_npt*ldim*wdsize,0,itmp)
+         endif
       endif
 
       ! geather the data and write it down to the file
@@ -380,7 +491,13 @@
       do il = 1,pstat_svar
          if (nid.eq.0) then
             ! first master writes its own data
-            write(uid) (pstat_int_avg (jl,il),jl=1,pstat_npt)
+            if (wdsl.eq.2) then
+               call copy(rtmpv1,pstat_int_avg(1,il),pstat_npt)
+               call byte_write(rtmpv2,pstat_npt*wdsl,ierr)
+            else
+               call copyX4(rtmpv2,pstat_int_avg(1,il),pstat_npt)
+               call byte_write(rtmpv2,pstat_npt,ierr)
+            endif
 
             ! geather data from slaves
             npass = min(mp,pstat_nptot)
@@ -393,7 +510,13 @@
                call crecv2(jl,rtmpv,npts*wdsize,jl)
 
                ! write data
-               write(uid) (rtmpv (kl),kl=1,npts)
+               if (wdsl.eq.2) then
+                  call copy(rtmpv1,rtmpv,npts)
+                  call byte_write(rtmpv2,npts*wdsl,ierr)
+               else
+                  call copyX4(rtmpv2,rtmpv,npts)
+                  call byte_write(rtmpv2,npts,ierr)
+               endif
             enddo
          else
             ! slaves send their data
@@ -405,11 +528,20 @@
          endif
       enddo
 
+      call mntr_check_abort(pstat_id,ierr,
+     $    'Error writing interpolated stat. file in pstat_mfo_interp.')
+
       ! fields derivatives
       do il = 1,pstat_dvar
          if (nid.eq.0) then
             ! first master writes its own data
-            write(uid) (pstat_int_der (jl,il),jl=1,pstat_npt)
+            if (wdsl.eq.2) then
+               call copy(rtmpv1,pstat_int_der(1,il),pstat_npt)
+               call byte_write(rtmpv2,pstat_npt*wdsl,ierr)
+            else
+               call copyX4(rtmpv2,pstat_int_der(1,il),pstat_npt)
+               call byte_write(rtmpv2,pstat_npt,ierr)
+            endif
 
             ! geather data from slaves
             npass = min(mp,pstat_nptot)
@@ -422,7 +554,13 @@
                call crecv2(jl,rtmpv,npts*wdsize,jl)
 
                ! write data
-               write(uid) (rtmpv (kl),kl=1,npts)
+               if (wdsl.eq.2) then
+                  call copy(rtmpv1,rtmpv,npts)
+                  call byte_write(rtmpv2,npts*wdsl,ierr)
+               else
+                  call copyX4(rtmpv2,rtmpv,npts)
+                  call byte_write(rtmpv2,npts,ierr)
+               endif
             enddo
          else
             ! slaves send their data
@@ -434,11 +572,17 @@
          endif
       enddo
 
+      call mntr_check_abort(pstat_id,ierr,
+     $    'Error writing interpolated deriv. file in pstat_mfo_interp.')
 
       ! master closes the file
-      if (nid.eq.0) then
-         close(uid)
+      if (nid.eq.pid00) then
+         call byte_close(ierr)
       endif
+
+      call mntr_check_abort(pstat_id,ierr,
+     $     'Error closing interpolation file in pstat_mfo_interp.')
+
 
       return
       end subroutine
