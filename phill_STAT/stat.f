@@ -762,8 +762,8 @@
       ! Map pressure to velocity mesh
       call mappr(tmppr,PR,tmpvel(1,1,1,1,2),tmpvel(1,1,1,1,3))
 
-      ! Compute derivative tensor
-      call user_stat_trnsv(tmpvel,dudx,dvdx,dwdx,slvel)
+      ! Compute derivative tensor and normalise pressure
+      call user_stat_trnsv(tmpvel,dudx,dvdx,dwdx,slvel,tmppr)
 
       ! call time series
       ! adding time series here
