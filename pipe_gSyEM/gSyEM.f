@@ -726,7 +726,7 @@
          call gop(xyz_ewall(1,1,1,il),work,'+  ',ldim*lx1*gsem_edge_max)
       enddo
 
-      ! extract bounding box, average coordinate, normal, aera
+      ! extract bounding box, average coordinate, normal, area
       call mntr_log(gsem_id,lp_inf,'Extract bounding box information')
       ! initial values
       do il=1,gsem_nfam
@@ -853,10 +853,8 @@
          ! rotate bounding box to get 2D constraint; THIS IS NOT FINISHED
          call mth_rot3Da(drtmp,gsem_bmin(1,il),
      $        gsem_raxs(1,il),-gsem_rang(il))
-!         write(*,*) 'TEST rot min',nid,drtmp(1:3,1)
          call mth_rot3Da(drtmp,gsem_bmax(1,il),
      $        gsem_raxs(1,il),-gsem_rang(il))
-!         write(*,*) 'TEST rot max',nid,drtmp(1:3,1)
 
          ! Should I shift edges to the surface normal to gsem_bcrd???????
 
@@ -1352,7 +1350,9 @@
          do jl=1,ldim
             gsem_epos(jl,itmp) = gsem_epos(jl,itmp) +
      $           DT*gsem_un(nfam)*gsem_bnrm(jl,nfam)
-            rtmp = rtmp + gsem_epos(jl,itmp)*gsem_bnrm(jl,nfam)
+            ! get distance with respect to family centre
+            rtmp = rtmp + (gsem_epos(jl,itmp)-gsem_bcrd(jl,nfam))*
+     $             gsem_bnrm(jl,nfam)
          enddo
          if (rtmp.gt.gsem_bext(nfam)) then
             neddy=neddy+1
