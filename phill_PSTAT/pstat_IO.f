@@ -196,6 +196,7 @@
 
       include 'SIZE'
       include 'INPUT'
+      include 'RESTART'
       include 'PARALLEL'
       include 'FRAMELP'
       include 'PSTATD'
@@ -205,14 +206,23 @@
       common /nekmpi/ mid,mp,nekcomm,nekgroup,nekreal
 
       ! local variables
-      integer il, jl       ! loop index
-      integer ierr         ! error flag
-      integer uidx, uidy   ! unit id
-      integer nrec         ! record position
-      integer npx, npy     ! number of points in the file
-      integer npass        ! number of messages to send
+      integer il, jl            ! loop index
+      integer ierr              ! error flag
+      integer ldiml             ! dimesion of interpolation file
+      integer nptsr             ! number of points in the file
+      integer npass             ! number of messages to send
       real rtmp_pts(ldim,lhis)
+      real*4 rbuffl(2*ldim*lhis)
       real rtmp1, rtmp2
+      character*132 fname       ! file name
+      integer hdrl
+      parameter (hdrl=32)
+      character*32 hdr         ! file header
+      character*4 dummy
+      real*4 bytetest
+
+      ! functions
+      logical if_byte_swap_test
 
 !#define DEBUG
 #ifdef DEBUG
@@ -226,33 +236,47 @@
 !-----------------------------------------------------------------------
       ! master opens files and gets point number
       ierr = 0
-      if (nid.eq.0) then
-         ! there is a problem with reading points in rank sections, so
-         ! I have to open the files using direct access
-         ! Find record length; this is fortran 90 feature
-         inquire(iolength=jl) rtmp1
-         call io_file_freeid(uidx, ierr)
-         open(unit=uidx,form='unformatted',access='direct',recl=jl,
-     $        file='DATA/x.fort')
-         call io_file_freeid(uidy, ierr)
-         open(unit=uidy,form='unformatted',access='direct',recl=jl,
-     $        file='DATA/y.fort')
-         read(uidx,rec=1) il,npx
-         read(uidy,rec=1) il,npy
-         if (npx.ne.npy) ierr = 1
-         nrec = 3
+      if (nid.eq.pid00) then
+         !open the file
+         fname='DATA/int_pos'
+         call byte_open(fname,ierr)
+
+         ! read header
+         call blank     (hdr,hdrl)
+         call byte_read (hdr,hdrl/4,ierr)
+         if (ierr.ne.0) goto 101
+
+         ! big/little endian test
+         call byte_read (bytetest,1,ierr)
+         if(ierr.ne.0) goto 101
+         if_byte_sw = if_byte_swap_test(bytetest,ierr)
+         if(ierr.ne.0) goto 101
+
+         ! extract header information
+         read(hdr,*,iostat=ierr) dummy, wdsizr, ldiml, nptsr
       endif
+
+ 101  continue
 
       call mntr_check_abort(pstat_id,ierr,
      $       'pstat_mfi_interp: Error opening point files')
 
-      ! broadcast points number and calculate point distribution
-      ! it is post-processing done on small number of cores, so I assume npx >> mp
-      call bcast(npx,isize)
-      pstat_nptot = npx
-      pstat_npt = npx/mp
+      ! broadcast header data
+      call bcast(wdsizr,isize)
+      call bcast(ldiml,isize)
+      call bcast(nptsr,isize)
+      call bcast(if_byte_sw,lsize)
+
+      ! check dimension consistency
+      if (ldim.ne.ldiml) call mntr_check_abort(pstat_id,
+     $       'pstat_mfi_interp: Inconsisten dimension.')
+
+      ! calculate point distribution; I assume it is post-processing
+      ! done on small number of cores, so I assume nptsr >> mp
+      pstat_nptot = nptsr
+      pstat_npt = nptsr/mp
       if (pstat_npt.gt.0) then
-         pstat_npt1 = mod(pstat_nptot,pstat_npt)
+         pstat_npt1 = mod(pstat_nptot,mp)
       else
          pstat_npt1 = pstat_nptot
       endif
@@ -268,34 +292,62 @@
      $       'pstat_mfi_interp: lhis too small')
 
       ! read and redistribute points
-      ! this part is not optimised, but it is post-processing done locally, so I don't care
-      if (nid.eq.0) then
+      ! this part is not optimised, but it is post-processing
+      ! done locally, so I don't care
+      if (nid.eq.pid00) then
          if (pstat_nptot.gt.0) then
             ! read points for the master rank
-            do il=1,pstat_npt
-               read(uidx,rec=nrec) rtmp1
-               read(uidy,rec=nrec) rtmp2
-               nrec = nrec + 1
-               pstat_int_pts(1,il) = rtmp1
-               pstat_int_pts(2,il) = rtmp2
-            enddo
+            ldiml = ldim*pstat_npt*wdsizr/4
+            call byte_read (rbuffl,ldiml,ierr)
+
+            ! get byte shift
+            if (if_byte_sw) then
+               if(wdsizr.eq.8) then
+                  call byte_reverse8(rbuffl,ldiml,ierr)
+               else
+                  call byte_reverse(rbuffl,ldiml,ierr)
+               endif
+            endif
+
+            ! copy data
+            ldiml = ldim*pstat_npt
+            if (wdsizr.eq.4) then
+               call copy4r(pstat_int_pts,rbuffl,ldiml)
+            else
+               call copy(pstat_int_pts,rbuffl,ldiml)
+            endif
 
             ! redistribute rest of points
             npass = min(mp,pstat_nptot)
             do il = 1,npass-1
-               npy = pstat_npt
+               nptsr = pstat_npt
                if (pstat_npt1.gt.0.and.il.ge.pstat_npt1) then
-                  npy = pstat_npt -1
+                  nptsr = pstat_npt -1
                endif
-               do jl = 1,npy
-                  read(uidx,rec=nrec) rtmp1
-                  read(uidy,rec=nrec) rtmp2
-                  nrec = nrec + 1
-                  rtmp_pts(1,jl) = rtmp1
-                  rtmp_pts(2,jl) = rtmp2
-               enddo
+               ! read points for the slave rank
+               ldiml = ldim*nptsr*wdsizr/4
+               call byte_read (rbuffl,ldiml,ierr)
 
-               call csend(il,rtmp_pts,ldim*npy*wdsize,il,jl)
+               ! get byte shift
+               if (if_byte_sw) then
+                  if(wdsizr.eq.8) then
+                     call byte_reverse8(rbuffl,ldiml,ierr)
+                  else
+                     call byte_reverse(rbuffl,ldiml,ierr)
+                  endif
+               endif
+
+               ! copy data
+               ldiml = ldim*nptsr
+               if (wdsizr.eq.4) then
+                  call copy4r(rtmp_pts,rbuffl,ldiml)
+               else
+                  call copy(rtmp_pts,rbuffl,ldiml)
+               endif
+
+               ! send data
+               ldiml = ldiml*wdsizr
+               call csend(il,rtmp_pts,ldiml,il,jl)
             enddo
          endif
       else
@@ -305,9 +357,8 @@
       endif
 
       ! master closes files
-      if (nid.eq.0) then
-        close (uidx)
-        close (uidy)
+      if (nid.eq.pid00) then
+        call byte_close(ierr)
       endif
 
 #ifdef DEBUG

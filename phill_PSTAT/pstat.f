@@ -809,17 +809,9 @@
          call cmult(pstat_ruavg(1,1,il),rtmp,nvec)
       enddo
 
-      ! save fields to the disc for visualisation
-      ! vx, vy
-      ifpo = .false.
-      call outpost2(pstat_ruavg(1,1,1),pstat_ruavg(1,1,2),vz,pr,t,0,
-     $     'UV_')
-      ! vz, pr
-      call outpost2(pstat_ruavg(1,1,3),pstat_ruavg(1,1,4),vz,pr,t,0,
-     $     'WP_')
-
       ! save all averaged fields
       ifvo = .false.
+      ifpo = .false.
       ifto = .false.
       do il=1,pstat_svar
           ifpsco(il)=.TRUE.
