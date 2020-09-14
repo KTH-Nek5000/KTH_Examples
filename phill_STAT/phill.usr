@@ -642,9 +642,9 @@ c-----------------------------------------------------------------------
       enddo
       ! global communication
       call gop(vrtmp2,vrtmp,'+  ',2)
-      ! missing error chack vrtmp2(1) == 0
+      ! missing error check vrtmp2(1) == 0
       vrtmp2(2) = -vrtmp2(2)/vrtmp2(1)
-      ! subtract mean pressure
+      ! remove mean pressure
       itmp = LX1*LY1*LZ1*NELV
       call cadd(pres,vrtmp2(2),itmp)
 
