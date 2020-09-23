@@ -611,33 +611,7 @@
       ! element size
       itmp = lx1*ly1*lz1
 
-      ! for each variable
-      do il=1, pstat_svar
-         ! number of local elements
-         lnelt = nelt
-
-         ! pack transfer data
-         do jl=1,lnelt
-            vi(1,jl) = gllel(pstat_gnel(jl))
-            vi(2,jl) = gllnid(pstat_gnel(jl))
-         enddo
-
-         ! transfer array
-         call fgslib_crystal_tuple_transfer
-     $        (cr_h,lnelt,LELT,vi,isw,vl,0,t(1,1,1,1,il+1),itmp,2)
-
-         ! test local element number
-         if (lnelt.ne.NELT) then
-            call mntr_abort('Error: pstat_transfer; lnelt /= nelt')
-         endif
-
-      ! sort elements acording to their global number
-         key(1) = 1
-         call fgslib_crystal_tuple_sort
-     $        (cr_h,lnelt,vi,isw,vl,0,t(1,1,1,1,il+1),itmp,key,1)
-      enddo
-
-#ifdef DEBUG
+      ! coordinates
       ! number of local elements
       lnelt = nelt
 
@@ -683,7 +657,32 @@
       key(1) = 1
       call fgslib_crystal_tuple_sort
      $     (cr_h,lnelt,vi,isw,vl,0,ym1,itmp,key,1)
-#endif
+
+      ! for each variable
+      do il=1, pstat_svar
+         ! number of local elements
+         lnelt = nelt
+
+         ! pack transfer data
+         do jl=1,lnelt
+            vi(1,jl) = gllel(pstat_gnel(jl))
+            vi(2,jl) = gllnid(pstat_gnel(jl))
+         enddo
+
+         ! transfer array
+         call fgslib_crystal_tuple_transfer
+     $        (cr_h,lnelt,LELT,vi,isw,vl,0,t(1,1,1,1,il+1),itmp,2)
+
+         ! test local element number
+         if (lnelt.ne.NELT) then
+            call mntr_abort('Error: pstat_transfer; lnelt /= nelt')
+         endif
+
+         ! sort elements acording to their global number
+         key(1) = 1
+         call fgslib_crystal_tuple_sort
+     $        (cr_h,lnelt,vi,isw,vl,0,t(1,1,1,1,il+1),itmp,key,1)
+      enddo
 
       return
       end subroutine
@@ -727,11 +726,7 @@
       bname = trim(adjustl(session))
 
       ! mark variables to be read
-#ifdef DEBUG
       ifgetx=.true.
-#else
-      ifgetx=.false.
-#endif
       ifgetz=.false.
       ifgetu=.false.
       ifgetw=.false.
@@ -841,9 +836,9 @@
       integer nvec                  ! single field length
       real dudx(lx1*ly1*lz1,lelt,3) ! field derivatives
 !-----------------------------------------------------------------------
-#ifdef DEBUG
+      ! update derivative arrays
       call geom_reset(1)
-#endif
+
       ! initilise vectors
       call rzero(pstat_ruder,lx1**ldim*lelt*pstat_dvar)
       nvec = lx1*ly1*nelt
