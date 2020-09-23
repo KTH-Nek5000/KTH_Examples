@@ -149,7 +149,7 @@
             fcoeff(1)= 2.e4
             fcoeff(2)= 1.e3
             fcoeff(3)= 1.e5
-            uz=UPARAM(1)*mth_ran_dst(il,jl,kl,ieg,xl,fcoeff)
+            uz=UPARAM(1)*mth_ran_dst(ix,iy,iz,ieg,xl,fcoeff)
          else
             uz = 0.0
          endif
