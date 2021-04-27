@@ -39,10 +39,8 @@ LOGLEVEL             = 2                      # Logging threshold for toolboxes
 IFTIMDSCR            = no                     # Write timer description in the summary
 WALLTIME             = 04:00                  # Simulation wall time
 
-[_PSTAT]                # Runtime paramere section for pstat module
-CRD_FNUM             = 1                      # CRD file number
-AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)
-STS_NFILE            = 7                      # Number of stat files
+[_PSTAT3D]                # Runtime paramere section for pstat module
+STS_NFILE            = 2                      # Number of stat files
 STS_STIME            = 0.69968783E+02         # Statistics starting time
 STS_NSTEP            = 10                     # Number of steps between averaging (in sts file)
 

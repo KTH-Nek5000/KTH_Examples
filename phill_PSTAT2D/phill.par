@@ -1,0 +1,49 @@
+#
+# nek parameter file
+#
+[GENERAL] 
+stopAt = numSteps #endTime
+#endTime = 30.0
+numSteps = 1003
+
+dt = -2.0e-04
+timeStepper = bdf3 #char #steady
+variableDt = no
+targetCFL = 0.3
+
+writeControl = timeStep #runTime
+writeInterval = 100  
+
+dealiasing = yes
+filtering = explicit
+filterWeight = 0.02
+filterCutoffRatio = 0.67
+
+[PROBLEMTYPE]
+stressFormulation = no
+variableProperties = no
+
+[PRESSURE]
+residualTol = 1e-8
+residualProj = no
+
+[VELOCITY]
+residualTol = 1e-8
+residualProj = no
+density = 1.0
+viscosity = -700
+advection = yes
+
+[_MONITOR]              # Runtime parameter section for monitor module
+LOGLEVEL             = 2                      # Logging threshold for toolboxes
+IFTIMDSCR            = no                     # Write timer description in the summary
+WALLTIME             = 04:00                  # Simulation wall time
+
+[_PSTAT2D]                # Runtime paramere section for pstat module
+CRD_FNUM             = 1                      # CRD file number
+AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)
+STS_NFILE            = 7                      # Number of stat files
+STS_STIME            = 0.69968783E+02         # Statistics starting time
+STS_NSTEP            = 10                     # Number of steps between averaging (in sts file)
+
+

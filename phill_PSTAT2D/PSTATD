@@ -8,7 +8,7 @@
 !     module id and name
       integer pstat_id
       character*(*) pstat_name
-      parameter(pstat_name='PSTAT')
+      parameter(pstat_name='PSTAT2D')
 
 !     timer id
       integer pstat_tmr_tot_id   ! total time

@@ -38,7 +38,8 @@ To run the code:
 * `ext_cyl_SFD` - nonlinear simulation of the flow past circular cylinder with Selective Frequency Damping to calculate base flow
 * `ext_cyl_ARN` - linear stability tool for spectra calculation with Arnoldi algorithm
 * `ext_cyl_PWI` - linear stability tool, power iteration 
-* `phill_STAT`  - nonlinear simulation of flow over periodic hill to calculate turbulence statistics
-* `phill_PSTAT`  - postprocessing of files produced by `phill_STAT`
+* `phill_STAT`  - nonlinear simulation of flow over periodic hill to calculate turbulence statistics (can be run in 2D or 3D mode)
+* `phill_PSTAT2D`  - two-dimensional postprocessing of files produced by `phill_STAT`
+* `phill_PSTAT3D`  - three-dimensional postprocessing of files produced by `phill_STAT`
 * `phill_TRIP`  - nonlinear simulation of flow over periodic hill with tripping line
 * `pipe_gSyEM`  - generalsed synthetic eddy method for pipe inflow
