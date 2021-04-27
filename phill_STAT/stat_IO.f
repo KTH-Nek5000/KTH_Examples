@@ -35,10 +35,12 @@
       include 'STATD'           ! 
 
       ! local variables
-      logical ifpo_tmp
+      logical ifpo_tmp, ifto_tmp
 !----------------------------------------------------------------------
       ifpo_tmp = ifpo
+      ifto_tmp = ifto
       ifpo=.FALSE.
+      ifto =.TRUE.
 
       ! Fields to outpost: <u>t, <v>t, <w>t, <p>t
       call outpost(stat_ruavg(1,1,1),stat_ruavg(1,1,2),
@@ -85,6 +87,7 @@
      $     stat_ruavg(1,1,43),pr,stat_ruavg(1,1,44),'s11')
 
       ifpo=ifpo_tmp
+      ifto=ifto_tmp
 
       return
       end subroutine      
