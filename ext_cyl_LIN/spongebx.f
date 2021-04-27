@@ -272,13 +272,13 @@
                      if(rtmp.le.xxmin_c) then ! constant; xmin
                         rtmp=spng_str
                      elseif(rtmp.lt.xxmin) then ! fall; xmin
-                        arg = (xxmin-rtmp)/spng_wl(il)
-                        rtmp = mth_stepf(arg)
+                        arg = (xxmin-rtmp)/(spng_wl(il)-spng_dl(il))
+                        rtmp = spng_str*mth_stepf(arg)
                      elseif (rtmp.le.xxmax) then ! zero
                         rtmp = 0.0
                      elseif (rtmp.lt.xxmax_c) then ! rise
-                        arg = (rtmp-xxmax)/spng_wr(il)
-                        rtmp = mth_stepf(arg)
+                        arg = (rtmp-xxmax)/(spng_wr(il)-spng_dr(il))
+                        rtmp = spng_str*mth_stepf(arg)
                      else    ! constant
                         rtmp = spng_str
                      endif
