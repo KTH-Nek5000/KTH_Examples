@@ -7,7 +7,7 @@ stopAt = numSteps #endTime
 numSteps = 1003
 
 dt = -2.0e-04
-timeStepper = bdf3 #char #steady
+timeStepper = bdf3
 variableDt = no
 targetCFL = 0.3
 
@@ -15,9 +15,9 @@ writeControl = timeStep #runTime
 writeInterval = 100  
 
 dealiasing = yes
-filtering = explicit
-filterWeight = 0.02
-filterCutoffRatio = 0.67
+filtering = hpfrt
+filterWeight = 10.0
+filterCutoffRatio = 0.9
 
 [PROBLEMTYPE]
 stressFormulation = no
