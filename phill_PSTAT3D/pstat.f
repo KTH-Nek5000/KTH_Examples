@@ -842,19 +842,19 @@
       nfail = iglsum(nfail,1)
 
 #ifdef DEBUG
-         ! for testing
-         ! to output refinement
-         icalld = icalld+1
-         call io_file_freeid(iunit, ierr)
-         write(str1,'(i3.3)') NID
-         write(str2,'(i3.3)') icalld
-         open(unit=iunit,file='INTfpts.txt'//str1//'i'//str2)
+      ! for testing
+      ! to output refinement
+      icalld = icalld+1
+      call io_file_freeid(iunit, ierr)
+      write(str1,'(i3.3)') NID
+      write(str2,'(i3.3)') icalld
+      open(unit=iunit,file='INTfpts.txt'//str1//'i'//str2)
 
-         write(iunit,*) pstat_nptot, pstat_npt, nfail
-         do il=1,pstat_npt
-            write(iunit,*) il, proc(il), elid(il), rcode(il), dist(il),
-     $       (rst(jl+(il-1)*ldim),jl=1,ldim)
-         enddo
+      write(iunit,*) pstat_nptot, pstat_npt, nfail
+      do il=1,pstat_npt
+         write(iunit,*) il, proc(il), elid(il), rcode(il), dist(il),
+     $        (rst(jl+(il-1)*ldim),jl=1,ldim)
+      enddo
 
          close(iunit)
 #endif
@@ -870,19 +870,19 @@
       enddo
 
 #ifdef DEBUG
-         ! for testing
-         ! to output refinement
-         call io_file_freeid(iunit, ierr)
-         write(str1,'(i3.3)') NID
-         write(str2,'(i3.3)') icalld
-         open(unit=iunit,file='INTavg.txt'//str1//'i'//str2)
+      ! for testing
+      ! to output refinement
+      call io_file_freeid(iunit, ierr)
+      write(str1,'(i3.3)') NID
+      write(str2,'(i3.3)') icalld
+      open(unit=iunit,file='INTavg.txt'//str1//'i'//str2)
 
-         write(iunit,*) pstat_nptot, pstat_npt
-         do il=1,pstat_npt
-            write(iunit,*) il, (pstat_int_avg(il,jl),jl=1,4)
-         enddo
+      write(iunit,*) pstat_nptot, pstat_npt
+      do il=1,pstat_npt
+         write(iunit,*) il, (pstat_int_avg(il,jl),jl=1,4)
+      enddo
 
-         close(iunit)
+      close(iunit)
 #endif
 
       ! Interpolate tmp fields
@@ -893,20 +893,44 @@
       enddo
 
 #ifdef DEBUG
-         ! for testing
-         ! to output refinement
-         call io_file_freeid(iunit, ierr)
-         write(str1,'(i3.3)') NID
-         write(str2,'(i3.3)') icalld
-         open(unit=iunit,file='INTtmp.txt'//str1//'i'//str2)
+      ! for testing
+      ! to output refinement
+      call io_file_freeid(iunit, ierr)
+      write(str1,'(i3.3)') NID
+      write(str2,'(i3.3)') icalld
+      open(unit=iunit,file='INTtmp.txt'//str1//'i'//str2)
 
-         write(iunit,*) pstat_nptot, pstat_npt
-         do il=1,pstat_npt
-            write(iunit,*) il, (pstat_int_tmp(il,jl),jl=1,4)
-         enddo
+      write(iunit,*) pstat_nptot, pstat_npt
+      do il=1,pstat_npt
+         write(iunit,*) il, (pstat_int_tmp(il,jl),jl=1,4)
+      enddo
 
-         close(iunit)
+      close(iunit)
 #endif
+
+      ! Interpolate new fields
+      do il=1,pstat_dvar
+         call fgslib_findpts_eval(ifpts,pstat_int_new (1,il),1,
+     &        rcode,1,proc,1,elid,1,rst,ndim,pstat_npt,
+     &        pstat_runew(1,1,il))
+      enddo
+
+#ifdef DEBUG
+      ! for testing
+      ! to output refinement
+      call io_file_freeid(iunit, ierr)
+      write(str1,'(i3.3)') NID
+      write(str2,'(i3.3)') icalld
+      open(unit=iunit,file='INTnew.txt'//str1//'i'//str2)
+
+      write(iunit,*) pstat_nptot, pstat_npt
+      do il=1,pstat_npt
+         write(iunit,*) il, (pstat_int_new(il,jl),jl=1,4)
+      enddo
+
+      close(iunit)
+#endif
+         
 
       ! finalise interpolation tool
       call fgslib_findpts_free(ifpts)
