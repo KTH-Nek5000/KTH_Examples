@@ -1,4 +1,4 @@
-# Nonlinear simulation of flow over periodic hill to calculate turbulence statistics.
+# Nonlinear simulation of 3D periodic turbulent pipe to calculate turbulence statistics.
 
 This example presents use of turbulence statistics tool.
 
