@@ -42,5 +42,6 @@ To run the code:
 * `phill_PSTAT2D`  - two-dimensional postprocessing of files produced by `phill_STAT`
 * `phill_PSTAT3D`  - three-dimensional postprocessing of files produced by `phill_STAT`
 * `pipe_STAT` - like `phill_STAT` but with preriodic pipe and mesh generated with gmsh
+* `pipe_PSTAT` - like `phill_PSTAT2D` but with preriodic pipe and mesh generated with gmsh
 * `phill_TRIP`  - nonlinear simulation of flow over periodic hill with tripping line
 * `pipe_gSyEM`  - generalsed synthetic eddy method for pipe inflow

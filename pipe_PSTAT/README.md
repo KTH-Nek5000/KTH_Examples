@@ -1,6 +1,6 @@
 # Post processing of turbulence statistics files for 3D periodic pipe flow.
 
-This example presents use of pos processing routines for turbulence statistics tool.
+This example presents use of post processing routines for turbulence statistics tool.
 
 ## Tool list:
 * [frame](https://kth-nek5000.github.io/KTH_Framework/group__frame.html) - backbone of the toolbox
