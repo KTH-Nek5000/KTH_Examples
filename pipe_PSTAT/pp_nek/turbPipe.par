@@ -1,0 +1,46 @@
+#
+# nek parameter file
+#
+[GENERAL]
+stopAt = numSteps
+#endTime = 100.0
+numSteps = 5000
+
+#dt = -3e-03    
+dt = -3e-03
+timeStepper = bdf3 #char #steady
+variableDt = yes
+targetCFL = 0.3
+
+writeControl = timeStep #runTime
+writeInterval = 1000
+
+dealiasing = yes
+filtering = hpfrt
+filterWeight = 10.0
+filterCutoffRatio = 0.9
+
+
+[PROBLEMTYPE]
+equation = incompNS # incompLinNS
+variableProperties = no
+
+[PRESSURE]
+#preconditioner = # Schwarz is default for Nekp4est - this line should be commented0
+residualTol = 1e-6
+residualProj = yes
+
+[VELOCITY]
+residualTol = 1e-8
+residualProj = yes
+density = 1.0
+viscosity = -2650
+advection = yes
+
+
+[_PSTAT]                # Runtime paramere section for pstat module
+CRD_FNUM             = 1                      # CRD file number
+AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)
+STS_NFILE            = 5                      # Number of stat files
+STS_STIME            = 0.1446665908816E+03    # Statistics starting time
+STS_NSTEP            = 10                     # Number of steps between averaging (in sts file)
