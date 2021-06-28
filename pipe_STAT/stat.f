@@ -168,6 +168,42 @@
       return
       end subroutine
 !=======================================================================
+!> @brief Finalise statistics module
+!! @ingroup stat
+!! @note This routine should be called in frame_usr_end
+      subroutine stat_end()
+      implicit none
+
+      include 'SIZE'
+      include 'FRAMELP'
+      include 'STATD'
+
+      ! local variables
+      real ltim
+
+      ! functions
+      real dnekclock
+!-----------------------------------------------------------------------
+      ! make sure all data in the buffer is saved
+      if (stat_atime.gt.0.0) then
+         if (stat_rdim.eq.1) then
+            ltim = dnekclock()
+            call mntr_log(stat_id,lp_inf,'Global sum')
+            call stat_gs_sum
+            ltim = dnekclock() - ltim
+            call mntr_tmr_add(stat_tmr_cmm_id,1,ltim)
+         endif
+
+         ltim = dnekclock()
+         call mntr_log(stat_id,lp_inf,'Writing stat file')
+         call stat_mfo
+         ltim = dnekclock() - ltim
+         call mntr_tmr_add(stat_tmr_io_id,1,ltim)
+      endif
+
+      return
+      end subroutine
+!=======================================================================
 !> @brief Check if module was initialised
 !! @ingroup stat
 !! @return stat_is_initialised
@@ -200,7 +236,7 @@
       ! simple timing
       real ltim
 
-      ! number of steps to bescarded in the simulation beginning
+      ! number of steps to be descarded in the simulation beginning
       ! This is necessary due to multistep restart scheme as 2-3 first steps
       ! are in general repeated from the previous simulation.
       ! It does not produce any problem in case of AMR, as in this case
@@ -774,14 +810,6 @@
 
       ! Compute derivative tensor and normalise pressure
       call user_stat_trnsv(tmpvel,dudx,dvdx,dwdx,slvel,tmppr)
-
-      ! call time series
-      ! adding time series here
-      ! notice I use tmpvel, so the mean pressure is subtracted from
-      ! pressure
-      if (if3d) then
-!          call stat_pts_compute(tmpvel,slvel,tmppr)
-      endif
 
       ! reset varaible counter
       lnvar = 0
