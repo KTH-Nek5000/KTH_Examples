@@ -111,6 +111,9 @@
      $           'SMTHZ'//str,'Smoothing length Z',
      $           rpar_real,0,0.0,.false.,' ')
          endif
+
+         call rprm_rp_reg(trip_lext_id(il),trip_sec_id,'LEXT'//str,
+     $        'Line extension',rpar_log,0,0.0,.false.,' ')
       
          call rprm_rp_reg(trip_rota_id(il),trip_sec_id,'ROTA'//str,
      $        'Rotation angle',rpar_real,0,0.0,.false.,' ')
@@ -180,8 +183,11 @@
             trip_epos(jl,il) = rtmp
             call rprm_rp_get(itmp,rtmp,ltmp,ctmp,trip_smth_id(jl,il),
      $           rpar_real)
-            trip_smth(jl,il) = rtmp
+            trip_smth(jl,il) = abs(rtmp)
          enddo
+         call rprm_rp_get(itmp,rtmp,ltmp,ctmp,trip_lext_id(il),
+     $        rpar_log)
+         trip_lext(il) = ltmp
          call rprm_rp_get(itmp,rtmp,ltmp,ctmp,trip_rota_id(il),
      $        rpar_real)
          trip_rota(il) = rtmp
@@ -191,6 +197,17 @@
          call rprm_rp_get(itmp,rtmp,ltmp,ctmp,trip_tdt_id(il),
      $        rpar_real)
          trip_tdt(il) = rtmp
+      enddo
+
+      ! get sure z position of stating point is lower than ending point position
+      do il=1,trip_nline
+         if (trip_spos(ldim,il).gt.trip_epos(ldim,il)) then
+            do jl=1,LDIM
+               rtmp = trip_spos(jl,il)
+               trip_spos(jl,il) = trip_epos(jl,il)
+               trip_epos(jl,il) = rtmp
+            enddo
+         endif
       enddo
 
       ! get inverse line lengths and smoothing radius
@@ -305,16 +322,18 @@
       real ffn
 !-----------------------------------------------------------------------
       iel=GLLEL(ieg)
-      ffn = 0.0
-      
+
       do il= 1, trip_nline
-         ipos = trip_map(ix,iy,iz,iel,il)
-         ffn = trip_ftrp(ipos,il)*trip_fsmth(ix,iy,iz,iel,il)
-         
-         ffx = ffx - ffn*sin(trip_rota(il))
-         ffy = ffy + ffn*cos(trip_rota(il))
+         ffn = trip_fsmth(ix,iy,iz,iel,il)
+         if (ffn.gt.0.0) then
+            ipos = trip_map(ix,iy,iz,iel,il)
+            ffn = trip_ftrp(ipos,il)*ffn
+
+            ffx = ffx - ffn*sin(trip_rota(il))
+            ffy = ffy + ffn*cos(trip_rota(il))
+         endif
       enddo
-      
+
       return
       end subroutine
 !=======================================================================
@@ -361,16 +380,17 @@
       include 'GEOM'
       include 'TRIPD'
 
-      ! local variables
-      integer npxy, npel, nptot, itmp, jtmp, ktmp, eltmp
-      integer il, jl
-      real xl, yl, xr, yr, rota, rtmp, epsl
-      parameter (epsl = 1.0e-10)
-      
+      ! global memory access
       real lcoord(LX1*LY1*LZ1*LELT)
       common /CTMP0/ lcoord
       integer lmap(LX1*LY1*LZ1*LELT)
       common /CTMP1/ lmap
+
+      ! local variables
+      integer npxy, npel, nptot, itmp, jtmp, ktmp, eltmp, istart
+      integer il, jl
+      real xl, yl, zl, xr, yr, rota, rtmp, ptmp, epsl
+      parameter (epsl = 1.0e-10)
 !-----------------------------------------------------------------------
       npxy = NX1*NY1
       npel = npxy*NZ1
@@ -378,14 +398,31 @@
       
       ! for each line
       do il=1,trip_nline
-      ! Get coordinates and sort them
+         ! reset mapping array
+         call ifill(trip_map(1,1,1,1,il),-1,nptot)
+
+         ! Get coordinates and sort them
          call copy(lcoord,zm1,nptot)
          call sort(lcoord,lmap,nptot)
 
+         ! if we do not extend a line exclude points below line start (z coordinate matters only)
+         ! this cannot be mixed with Gauss profile
+         istart = 1
+         if (.not.trip_lext(il)) then
+            do jl=1,nptot
+               if (lcoord(jl).lt.
+     $              (trip_spos(ldim,il)-3.0*trip_smth(ldim,il))) then
+                  istart = istart+1
+               else
+                  exit
+               endif
+            enddo
+         endif
+
          ! find unique entrances and provide mapping
          trip_npoint(il) = 1
-         trip_prj(trip_npoint(il),il) = lcoord(1)
-         itmp = lmap(1)-1
+         trip_prj(trip_npoint(il),il) = lcoord(istart)
+         itmp = lmap(istart)-1
          eltmp = itmp/npel + 1
          itmp = itmp - npel*(eltmp-1)
          ktmp = itmp/npxy + 1
@@ -393,7 +430,11 @@
          jtmp = itmp/nx1 + 1
          itmp = itmp - nx1*(jtmp-1) + 1
          trip_map(itmp,jtmp,ktmp,eltmp,il) = trip_npoint(il)
-         do jl=2,nptot
+         do jl=istart+1,nptot
+            ! if line is not extended finish at proper position
+            if (.not.trip_lext(il).and.(lcoord(jl).gt.
+     $           (trip_epos(ldim,il)+3.0*trip_smth(ldim,il)))) exit
+
             if((lcoord(jl)-trip_prj(trip_npoint(il),il)).gt.
      $           max(epsl,abs(epsl*lcoord(jl)))) then
                trip_npoint(il) = trip_npoint(il) + 1
@@ -418,6 +459,8 @@
          
          ! get smoothing profile
          rota = trip_rota(il)
+         ! initialize smoothing factor
+         call rzero(trip_fsmth(1,1,1,1,il),nptot)
          
          do jl=1,nptot
             itmp = jl-1
@@ -428,22 +471,37 @@
             jtmp = itmp/nx1 + 1
             itmp = itmp - nx1*(jtmp-1) + 1
 
-            ! rotation
-            xl = xm1(itmp,jtmp,ktmp,eltmp)-trip_spos(1,il)
-            yl = ym1(itmp,jtmp,ktmp,eltmp)-trip_spos(2,il)
+            ! take only mapped points
+            istart = trip_map(itmp,jtmp,ktmp,eltmp,il)
+            if (istart.gt.0) then
 
-            xr = xl*cos(rota)+yl*sin(rota)
-            yr = -xl*sin(rota)+yl*cos(rota)
-            
-            rtmp = (xr*trip_ismth(1,il))**2 + (yr*trip_ismth(2,il))**2
-            ! Gauss
-            !trip_fsmth(itmp,jtmp,ktmp,eltmp,il) = exp(-4.0*rtmp)
-            ! limited support
-            if (rtmp.lt.1.0) then
-               trip_fsmth(itmp,jtmp,ktmp,eltmp,il) =
-     $              exp(-rtmp)*(1-rtmp)**2
-            else
-               trip_fsmth(itmp,jtmp,ktmp,eltmp,il) = 0.0
+               ! rotation
+               xl = xm1(itmp,jtmp,ktmp,eltmp)-trip_spos(1,il)
+               yl = ym1(itmp,jtmp,ktmp,eltmp)-trip_spos(2,il)
+
+               xr = xl*cos(rota)+yl*sin(rota)
+               yr = -xl*sin(rota)+yl*cos(rota)
+
+               rtmp = (xr*trip_ismth(1,il))**2+(yr*trip_ismth(2,il))**2
+               ! do we extend a line beyond its ends
+               if (.not.trip_lext(il)) then
+                  if (trip_prj(istart,il).lt.0.0) then
+                     zl = zm1(itmp,jtmp,ktmp,eltmp)-trip_spos(ldim,il)
+                     rtmp = rtmp+(zl*trip_ismth(ldim,il))**2
+                  elseif(trip_prj(istart,il).gt.1.0) then
+                     zl = zm1(itmp,jtmp,ktmp,eltmp)-trip_epos(ldim,il)
+                     rtmp = rtmp+(zl*trip_ismth(ldim,il))**2
+                  endif
+               endif
+               ! Gauss; cannot be used with lines not extended beyond their ending points
+               !trip_fsmth(itmp,jtmp,ktmp,eltmp,il) = exp(-4.0*rtmp)
+               ! limited support
+               if (rtmp.lt.1.0) then
+                  trip_fsmth(itmp,jtmp,ktmp,eltmp,il) =
+     $                 exp(-rtmp)*(1-rtmp)**2
+               else
+                  trip_fsmth(itmp,jtmp,ktmp,eltmp,il) = 0.0
+               endif
             endif
 
          enddo

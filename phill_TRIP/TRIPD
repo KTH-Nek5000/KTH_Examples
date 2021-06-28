@@ -43,6 +43,8 @@
       integer trip_epos_id(LDIM,trip_nline_max)
       real trip_smth(LDIM,trip_nline_max) !< @var smoothing radius
       integer trip_smth_id(LDIM,trip_nline_max)
+      logical trip_lext(trip_nline_max)    !< @var do we extend a line beyond starting and endig points
+      integer trip_lext_id(trip_nline_max)
       real trip_rota(trip_nline_max)      !< @var elipse rotation angle
       integer trip_rota_id(trip_nline_max)
       integer trip_nmode(trip_nline_max)  !< @var number of Fourier modes
@@ -87,11 +89,11 @@
       common /tripi/ trip_id, trip_tmr_id, trip_sec_id, trip_nline,
      $     trip_nline_id, trip_nmode, trip_nmode_id, trip_tiamp_id,
      $     trip_tdamp_id, trip_tdt_id, trip_spos_id, trip_epos_id,
-     $     trip_smth_id, trip_rota_id, trip_npoint, trip_map,
-     $     trip_seed, trip_ntdt, trip_ntdt_old
+     $     trip_smth_id, trip_lext_id, trip_rota_id, trip_npoint,
+     $     trip_map, trip_seed, trip_ntdt, trip_ntdt_old
 
       common /tripr/ trip_tiamp, trip_tdamp, trip_tdt, trip_spos,
      $     trip_epos, trip_smth, trip_rota, trip_ilngt, trip_ismth,
      $     trip_prj, trip_fsmth, trip_rphs, trip_frcs, trip_ftrp
 
-      common /tripl/ trip_ifinit
+      common /tripl/ trip_ifinit, trip_lext
