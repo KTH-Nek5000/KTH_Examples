@@ -1,14 +1,14 @@
-$(OBJDIR)/frame.o           :frame.f;                                $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrlog_block.o   :mntrlog_block.f MNTRLOGD;               $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrlog.o         :mntrlog.f MNTRLOGD;                     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrtmr_block.o   :mntrtmr_block.f MNTRLOGD MNTRTMRD;      $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrtmr.o         :mntrtmr.f MNTRLOGD MNTRTMRD FRAMELP;    $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/rprm_block.o      :rprm_block.f RPRMD;                     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/rprm.o            :rprm.f RPRMD FRAMELP;                   $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/math_tools.o      :math_tools.f;                           $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/spongebx.o        :spongebx.f SPONGEBXD;                   $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/noisebx.o         :noisebx.f NOISEBXD;                     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/io_tools_block.o  :io_tools_block.f IOTOOLD;               $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/io_tools.o        :io_tools.f IOTOOLD;                     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/chkpoint.o        :chkpoint.f CHKPOINTD;                   $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/chkpt_mstp.o      :chkpt_mstp.f CHKPTMSTPD CHKPOINTD;      $(F77) -c $(FL2) -I./ $< -o $@
+$(OBJDIR)/frame.o           :$(FRAME_SRC)/frame.f;                   $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrlog_block.o   :$(MONITOR_SRC)/mntrlog_block.f;         $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrlog.o         :$(MONITOR_SRC)/mntrlog.f;               $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrtmr_block.o   :$(MONITOR_SRC)/mntrtmr_block.f;         $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrtmr.o         :$(MONITOR_SRC)/mntrtmr.f;               $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/rprm_block.o      :$(RUNPARAM_SRC)/rprm_block.f;           $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/rprm.o            :$(RUNPARAM_SRC)/rprm.f;                 $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/io_tools_block.o  :$(IO_TOOLS_SRC)/io_tools_block.f;       $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/chkpt_mstp.o      :$(CHKPTMS_SRC)/chkpt_mstp.f;            $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/spongebx.o        :$(SPONGE_BOX_SRC)/spongebx.f;           $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/noisebx.o         :$(NOISE_BOX_SRC)/noisebx.f;             $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@

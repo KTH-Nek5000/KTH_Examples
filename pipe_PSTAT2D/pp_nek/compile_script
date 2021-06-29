@@ -12,10 +12,14 @@ function error_quit {
     exit 1
 }
 
+# Add Framework paths
+export TOOLBOX_SRC="../../../Toolbox"
+source ${TOOLBOX_SRC}/toolbox_path.sh
+
 #parameters
 export CASE="turbPipe"
-export NEK_SOURCE_ROOT=""
-export FC="mpifort"
+export NEK_SOURCE_ROOT="../../../Nek5000"
+export FC="mpifort "${TOOLBOX_INC}
 export CC="mpicc"
 export CXX="mpicxx"
 export CFLAGS=""

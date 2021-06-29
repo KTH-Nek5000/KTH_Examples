@@ -12,10 +12,14 @@ function error_quit {
     exit 1
 }
 
-#parameters
+# Add Framework paths
+export TOOLBOX_SRC="../../Toolbox"
+source ${TOOLBOX_SRC}/toolbox_path.sh
+
+# Nek5000 parameters
 export CASE="phill"
 export NEK_SOURCE_ROOT="../../Nek5000"
-export FC="mpifort"
+export FC="mpifort "${TOOLBOX_INC}
 export CC="mpicc"
 export CFLAGS=""
 export PPLIST=""

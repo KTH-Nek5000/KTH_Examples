@@ -1,11 +1,11 @@
-$(OBJDIR)/frame.o           :frame.f FRAMELP;                        $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrlog_block.o   :mntrlog_block.f MNTRLOGD;               $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrlog.o         :mntrlog.f MNTRLOGD;                     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrtmr_block.o   :mntrtmr_block.f MNTRLOGD MNTRTMRD;      $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/mntrtmr.o         :mntrtmr.f MNTRLOGD MNTRTMRD FRAMELP;    $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/rprm_block.o      :rprm_block.f RPRMD;                     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/rprm.o            :rprm.f RPRMD FRAMELP;                   $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/io_tools_block.o  :io_tools_block.f IOTOOLD;               $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/io_tools.o        :io_tools.f IOTOOLD;                     $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/pstat.o           :pstat.f PSTATD FRAMELP;                 $(F77) -c $(FL2) -I./ $< -o $@
-$(OBJDIR)/pstat_IO.o        :pstat_IO.f PSTATD FRAMELP;              $(F77) -c $(FL2) -I./ $< -o $@
+$(OBJDIR)/frame.o           :$(FRAME_SRC)/frame.f;                   $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrlog_block.o   :$(MONITOR_SRC)/mntrlog_block.f;         $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrlog.o         :$(MONITOR_SRC)/mntrlog.f;               $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrtmr_block.o   :$(MONITOR_SRC)/mntrtmr_block.f;         $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/mntrtmr.o         :$(MONITOR_SRC)/mntrtmr.f;               $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/rprm_block.o      :$(RUNPARAM_SRC)/rprm_block.f;           $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/rprm.o            :$(RUNPARAM_SRC)/rprm.f;                 $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/io_tools_block.o  :$(IO_TOOLS_SRC)/io_tools_block.f;       $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/pstat.o           :${PSTAT2D_SRC}/pstat.f ./PSTATD;        $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
+$(OBJDIR)/pstat_IO.o        :${PSTAT2D_SRC}/pstat_IO.f ./PSTATD;     $(F77) -c $(FL2) -I./ $(TOOLBOX_INC) $< -o $@
