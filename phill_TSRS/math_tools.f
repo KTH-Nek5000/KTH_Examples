@@ -245,7 +245,7 @@
 !! @param[out]   istop     upper loop bound
 !! @param[out]   iskip     stride
 !! @param[in]    iedg      edge number
-!! @param[in]    nx,ny,xz  element size
+!! @param[in]    nx,ny,nz  element size
       subroutine math_edgind(istart,istop,iskip,iedg,nx,ny,nz)
       implicit none
       include 'SIZE'
@@ -291,7 +291,7 @@
 !! @param[out]   vec       vector containg edge values
 !! @param[in]    edg       edge number
 !! @param[in]    vfld      pointer to singe element in the field
-!! @param[in]    nx,ny,xz  element size
+!! @param[in]    nx,ny,nz  element size
       subroutine math_etovec(vec,edg,vfld,nx,ny,nz)
       implicit none
 

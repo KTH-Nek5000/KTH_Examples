@@ -89,7 +89,7 @@
       real fcoeff(3)            ! coefficients for random distribution
  
 !     functions
-      real mth_ran_dst
+      real math_ran_dst
       
       xl(1) = X
       xl(2) = Y
@@ -99,17 +99,17 @@
       fcoeff(1)=  3.0e4
       fcoeff(2)= -1.5e3
       fcoeff(3)=  0.5e5
-      ux=1.0+eps*mth_ran_dst(ix,iy,iz,ieg,xl,fcoeff)
+      ux=1.0+eps*math_ran_dst(ix,iy,iz,ieg,xl,fcoeff)
 
       fcoeff(1)=  2.3e4
       fcoeff(2)=  2.3e3
       fcoeff(3)= -2.0e5
-      uy=eps*mth_ran_dst(ix,iy,iz,ieg,xl,fcoeff)
+      uy=eps*math_ran_dst(ix,iy,iz,ieg,xl,fcoeff)
          
       fcoeff(1)= 2.e4
       fcoeff(2)= 1.e3
       fcoeff(3)= 1.e5
-      uz=eps*mth_ran_dst(il,jl,kl,ieg,xl,fcoeff)
+      uz=eps*math_ran_dst(il,jl,kl,ieg,xl,fcoeff)
 
       return
       end

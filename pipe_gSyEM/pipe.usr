@@ -223,23 +223,23 @@
       parameter (yp_cut=0.45)
       
       ! functions
-      real mth_ran_rng
+      real math_ran_rng
 !-----------------------------------------------------------------------
       ! get random position with respect to the begining of coordinate system
       ! this must be adapted to considered amily inflow shape (in current example circle)
-      rho = yp_cut*sqrt(mth_ran_rng(0.0,1.0))  
-      theta = mth_ran_rng(0.,2.0*pi)
+      rho = yp_cut*sqrt(math_ran_rng(0.0,1.0))  
+      theta = math_ran_rng(0.,2.0*pi)
 
       vrtmp(1) = rho*cos(theta)
       vrtmp(2) = rho*sin(theta)
       if (ifinit) then
-         vrtmp(ldim) = mth_ran_rng(-gsem_bext(nfam),gsem_bext(nfam))
+         vrtmp(ldim) = math_ran_rng(-gsem_bext(nfam),gsem_bext(nfam))
       else
          vrtmp(ldim) = -gsem_bext(nfam)
       endif
 
       ! rotate coordinates with respect to family normal
-      call mth_rot3Da(epos,vrtmp,
+      call math_rot3Da(epos,vrtmp,
      $        gsem_raxs(1,nfam),gsem_rang(nfam))
 
       ! shift vertex position with respect to family centre
@@ -250,7 +250,7 @@
 
       ! get random orientation
       do il=1,ldim
-         rho = mth_ran_rng(0.0,1.0)
+         rho = math_ran_rng(0.0,1.0)
          if (rho.gt.0.5) then
             eps(il) = 1
          else
