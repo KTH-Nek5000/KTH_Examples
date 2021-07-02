@@ -26,6 +26,13 @@ export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_blo
 USR+=" chkpoint.o chkpt_mstp.o sfd.o"
 export USR_LFLAGS=""
 
+
+# Change a possible relative path to an absolute one; e.g. parRSB doesn't like a relative path
+# This is just a hack
+cd ${NEK_SOURCE_ROOT}
+NEK_SOURCE_ROOTGGq=`pwd`
+cd -
+
 # arguments
 args=("$@")
 argsnr=$#

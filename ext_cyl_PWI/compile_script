@@ -27,6 +27,12 @@ USR+=" math_tools.o spongebx.o io_tools_block.o io_tools.o chkpoint.o chkpt_mstp
 USR+=" conht_tools.o powerit.o"
 export USR_LFLAGS=""
 
+# Change a possible relative path to an absolute one; e.g. parRSB doesn't like a relative path
+# This is just a hack
+cd ${NEK_SOURCE_ROOT}
+NEK_SOURCE_ROOTGGq=`pwd`
+cd -
+
 # arguments
 args=("$@")
 argsnr=$#
