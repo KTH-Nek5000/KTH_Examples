@@ -30,7 +30,7 @@ export USR_LFLAGS="-L./ -lparpack_MPI-gcc_rst -larpack_gcc_rst"
 # Change a possible relative path to an absolute one; e.g. parRSB doesn't like a relative path
 # This is just a hack
 cd ${NEK_SOURCE_ROOT}
-NEK_SOURCE_ROOTGGq=`pwd`
+NEK_SOURCE_ROOT=`pwd`
 cd -
 
 # arguments
