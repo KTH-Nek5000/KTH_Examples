@@ -25,7 +25,7 @@
       integer pstat_sec_id
       
 !     parameter section
-      integer pstat_crd_fnr       !< crd file number
+      integer pstat_crd_fnr       !< c2D file number
       integer pstat_crd_fnr_id
       integer pstat_amr_irnr      !< number of initial refinemnts
       integer pstat_amr_irnr_id

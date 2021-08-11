@@ -40,7 +40,7 @@ IFTIMDSCR            = no                     # Write timer description in the s
 WALLTIME             = 04:00                  # Simulation wall time
 
 [_PSTAT2D]                # Runtime paramere section for pstat module
-CRD_FNUM             = 1                      # CRD file number
+C2D_FNUM             = 1                      # c2D file number
 AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)
 STS_NFILE            = 7                      # Number of stat files
 STS_STIME            = 0.69968783E+02         # Statistics starting time
