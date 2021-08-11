@@ -24,7 +24,7 @@ export CC="mpicc"
 export CFLAGS=""
 export PPLIST=""
 export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o"
-USR+=" pstat.o pstat_IO.o"
+USR+=" pstat3D.o pstat3D_IO.o"
 export USR_LFLAGS=""
 
 # Change a possible relative path to an absolute one; e.g. parRSB doesn't like a relative path

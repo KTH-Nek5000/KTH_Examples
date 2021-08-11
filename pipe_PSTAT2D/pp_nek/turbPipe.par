@@ -38,8 +38,8 @@ viscosity = -2650
 advection = yes
 
 
-[_PSTAT]                # Runtime paramere section for pstat module
-CRD_FNUM             = 1                      # CRD file number
+[_PSTAT2D]              # Runtime paramere section for pstat module
+C2D_FNUM             = 1                      # c2D file number
 AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)
 STS_NFILE            = 5                      # Number of stat files
 STS_STIME            = 0.1446665908816E+03    # Statistics starting time

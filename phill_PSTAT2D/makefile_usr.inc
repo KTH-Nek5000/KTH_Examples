@@ -7,5 +7,5 @@ $(OBJDIR)/rprm_block.o      :$(RUNPARAM_SRC)/rprm_block.f;           $(F77) -c $
 $(OBJDIR)/rprm.o            :$(RUNPARAM_SRC)/rprm.f;                 $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/io_tools_block.o  :$(IO_TOOLS_SRC)/io_tools_block.f;       $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/pstat.o           :${PSTAT2D_SRC}/pstat.f ./PSTATD;        $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/pstat_IO.o        :${PSTAT2D_SRC}/pstat_IO.f ./PSTATD;     $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/pstat2D.o         :${PSTAT2D_SRC}/pstat2D.f;               $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/pstat2D_IO.o      :${PSTAT2D_SRC}/pstat2D_IO.f;            $(F77) -c $(FL2) $< -o $@

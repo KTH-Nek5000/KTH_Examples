@@ -50,7 +50,7 @@
       call frame_monitor
 
 !     post processing step
-      call pstat_main()
+      call pstat2d_main()
       
 !     finish simulation
       LASTEP=1
@@ -120,7 +120,7 @@
 !-----------------------------------------------------------------------
 !     register modules
       call io_register()
-      call pstat_register()
+      call pstat2d_register()
 
       return
       end subroutine
@@ -134,7 +134,7 @@
       include 'SOLN'
 !-----------------------------------------------------------------------
 !     initialise modules
-      call pstat_init()
+      call pstat2d_init()
 
       return
       end subroutine
