@@ -26,7 +26,7 @@ As detailed below, by running a set of `Python` scripts located in [`./pp_Python
 ## Details of Step 2
 * In `./pp_Python/modules/` run `writer_int_pos.py` to create `int_pos` which contains a set of points at which the gathered statistics are to be interpolated. `int_pos` will be created in `./pp_Nek/DATA/`. Before running the script, the parameters in `./pp_Python/inputs_phill_pp.in` should be set. The "Fluid Properties" and "Hill Geometry" parameters should be the same as what used in the flow simulation (i.e. in Step 1). Currently two sets of interpolation points are considered: 
   * (P-i) A set of streamwise locations `xpvrt` is considered at each `npvrt` points are created in the y-direction between the two walls. 
-  * (P-ii)Adjacent to the lower wall and between the two hills,  `npwall` points are created in the streamwise direction.
+  * (P-ii) Adjacent to the lower wall and between the two hills,  `npwall` points are created in the streamwise direction.
 
 * Copy `stsphill0.f*****` and `c2dphill0.f*****` files to `./pp_Nek/DATA/`.
 
@@ -40,8 +40,7 @@ As a result, `int_fld` is generated which should then be moved to `/DATA/`.
 ## Details of Step 3
 To extract the profiles of the turbulence statistics, the `Python` scripts in `./pp_Python/` are used:
 
-  * The whole workflow is implemented in `main_pHill_PP.py`. Therefore, one can only run `python main_pHill_PP`. For different functions called in `main_pHill_PP.py`, see scripts in `/modules/`.
-  * The only variable to set in `main_pHill_PP.py` is `data_path` which specifies where `int_fld` is located.
-  * The input parameters and information about the interpolation points are read from `/pp/inputs_phill_pp.in`. 
+  * The whole workflow is implemented in `main_pHill_PP.py`. Therefore, one can only run `python main_pHill_PP`. For different functions called in `main_pHill_PP.py`, see the scripts in `/modules/`.
+  * The input parameters and information about the interpolation points are read from `/pp_Python/inputs_phill_pp.in`. 
   * The resulting database `dbProfs` and `dbWall` contain the turbulence statistics at the (P-i) and (P-ii) interpolation points, respectively, see above. For the complete set of quantities in these databases, print `dbProfs.keys()`.
   * A set of example plots are provided at the end of `main_pHill_PP.py`.
