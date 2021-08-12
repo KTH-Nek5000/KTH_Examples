@@ -24,6 +24,8 @@ Each example consists of:
 To compile the code:
 * make sure `compile_script` has set execute bit (`chmode u+x compile_script`)
 * edit `compile_script` to set proper compilers
+* if you have not cloned this repo as a submodule of [KTH_Framework](https://github.com/KTH-Nek5000/KTH_Framework), make sure that
+in the `compile_script` the `TOOLBOX_SRC` variable points to the root of KTH_Toolbox, and `NEK_SOURCE_ROOT` points to the root of Nek5000.
 * clean directory `./compile_script --clean` (with the first compilation on a given machine clean the libraries as well)
 * build the code `./compile_script --all`
 
