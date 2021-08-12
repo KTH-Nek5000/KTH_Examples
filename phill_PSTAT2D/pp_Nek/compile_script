@@ -13,7 +13,7 @@ function error_quit {
 }
 
 # Add Framework paths
-export TOOLBOX_SRC="../../Toolbox"
+export TOOLBOX_SRC="../../KTH_Toolbox"
 source ${TOOLBOX_SRC}/toolbox_path.sh
 
 # Nek5000 parameters

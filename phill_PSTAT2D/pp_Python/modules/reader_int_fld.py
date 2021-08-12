@@ -1,11 +1,12 @@
-# Example script for reading int_fld data
-# Kept similar to pymech
+################
+# Read `int_fld` 
+################
+
 import struct
 import numpy as np
 
 class point:
     """class defining point variables"""
-
     def __init__(self,ldim,nstat,nderiv):
         self.pos = np.zeros((ldim))
         self.stat = np.zeros((nstat))
@@ -13,7 +14,6 @@ class point:
 
 class pset:
     """class containing data of the point collection"""
-
     def __init__(self,ldim,nstat,nderiv,npoints):
         self.ldim = ldim
         self.nstat = nstat
@@ -149,20 +149,8 @@ def print_point_data(data,il):
     print('Point data, npt = {0}'.format(il+1))
     lptn = data.pset[il]
     data_pos = getattr(lptn,'pos')
-    print(data_pos)
+    print('x,y: ',data_pos)
     data_sts = getattr(lptn,'stat')
-    print(data_sts)
+    print('stat data: ',data_sts,data_sts.size)
     data_drv = getattr(lptn,'deriv')
-    print(data_drv)
-
-if __name__ == "__main__":
-    fname = 'int_fld'
-    data = read_int_fld(fname)
-
-    print_sim_data(data)
-
-    #for testing
-    for il in range(5):
-        print_point_data(data,il)
-
-    # place for operations
+    print('deriv data: ',data_drv,data_drv.size)

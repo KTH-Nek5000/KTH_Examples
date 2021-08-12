@@ -15,9 +15,9 @@ writeControl = timeStep #runTime
 writeInterval = 100  
 
 dealiasing = yes
-filtering = explicit
-filterWeight = 0.02
-filterCutoffRatio = 0.67
+filtering = hpfrt
+filterWeight = 10
+filterCutoffRatio = 0.9
 
 [PROBLEMTYPE]
 stressFormulation = no

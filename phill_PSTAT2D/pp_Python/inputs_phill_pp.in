@@ -1,0 +1,16 @@
+# Input parameters for post-processing of the statistics of the periodic hill case
+ 
+[Fluid Properties]
+nu = 700     #viscosity (what is set in the simulation)
+rho = 1.0     #density (what is used in the simulation)
+
+[Periodic Hill Geomtery]
+h = 1.0       #height of the hills
+w = 1.929     #domain width (in the spanwise direction)
+l = 9.0       #domain length
+hMax = 3.035  #maximum height of the domain (measured from the bottom wall)
+
+[Interpolating Mesh]
+xpvrt = 0.05 0.5 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 8.5  #streamwise locations at which profiles are extracted
+npvrt = 540    #number of interpolating points on each profile
+npwall = 1080  #number of interpolating points on the lower wall
