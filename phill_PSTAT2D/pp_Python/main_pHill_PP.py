@@ -1,7 +1,7 @@
 ###########################################################
 # Post-processing of the 2D statistics of the periodic hill 
 ###########################################################
-# Salehr Rezaeiravesh, salehr@kth.se
+# Saleh Rezaeiravesh, salehr@kth.se
 # Daniele Massaro, dmassaro@kth.se
 #----------------------------------------------------------
 
