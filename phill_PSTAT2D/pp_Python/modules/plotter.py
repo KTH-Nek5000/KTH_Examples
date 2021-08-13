@@ -69,4 +69,28 @@ def profiles_xpvrt(dbProfs,qoiName,zoomFactor=1.):
     plt.yticks(fontsize=16)
     plt.show()
 
+def profiles_wall(dbWall,qoiName,zoomFactor=1.):
+    """
+    Plot the profiles of different time-averaged quantities at 'npwall' points adjacent 
+    to a part of the lower wall.
 
+    Args:
+       `dbWall`: dictionary of the post-processed statistics
+       `qoiName`: key of the quantity whose profile is plotted
+       `zoomFactor`: float, factor by which the profiles are magnified for better visibility
+    """
+    #check if the qoiName is valid
+    if qoiName not in dbWall.keys():
+       print('Available Quantities:',dbWall.keys())
+       raise KeyError("%s is not a valid quantity!" %qoiName)
+
+    #plot
+    plt.figure(figsize=(12,5))
+    plt.plot(dbWall['x'],dbWall[qoiName])
+    plt.xlabel('x',fontsize=16)
+    plt.ylabel(qoiName,fontsize=16)
+    plt.title('Data at y=%g' %dbWall['y'][0])
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.grid(alpha=0.3)
+    plt.show()

@@ -45,3 +45,5 @@ dbWall=turbStats.comp(dbWall_in,nu,rho)     #along a part of the bottom wall of 
 plotter.profiles_xpvrt(dbProfs,qoiName='TKE',zoomFactor=10)
 plotter.profiles_xpvrt(dbProfs,qoiName='U',zoomFactor=1)
 plotter.profiles_xpvrt(dbProfs,qoiName='uv',zoomFactor=10)
+
+plotter.profiles_wall(dbWall,qoiName='dUdy',zoomFactor=1)
