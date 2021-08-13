@@ -7,7 +7,7 @@
 * [monitor](https://kth-nek5000.github.io/KTH_Framework/group__monitor.html) - monitoring tool: logging and timing
 * [runparam](https://kth-nek5000.github.io/KTH_Framework/group__runparam.html) - runtime parameters
 * [io_tool](https://kth-nek5000.github.io/KTH_Framework/group__io__tools.html) - simple I/O tools
-* [pstat2d](https://kth-nek5000.github.io/KTH_Framework/group__postpr.html)- post processing for turbulence statistics tool
+* [pstat2d](https://kth-nek5000.github.io/KTH_Framework/group__pstat2d.html)- post processing for turbulence statistics tool
 
 ## Overview
 The periodic hill is a 3D case with the periodic condition applied to both streamwise (x) and spanwise (z) directions. The flow statistics are computed by averaging over time and z-direction.  As a result, the final statistics are 2D and a function of x and y. 

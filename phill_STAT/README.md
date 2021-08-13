@@ -10,5 +10,5 @@ This example presents use of turbulence statistics tool.
 * [checkpoint](https://kth-nek5000.github.io/KTH_Framework/group__chkpoint.html) - checkpointing main interface
 * [mstep](https://kth-nek5000.github.io/KTH_Framework/group__chkpoint__mstep.html) - multi-step checkpointing
 * [math](https://kth-nek5000.github.io/KTH_Framework/group__math.html) - simple math tools
-* [map2D] - 3D to 2D grid mapping for 2D-extruded meshes
-* [stat] - turbulence statistics tool
+* [map2D](https://kth-nek5000.github.io/KTH_Framework/group__map2d.html) - 3D to 2D grid mapping for 2D-extruded meshes
+* [stat](https://kth-nek5000.github.io/KTH_Framework/group__stat.html) - turbulence statistics tool
