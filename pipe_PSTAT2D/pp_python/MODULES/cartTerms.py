@@ -325,12 +325,12 @@ def comp(db,Nx,Ny,nu,rho):
     PSyz = 1.0/rho*(pdvdz+pdwdy)
 
 #   Construct velocity-pressure-gradient-tensor
-    Pixx = -1.0/rho*(PTxx - PSxx)
-    Piyy = -1.0/rho*(PTyy - PSyy)
-    Pizz = -1.0/rho*(PTzz - PSzz)
-    Pixy = -1.0/rho*(PTxy - PSxy)
-    Pixz = -1.0/rho*(PTxz - PSxz)
-    Piyz = -1.0/rho*(PTyz - PSyz)
+    Pixx = -(PTxx - PSxx)
+    Piyy = -(PTyy - PSyy)
+    Pizz = -(PTzz - PSzz)
+    Pixy = -(PTxy - PSxy)
+    Pixz = -(PTxz - PSxz)
+    Piyz = -(PTyz - PSyz)
 
 #   Budget for each component of the Reynolds stress tensor 
 #   Without mean convection
