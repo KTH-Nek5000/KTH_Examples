@@ -124,6 +124,8 @@ c     perturb
       kz   = 23
       kth  = 13
 
+      th = atan2(y,x)
+
       xL1=(2.0*PI)
       zL1=ZLENPIPE
       alpha = kz * 2*PI/zL1
