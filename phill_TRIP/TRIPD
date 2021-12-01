@@ -74,7 +74,7 @@
       integer trip_seed(trip_nline_max)
 
 !     number of tripping time intervals
-      integer trip_ntdt, trip_ntdt_old
+      integer trip_ntdt(trip_nline_max), trip_ntdt_old(trip_nline_max)
       
 !     set of random phases (static, current and prevoious)
       real trip_rphs(trip_nmode_max,trip_nset_max,trip_nline_max)
