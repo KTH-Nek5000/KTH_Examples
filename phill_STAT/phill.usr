@@ -54,7 +54,7 @@
 !     save/load files for full-restart
       call chkpt_main
 
-!     for tripping
+!     for statistics
       call stat_avg
 
 !     finalise framework
