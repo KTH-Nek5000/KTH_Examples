@@ -42,7 +42,8 @@ def comp(dbCart,Nx,Ny,nu,rho):
 #   Transpose the imported data tensors
     U = np.transpose(dbCart['U']); V = np.transpose(dbCart['V']); W = np.transpose(dbCart['W'])
     uu = np.transpose(dbCart['uu']); uv = np.transpose(dbCart['uv']); uw = np.transpose(dbCart['uw']); vv = np.transpose(dbCart['vv']); vw = np.transpose(dbCart['vw'])
-    ww = np.transpose(dbCart['ww']) 
+    ww = np.transpose(dbCart['ww'])
+    P = dbCart['P']; P = np.reshape(P,[nTh,nR],'F')
     dUdx = np.transpose(dbCart['dUdx']); dUdy = np.transpose(dbCart['dUdy']); dUdz = np.transpose(dbCart['dUdz'])
     dVdx = np.transpose(dbCart['dVdx']); dVdy = np.transpose(dbCart['dVdy']); dVdz = np.transpose(dbCart['dVdz'])
     dWdx = np.transpose(dbCart['dWdx']); dWdy = np.transpose(dbCart['dWdy']); dWdz = np.transpose(dbCart['dWdz']) 
@@ -72,7 +73,7 @@ def comp(dbCart,Nx,Ny,nu,rho):
 
 
 #   Initialisation rotated quantities. The variables zz_ are zz after rotation
-    r1 = np.zeros((nTh,nR))
+    r1 = np.zeros((nTh,nR)); Pr_m = np.zeros((nR))
     Ur = np.zeros((nTh,nR)); Ut = np.zeros((nTh,nR)); Uz = np.zeros((nTh,nR))
     urur = np.zeros((nTh,nR)); urut = np.zeros((nTh,nR)); uruz = np.zeros((nTh,nR)); utut = np.zeros((nTh,nR)); uzuz = np.zeros((nTh,nR)); utuz = np.zeros((nTh,nR))
     dUrdr = np.zeros((nTh,nR)); dUrdt = np.zeros((nTh,nR)); dUrdz = np.zeros((nTh,nR)); dUtdr = np.zeros((nTh,nR)); dUtdt = np.zeros((nTh,nR)); dUtdz = np.zeros((nTh,nR))
@@ -109,7 +110,10 @@ def comp(dbCart,Nx,Ny,nu,rho):
           prod = R*U_tens 
           Ur[i,jj] = prod[0]
           Ut[i,jj] = prod[1]
-          Uz[i,jj] = prod[2]  
+          Uz[i,jj] = prod[2]
+
+          # Mean Pressure. Tensor of Rank 0.
+          Pr_m[j] = np.mean(P[:,j]) 
 
           # Reynolds stress tensor. Tensors of Rank 2.
           S = np.matrix([[uu[jj,i], uv[jj,i], uw[jj,i]], [uv[jj,i], vv[jj,i], vw[jj,i]], [uw[jj,i], vw[jj,i], ww[jj,i]]])          
@@ -513,6 +517,22 @@ def comp(dbCart,Nx,Ny,nu,rho):
     for i in range(0,nR):
        F.write("%g\t%g\t%g\t%g\t %g\t%g\t%g\t%g \n" % \
                (r_[i]*ReTau, Prz_m[i]*fac, Trz_m[i]*fac, PSrz_m[i]*fac, PTrz_m[i]*fac, VDrz_m[i]*fac, Drz_m[i]*fac, Crz_m[i]*fac) )
+    F.close()
+
+    #Pressure
+    fileName = 'turbPipe_pressure.txt'
+    F = open(fileName,'w')
+    F.write("# Postprocessed results of turbulent pipe flow \n")
+    F.write("# Pressure \n")
+    F.write("# ------------------------------------------------------------------\n")
+    F.write("# uTau = %g \n" % uTau)
+    F.write("# nu = %g \n"   % nu)
+    F.write("# ------------------------------------------------------------------\n")
+    F.write("# r\t P\t  \n")
+    F.write("# ------------------------------------------------------------------\n")
+    for i in range(0,nR):
+       F.write("%g\t%g\t   \n" % \
+               (r_[i], Pr_m[i]) )
     F.close()
 
 
