@@ -187,7 +187,6 @@ c     perturb
       include 'FRAMELP'
 !-----------------------------------------------------------------------
 !     register modules
-      call io_register
       call chkpt_register
       call stat_register
 

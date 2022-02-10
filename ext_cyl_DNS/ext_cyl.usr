@@ -251,7 +251,6 @@
       include 'FRAMELP'
 !-----------------------------------------------------------------------
 !     register modules
-      call io_register
       call chkpt_register
       call spng_register
       call nseb_register

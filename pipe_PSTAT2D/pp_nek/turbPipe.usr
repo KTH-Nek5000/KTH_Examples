@@ -119,7 +119,6 @@
       include 'FRAMELP'
 !-----------------------------------------------------------------------
 !     register modules
-      call io_register()
       call pstat2d_register()
 
       return

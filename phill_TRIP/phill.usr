@@ -342,7 +342,6 @@ c-----------------------------------------------------------------------
       include 'FRAMELP'
 !-----------------------------------------------------------------------
 !     register modules
-      call io_register
       call chkpt_register
       call trip_register
 
