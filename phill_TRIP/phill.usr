@@ -28,7 +28,7 @@
       ffz = 0.0
 
 !     tripping
-      call trip_forcing(ffx,ffy,ffz,ix,iy,iz,ieg) 
+      call tripl_forcing(ffx,ffy,ffz,ix,iy,iz,ieg) 
 
       return
       end
@@ -58,7 +58,7 @@
       call chkpt_main
 
 !     for tripping
-      call trip_update
+      call tripl_update
 
 !     finalise framework
       if (ISTEP.eq.NSTEPS.or.LASTEP.eq.1) then
@@ -343,7 +343,7 @@ c-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 !     register modules
       call chkpt_register
-      call trip_register
+      call tripl_register
 
       return
       end subroutine
@@ -358,7 +358,7 @@ c-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 !     initialise modules
       call chkpt_init
-      call trip_init
+      call tripl_init
 
       return
       end subroutine

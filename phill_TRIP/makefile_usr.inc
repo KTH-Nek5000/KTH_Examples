@@ -10,4 +10,4 @@ $(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/chkpt_mstp.o      :$(CHKPTMS_SRC)/chkpt_mstp.f;            $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/trip.o            :$(TRIP_LINE_SRC)/trip.f ./TRIPD;        $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/tripl.o           :$(TRIPL_SRC)/tripl.f ./TRIPLD;          $(F77) -c $(FL2) $< -o $@
