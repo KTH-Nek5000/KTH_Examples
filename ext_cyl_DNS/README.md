@@ -10,5 +10,5 @@ This example presents number of tools for DNS including framework, restarting fr
 * [checkpoint](https://kth-nek5000.github.io/KTH_Framework/group__chkpoint.html) - checkpointing main interface
 * [mstep](https://kth-nek5000.github.io/KTH_Framework/group__chkpoint__mstep.html) - multi-step checkpointing
 * [math](https://kth-nek5000.github.io/KTH_Framework/group__math.html) - simple math tools
-* [noise_box](https://kth-nek5000.github.io/KTH_Framework/group__noise__box.html) - white noise added to velocity
+* [nseb](https://kth-nek5000.github.io/KTH_Framework/group__noise__box.html) - white noise added to velocity
 * [sponge_box](https://kth-nek5000.github.io/KTH_Framework/group__sponge__box.html) - sponge/fringe for simple box meshes

@@ -11,4 +11,4 @@ $(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $
 $(OBJDIR)/chkpt_mstp.o      :$(CHKPTMS_SRC)/chkpt_mstp.f;            $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/spongebx.o        :$(SPONGE_BOX_SRC)/spongebx.f;           $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/noisebx.o         :$(NOISE_BOX_SRC)/noisebx.f;             $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/nseb.o            :$(NSEB_SRC)/nseb.f;                     $(F77) -c $(FL2) $< -o $@
