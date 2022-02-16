@@ -51,7 +51,7 @@
 
       call chkpt_main           ! save/load files for full-restart
       
-      call gsem_main            ! synthetic eddy method
+      call gsyem_main            ! synthetic eddy method
 
       ntot=nx1*ny1*nz1*nelv
       ubar = glsc2(vz,bm1,ntot)/volvm1
@@ -165,7 +165,7 @@
 !-----------------------------------------------------------------------
 !     register modules
       call chkpt_register
-      call gsem_register
+      call gsyem_register
 
       return
       end subroutine
@@ -179,7 +179,7 @@
 !-----------------------------------------------------------------------
 !     initialise modules
       call chkpt_init
-      call gsem_init
+      call gsyem_init
 
       return
       end subroutine
@@ -232,19 +232,19 @@
       vrtmp(1) = rho*cos(theta)
       vrtmp(2) = rho*sin(theta)
       if (ifinit) then
-         vrtmp(ldim) = math_ran_rng(-gsem_bext(nfam),gsem_bext(nfam))
+        vrtmp(ldim) = math_ran_rng(-gsyem_bext(nfam),gsyem_bext(nfam))
       else
-         vrtmp(ldim) = -gsem_bext(nfam)
+        vrtmp(ldim) = -gsyem_bext(nfam)
       endif
 
       ! rotate coordinates with respect to family normal
       call math_rot3Da(epos,vrtmp,
-     $        gsem_raxs(1,nfam),gsem_rang(nfam))
+     $        gsyem_raxs(1,nfam),gsyem_rang(nfam))
 
       ! shift vertex position with respect to family centre
       ! notice; rotation must be done first
       do il=1,ldim
-        epos(il) = epos(il) + gsem_bcrd(il,nfam)
+        epos(il) = epos(il) + gsyem_bcrd(il,nfam)
       enddo
 
       ! get random orientation
