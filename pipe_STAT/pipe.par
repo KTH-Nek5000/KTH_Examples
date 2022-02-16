@@ -51,6 +51,7 @@ CHKPINTERVAL         = 250                    # Checkpiont saving frequency (num
 #
 [_STAT]             # Runtime paramere section for statistics module
 AVSTEP               = 10
+SKSTEP               = 2
 IOSTEP               = 50
 
 
