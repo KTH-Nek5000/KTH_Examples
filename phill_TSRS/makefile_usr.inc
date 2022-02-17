@@ -10,6 +10,7 @@ $(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $
 $(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/chkpt_mstp.o      :$(CHKPTMS_SRC)/chkpt_mstp.f;            $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/comm_mpi_wrp.o    :$(COMM_SRC)/comm_mpi_tool.f;            $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/tsrs.o            :$(TSRS_SRC)/tsrs.f ./TSRSD;             $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/tsrs_IO.o         :$(TSRS_SRC)/tsrs_IO.f ./TSRSD;          $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/pts_redistribute.o  :$(TSRS_SRC)/pts_redistribute.f ./TSRSD;  $(F77) -c $(FL2) $< -o $@

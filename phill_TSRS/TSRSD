@@ -28,6 +28,8 @@
 !     parameter section
       integer tsrs_smpstep       !< @var frequency of sampling
       integer tsrs_smpstep_id
+      integer tsrs_skstep       !< @var number of steps omitted at the beginning of the simulation
+      integer tsrs_skstep_id
 
 !     array dimensions
       integer tsrs_nfld         ! number of fileds
@@ -62,7 +64,8 @@
       common /tsrsi/ tsrs_id, tsrs_tmr_tot_id, tsrs_tmr_ini_id,
      $     tsrs_tmr_cvp_id, tsrs_tmr_int_id, tsrs_tmr_bfr_id,
      $     tsrs_tmr_io_id, tsrs_sec_id, tsrs_smpstep, tsrs_smpstep_id,
-     $     tsrs_handle, tsrs_nptot, tsrs_npts, tsrs_npt1, tsrs_ntsnap
+     $     tsrs_skstep, tsrs_skstep_id, tsrs_handle, tsrs_nptot, 
+     $     tsrs_npts, tsrs_npt1, tsrs_ntsnap
 
       common /tsrsiv/ tsrs_ipts, tsrs_rcode, tsrs_elid, tsrs_proc
 
