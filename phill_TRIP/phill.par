@@ -35,11 +35,11 @@ viscosity = -700
 advection = yes
 
 #
-[_RUNPAR]               # Runtime parameter section for rprm module
+[_RPRM]               # Runtime parameter section for rprm module
 PARFWRITE            = no                     # Do we write runtime parameter file
 PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
 #
-[_MONITOR]              # Runtime parameter section for monitor module
+[_MNTR]              # Runtime parameter section for monitor module
 LOGLEVEL             = 4                      # Logging threshold for toolboxes
 WALLTIME             = 23:45                  # Simulation wall time
 #
@@ -48,7 +48,7 @@ READCHKPT            = no                     # Restat from checkpoint
 CHKPFNUMBER          = 1                      # Restart file number
 CHKPINTERVAL         = 250                    # Checkpiont saving frequency (number of time steps)
 #
-[_TRIPPING]             # Runtime paramere section for tripping module
+[_TRIPL]             # Runtime paramere section for tripping module
 NLINE                = 2                      # Number of tripping lines
 TIAMP                = 0.00000000E+00         # Time independent amplitude
 TDAMP                = 1.00000000E+01         # Time dependent amplitude

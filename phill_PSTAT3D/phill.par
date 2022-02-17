@@ -34,7 +34,7 @@ density = 1.0
 viscosity = -700
 advection = yes
 
-[_MONITOR]              # Runtime parameter section for monitor module
+[_MNTR]              # Runtime parameter section for monitor module
 LOGLEVEL             = 2                      # Logging threshold for toolboxes
 IFTIMDSCR            = no                     # Write timer description in the summary
 WALLTIME             = 04:00                  # Simulation wall time

@@ -8,7 +8,7 @@
 !     module id and name
       integer tripl_id
       character*(*) tripl_name
-      parameter(tripl_name='TRIPPING')
+      parameter(tripl_name='TRIPL')
 
 !     timer id
       integer tripl_tmr_id

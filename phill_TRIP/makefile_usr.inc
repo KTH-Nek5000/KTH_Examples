@@ -1,10 +1,10 @@
 $(OBJDIR)/frame.o           :$(FRAME_SRC)/frame.f;                   $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/mntrlog_block.o   :$(MONITOR_SRC)/mntrlog_block.f;         $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/mntrlog.o         :$(MONITOR_SRC)/mntrlog.f;               $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/mntrtmr_block.o   :$(MONITOR_SRC)/mntrtmr_block.f;         $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/mntrtmr.o         :$(MONITOR_SRC)/mntrtmr.f;               $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/rprm_block.o      :$(RUNPARAM_SRC)/rprm_block.f;           $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/rprm.o            :$(RUNPARAM_SRC)/rprm.f;                 $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/mntrlog_block.o   :$(MNTR_SRC)/mntrlog_block.f;            $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/mntrlog.o         :$(MNTR_SRC)/mntrlog.f;                  $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/mntrtmr_block.o   :$(MNTR_SRC)/mntrtmr_block.f;            $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/mntrtmr.o         :$(MNTR_SRC)/mntrtmr.f;                  $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/rprm_block.o      :$(RPRM_SRC)/rprm_block.f;               $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/rprm.o            :$(RPRM_SRC)/rprm.f;                     $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/io_tools_block.o  :$(IO_TOOLS_SRC)/io_tools_block.f;       $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@

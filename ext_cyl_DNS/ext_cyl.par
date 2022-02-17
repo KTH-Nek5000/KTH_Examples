@@ -46,11 +46,11 @@ advection = yes
 writeToFieldFile = yes
 
 #
-[_RUNPAR]               # Runtime parameter section for rprm module
+[_RPRM]               # Runtime parameter section for rprm module
 PARFWRITE            = no                     # Do we write runtime parameter file
 PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
 #
-[_MONITOR]              # Runtime parameter section for monitor module
+[_MNTR]              # Runtime parameter section for monitor module
 LOGLEVEL             = 4                      # Logging threshold for toolboxes
 WALLTIME             = 02:05                  # Simulation wall time
 #
@@ -59,14 +59,14 @@ READCHKPT            = no                     # Restat from checkpoint
 CHKPFNUMBER          = 2                      # Restart file number
 CHKPINTERVAL         = 25                     # Checkpiont saving frequency (number of time steps)
 
-[_SPONGEBX]
+[_SPNB]
 strength = 1.0
 widthlx = 4.0
 widthrx = 12.0
 droplx = 3.0
 droprx = 8.0
 
-[_NOISEBX]
+[_NSEB]
 time = 2.0
 amplitude = 0.001
 boxminx =-5.0

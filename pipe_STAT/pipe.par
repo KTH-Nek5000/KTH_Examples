@@ -36,11 +36,11 @@ viscosity = -2650
 advection = yes
 
 #
-[_RUNPAR]               # Runtime parameter section for rprm module
+[_RPRM]               # Runtime parameter section for rprm module
 PARFWRITE            = no                     # Do we write runtime parameter file
 PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
 #
-[_MONITOR]              # Runtime parameter section for monitor module
+[_MNTR]              # Runtime parameter section for monitor module
 LOGLEVEL             = 4                      # Logging threshold for toolboxes
 WALLTIME             = 23:45                  # Simulation wall time
 #
