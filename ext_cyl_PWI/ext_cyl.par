@@ -57,7 +57,7 @@ READCHKPT            = no                     # Restat from checkpoint
 CHKPFNUMBER          = 1                      # Restart file number
 CHKPINTERVAL         = 25                     # Checkpiont saving frequency (number of time steps)
 #
-[_SPONGEBX]             # Runtime paramere section for sponge_box module
+[_SPONGEBX]             # Runtime paramere section for sponge box module
 STRENGTH             = 0.10000000E+01         # Sponge strength
 WIDTHLX              = 0.40000000E+01         # Sponge left section width; dimension X
 WIDTHLY              = 0.00000000E+00         # Sponge left section width; dimension Y

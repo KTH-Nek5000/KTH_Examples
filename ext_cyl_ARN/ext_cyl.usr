@@ -34,7 +34,7 @@
       ffz = 0.0
 
 !     add sponge
-      call spng_forcing(FFX,FFY,FFZ,ix,iy,iz,ieg)
+      call spnb_forcing(FFX,FFY,FFZ,ix,iy,iz,ieg)
       
       return
       end
@@ -187,7 +187,7 @@
 !-----------------------------------------------------------------------
 !     register modules
       call chkpt_register
-      call spng_register
+      call spnb_register
       call tst_register()
 
       return
@@ -209,7 +209,7 @@
       call chkpt_init
       nn = lx1*ly1*lz1*lelt*ldim
       call rzero(vtmp,nn)
-      call spng_init(vtmp(1,1),vtmp(1,2),vtmp(1,ndim))
+      call spnb_init(vtmp(1,1),vtmp(1,2),vtmp(1,ndim))
       call tst_init()
 
       return

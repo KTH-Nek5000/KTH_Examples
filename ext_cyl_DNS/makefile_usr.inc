@@ -10,5 +10,5 @@ $(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $
 $(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/chkpt_mstp.o      :$(CHKPTMS_SRC)/chkpt_mstp.f;            $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/spongebx.o        :$(SPONGE_BOX_SRC)/spongebx.f;           $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/spnb.o            :$(SPNB_SRC)/spnb.f;                     $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/nseb.o            :$(NSEB_SRC)/nseb.f;                     $(F77) -c $(FL2) $< -o $@

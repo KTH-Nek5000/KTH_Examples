@@ -10,7 +10,7 @@ $(OBJDIR)/io_tools.o        :$(IO_TOOLS_SRC)/io_tools.f;             $(F77) -c $
 $(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/chkptd.o          :$(CHKPTDMM_SRC)/chkptd.f;               $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/spongebx.o        :$(SPONGE_BOX_SRC)/spongebx.f;           $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/spnb.o            :$(SPNB_SRC)/spnb.f;                     $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/tstepper.o        :$(TSTEPPER_SRC)/tstepper.f;             $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/conht_tools.o     :$(CONHT_SRC)/conht_tools.f;             $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/arn_arp.o         :$(ARNARP_SRC)/arn_arp.f ./ARN_ARPD;     $(F77) -c $(FL2) $< -o $@
