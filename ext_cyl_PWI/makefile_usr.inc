@@ -11,6 +11,6 @@ $(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $
 $(OBJDIR)/chkpt_mstp.o      :$(CHKPTMS_SRC)/chkpt_mstp.f;            $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/spnb.o            :$(SPNB_SRC)/spnb.f;                     $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/tstepper.o        :$(TSTEPPER_SRC)/tstepper.f;             $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/conht_tools.o     :$(CONHT_SRC)/conht_tools.f;             $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/tstpr.o           :$(TSTPR_SRC)/tstpr.f;                   $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/cnht_tools.o      :$(CNHT_SRC)/cnht_tools.f;               $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/powerit.o         :$(POWERIT_SRC)/powerit.f;               $(F77) -c $(FL2) $< -o $@

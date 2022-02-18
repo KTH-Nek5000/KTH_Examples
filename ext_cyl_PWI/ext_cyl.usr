@@ -76,7 +76,7 @@
 !      call chkpt_main
 
 !     call time stepper
-      call tst_solve()
+      call tstpr_main()
 
 !     finalise framework
       if (ISTEP.eq.NSTEPS.or.LASTEP.eq.1) then
@@ -188,7 +188,7 @@
 !     register modules
       call chkpt_register
       call spnb_register
-      call tst_register()
+      call tstpr_register()
 
       return
       end subroutine
@@ -210,7 +210,7 @@
       nn = lx1*ly1*lz1*lelt*ldim
       call rzero(vtmp,nn)
       call spnb_init(vtmp(1,1),vtmp(1,2),vtmp(1,ndim))
-      call tst_init()
+      call tstpr_init()
 
       return
       end subroutine

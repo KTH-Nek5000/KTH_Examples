@@ -16,6 +16,6 @@ To run this example copy mesh data (ext_cyl.re2) from 'ext_cyl_DNS' and base flo
 * [mstep](https://kth-nek5000.github.io/KTH_Framework/group__chkpoint__mstep.html) - multi-step checkpointing
 * [math](https://kth-nek5000.github.io/KTH_Framework/group__math.html) - simple math tools
 * [spnb](https://kth-nek5000.github.io/KTH_Framework/group__sponge__box.html) - sponge/fringe for simple box meshes
-* [conht] - conjugated heat transfer tools
-* [tstepper] - time stepper
+* [cnht] - conjugated heat transfer tools
+* [tstpr] - time stepper
 * [powerit] - power iterations to calculate stronges mode

@@ -39,7 +39,7 @@
 !     one vector for all velocity components (maxn in ARPACK notation)
 !     be careful about including temperature
       integer arna_ls
-      parameter (arna_ls = arna_lv*LDIM + arna_lt*min(1,LDIMT)*0)
+      parameter (arna_ls = arna_lv*LDIM + arna_lt*min(1,LDIMT)*0) !!! ???? should it be ultiplied by 0
 
       ! length of the vector transferred to arpack 
       ! (combining velocity and temperature)
@@ -87,22 +87,22 @@
 
       integer idoarp0, arna_ns0, arna_negv0, arna_nkrl0, iparp0(11),
      $     ipntarp0(14), nwlarp0, infarp0, nparp0, ncarp0,
-     $     tst_step0, tst_mode0
+     $     tstpr_step0, tstpr_mode0
 
       character bmatarp0*1, whicharp0*2
 
-      real tst_tol0, rnmarp0, dtarp0
+      real tstpr_tol0, rnmarp0, dtarp0
 
 !     common blocks
 !     integer variables
       common /parpi/ idoarp, iparp, ipntarp, nwlarp, infarp, ierrarp,
      $     nparp, ncarp, idoarp0, arna_ns0, arna_negv0, arna_nkrl0, 
      $     iparp0, ipntarp0, nwlarp0, infarp0, nparp0, ncarp0, 
-     $     tst_step0, tst_mode0
+     $     tstpr_step0, tstpr_mode0
 
 !     real variables
-      common /parpr/ sigarp, workda, workla, workea,
-     $     vbasea, resida, driarp, rnmarp, tst_tol0, rnmarp0, dtarp0
+      common /parpr/ sigarp, workda, workla, workea, vbasea, 
+     $     resida, driarp, rnmarp, tstpr_tol0, rnmarp0, dtarp0
 
 !     logical variables
       common /parpl/ rvarp, selarp

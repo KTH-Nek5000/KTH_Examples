@@ -23,8 +23,8 @@ export FC="mpifort "${TOOLBOX_INC}
 export CC="mpicc"
 export PPLIST=""
 export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o"
-USR+=" math_tools.o spnb.o io_tools_block.o io_tools.o chkpoint.o chkptd.o tstepper.o"
-USR+=" conht_tools.o arn_arp.o arn_arp_io.o"
+USR+=" math_tools.o spnb.o io_tools_block.o io_tools.o chkpoint.o chkptd.o tstpr.o"
+USR+=" cnht_tools.o arn_arp.o arn_arp_io.o"
 export USR_LFLAGS="-L./ -lparpack_MPI-gcc_rst -larpack_gcc_rst"
 
 # Change a possible relative path to an absolute one; e.g. parRSB doesn't like a relative path

@@ -68,7 +68,7 @@ DROPLY               = 0.00000000E+00         # Sponge left drop/rise section wi
 DROPRX               = 0.80000000E+01         # Sponge right drop/rise section width; dimension X
 DROPRY               = 0.00000000E+00         # Sponge right drop/rise section width; dimension Y
 #
-[_TSTEPPER]             # Runtime paramere section for time stepper module
+[_TSTPR]             # Runtime paramere section for time stepper module
 MODE                 = OIC                    # Simulation mode
 STEPS                = 80                     # Length of stepper phase
 MAXCYC               = 20                     # Max number of stepper cycles

@@ -19,6 +19,6 @@ to 2D flow past circular cylinder.
 * [dummy](https://kth-nek5000.github.io/KTH_Framework/group__chkptdummy.html) - dummy checkpointing routines
 * [math](https://kth-nek5000.github.io/KTH_Framework/group__math.html) - simple math tools
 * [spnb](https://kth-nek5000.github.io/KTH_Framework/group__sponge__box.html) - sponge/fringe for simple box meshes
-* [conht] - conjugated heat transfer tools
-* [tstepper] - time stepper
+* [cnht] - conjugated heat transfer tools
+* [tstpr] - time stepper
 * [arnoldi_arpack] - Arnildi algorithm using PARCPACK library for spectra clculation
