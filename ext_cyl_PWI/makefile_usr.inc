@@ -13,4 +13,4 @@ $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $
 $(OBJDIR)/spnb.o            :$(SPNB_SRC)/spnb.f;                     $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/tstpr.o           :$(TSTPR_SRC)/tstpr.f;                   $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/cnht_tools.o      :$(CNHT_SRC)/cnht_tools.f;               $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/powerit.o         :$(POWERIT_SRC)/powerit.f;               $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/pwit.o            :$(PWIT_SRC)/pwit.f;                     $(F77) -c $(FL2) $< -o $@

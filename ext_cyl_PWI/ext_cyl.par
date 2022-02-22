@@ -74,5 +74,5 @@ STEPS                = 80                     # Length of stepper phase
 MAXCYC               = 20                     # Max number of stepper cycles
 TOL                  = 0.10000000E-05         # Convergence threshold
 #
-[_POWERIT]              # Runtime paramere section for power iteration module
+[_PWIT]              # Runtime paramere section for power iteration module
 L2N                  = 0.10000000E+01         # Vector initial norm
