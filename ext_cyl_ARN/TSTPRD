@@ -1,0 +1,67 @@
+!> @file TSTPRD
+!! @ingroup tstpr
+!! @brief Include file for time stepper module
+!! @author Adam Peplinski
+!! @date Mar 7, 2016
+!=======================================================================
+!     module id and name
+      integer tstpr_id
+      character*(*) tstpr_name
+      parameter(tstpr_name='TSTPR')
+
+!     timer id
+      integer tstpr_tmr_tot_id   ! total time
+      integer tstpr_tmr_ini_id   ! initialisation itme
+      integer tstpr_tmr_evl_id   ! evolution time
+
+!     initialisation flag
+      logical tstpr_ifinit
+
+!     runtime parameter part
+!     section id
+      integer tstpr_sec_id
+
+!     parameter section
+      integer tstpr_mode                  !< @var simulation mode; 1 - direct, 2 - adjoint, 3 - initial optimal condition
+      integer tstpr_mode_id
+      integer tstpr_step                  !< @var frequency of calling stepper_vsolve (number of time steps)
+      integer tstpr_step_id
+      integer tstpr_cmax                  !< @var max number of stepper cycles (major itaration steps)
+      integer tstpr_cmax_id
+      real    tstpr_tol                   !< @var convergence threshold for stepper
+      integer tstpr_tol_id
+
+!     flag marking pressure added to the vector lenght
+      integer tstpr_pr         ! 0 - no presure in the vector; 1 - pressure included in a vector
+      parameter (tstpr_pr = 0) ! CASE SPECIFIC
+!     flag marking temperature added to the vector lenght
+      integer tstpr_ht         ! 0 - no temperature in the vector; 1 - temperature included in a vector
+      parameter (tstpr_ht = 0) ! CASE SPECIFIC
+      
+
+!     vector lengths
+      integer tstpr_nv   ! velocity mesh
+      integer tstpr_nt   ! temperature mesh
+      integer tstpr_np   ! pressure mesh
+
+!     number of current time steps within stepper stage,
+      integer tstpr_istep
+
+!     number of vector steps (stepper phases),
+      integer tstpr_vstep
+
+!     for optimal initial condition
+      real tstpr_L2ini   ! intial norm
+      real tstpr_L2dir   ! growthrate after direct phase
+      real tstpr_L2adj   ! growthrate after adjoint phase
+
+!     common block section
+      common /tstpri/ tstpr_id, tstpr_tmr_tot_id, tstpr_tmr_ini_id, 
+     $     tstpr_tmr_evl_id, tstpr_sec_id, tstpr_mode, tstpr_mode_id, 
+     $     tstpr_step, tstpr_step_id, tstpr_cmax,  tstpr_cmax_id, 
+     $     tstpr_tol_id, tstpr_nv, tstpr_nt, tstpr_np, tstpr_istep, 
+     $     tstpr_vstep
+
+      common /tstprr/ tstpr_tol, tstpr_L2ini, tstpr_L2dir, tstpr_L2adj
+      
+      common /tstprl/ tstpr_ifinit

@@ -11,7 +11,7 @@ $(OBJDIR)/chkpoint.o        :$(CHKPT_SRC)/chkpoint.f;                $(F77) -c $
 $(OBJDIR)/chkptd.o          :$(CHKPTDMM_SRC)/chkptd.f;               $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/spnb.o            :$(SPNB_SRC)/spnb.f;                     $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/tstpr.o           :$(TSTPR_SRC)/tstpr.f;                   $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/tstpr.o           :$(TSTPR_SRC)/tstpr.f ./TSTPRD;          $(F77) -c $(FL2) $< -o $@
 $(OBJDIR)/cnht_tools.o      :$(CNHT_SRC)/cnht_tools.f;               $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/arn_arp.o         :$(ARNARP_SRC)/arn_arp.f ./ARN_ARPD;     $(F77) -c $(FL2) $< -o $@
-$(OBJDIR)/arn_arp_io.o      :$(ARNARP_SRC)/arn_arp_io.f ./ARN_ARPD;  $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/arna.o            :$(ARNA_SRC)/arna.f ./ARNAD ./TSTPRD;    $(F77) -c $(FL2) $< -o $@
+$(OBJDIR)/arna_io.o         :$(ARNA_SRC)/arna_io.f ./ARNAD ./TSTPRD; $(F77) -c $(FL2) $< -o $@

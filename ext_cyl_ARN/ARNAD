@@ -1,5 +1,5 @@
-!> @file ARN_ARPD
-!! @ingroup arn_arp
+!> @file ARNAD
+!! @ingroup arna
 !! @brief Include file for Arnoldi method using ARPACK library
 !! @author Adam Peplinski
 !! @date Mar 7, 2016
@@ -7,7 +7,7 @@
 !     module id and name
       integer arna_id
       character*(*) arna_name
-      parameter(arna_name='ARN_ARP')
+      parameter(arna_name='ARNA')
 
 !     timer id
       integer arna_tmr_ini_id   ! initialisation itme
@@ -29,17 +29,19 @@
 !     array sizes; static allocation
 !     max size of Krylov space (maxncv in ARPCK notation)
       integer arna_lkrl
-      parameter (arna_lkrl = 250)
+      parameter (arna_lkrl = 250) ! CASE SPECIFIC
 
 !     single vector sizes
-      integer arna_lv, arna_lt
+      integer arna_lv, arna_lt, arna_lp
       parameter (arna_lv = LPX1*LPY1*LPZ1*LPELV) ! velocity mesh
       parameter (arna_lt = LPX1*LPY1*LPZ1*LPELT) ! temperature mesh
+      parameter (arna_lp = LPX2*LPY2*LPZ2*LPELV) ! pressure mesh
 
 !     one vector for all velocity components (maxn in ARPACK notation)
 !     be careful about including temperature
       integer arna_ls
-      parameter (arna_ls = arna_lv*LDIM + arna_lt*min(1,LDIMT)*0) !!! ???? should it be ultiplied by 0
+      parameter (arna_ls = arna_lv*LDIM + arna_lp*tstpr_pr + 
+     $                     arna_lt*tstpr_ht)
 
       ! length of the vector transferred to arpack 
       ! (combining velocity and temperature)

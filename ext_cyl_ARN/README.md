@@ -21,4 +21,4 @@ to 2D flow past circular cylinder.
 * [spnb](https://kth-nek5000.github.io/KTH_Framework/group__sponge__box.html) - sponge/fringe for simple box meshes
 * [cnht] - conjugated heat transfer tools
 * [tstpr] - time stepper
-* [arnoldi_arpack] - Arnildi algorithm using PARCPACK library for spectra clculation
+* [arna] - Arnildi algorithm using PARCPACK library for spectra clculation

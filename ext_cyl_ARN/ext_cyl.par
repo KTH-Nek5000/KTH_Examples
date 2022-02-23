@@ -74,7 +74,7 @@ STEPS                = 80                     # Length of stepper phase
 MAXCYC               = 20                     # Max number of stepper cycles
 TOL                  = 0.10000000E-05         # Convergence threshold
 #
-[_ARN_ARP]              # Runtime paramere section for Arnoldi ARPACK module
+[_ARNA]              # Runtime paramere section for Arnoldi ARPACK module
 NKRL                 = 50                     # Krylov space size
 NEGV                 = 10                     # Number of eigenvalues
 
