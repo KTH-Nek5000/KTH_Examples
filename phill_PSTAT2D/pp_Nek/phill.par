@@ -40,9 +40,9 @@ IFTIMDSCR            = no                     # Write timer description in the s
 WALLTIME             = 04:00                  # Simulation wall time
 
 [_PSTAT2D]                # Runtime paramere section for pstat module
-C2D_FNUM             = 1                      # c2D file number
 AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)
-STS_NFILE            = 7                      # Number of stat files
+STS_FFILE            = 1                      # First stat file number
+STS_NFILE            = 7                      # Last stat file number
 STS_STIME            = 0.69968783E+02         # Statistics starting time
 STS_NSTEP            = 10                     # Number of steps between averaging (in sts file)
 

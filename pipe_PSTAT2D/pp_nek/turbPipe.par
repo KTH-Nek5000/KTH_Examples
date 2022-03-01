@@ -39,8 +39,8 @@ advection = yes
 
 
 [_PSTAT2D]              # Runtime paramere section for pstat module
-C2D_FNUM             = 1                      # c2D file number
 AMR_NREF             = 0                      # Nr. of initial refinemnt (AMR only)
-STS_NFILE            = 5                      # Number of stat files
+STS_FFILE            = 1                      # First stat file number
+STS_NFILE            = 5                      # Last stat file number
 STS_STIME            = 0.1446665908816E+03    # Statistics starting time
 STS_NSTEP            = 10                     # Number of steps between averaging (in sts file)
