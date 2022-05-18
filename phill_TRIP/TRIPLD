@@ -31,19 +31,19 @@
       parameter (tripl_nset_max=4)
 
 !     parameter section
-      integer tripl_nline                  !< @var number of tripping lines
+      integer tripl_nline                   !< @var number of tripping lines
       integer tripl_nline_id
-      real tripl_tiamp                     !< @var time independent amplitude
-      integer tripl_tiamp_id
-      real tripl_tdamp                     !< @var time dependent amplitude
-      integer tripl_tdamp_id
+      real tripl_tiamp(tripl_nline_max)     !< @var time independent amplitude
+      integer tripl_tiamp_id(tripl_nline_max)
+      real tripl_tdamp(tripl_nline_max)     !< @var time dependent amplitude
+      integer tripl_tdamp_id(tripl_nline_max)
       real tripl_spos(LDIM,tripl_nline_max) !< @var coordinates of starting point of tripping line
       integer tripl_spos_id(LDIM,tripl_nline_max)
       real tripl_epos(LDIM,tripl_nline_max) !< @var coordinates of ending point of tripping line
       integer tripl_epos_id(LDIM,tripl_nline_max)
       real tripl_smth(LDIM,tripl_nline_max) !< @var smoothing radius
       integer tripl_smth_id(LDIM,tripl_nline_max)
-      logical tripl_lext(tripl_nline_max)    !< @var do we extend a line beyond starting and endig points
+      logical tripl_lext(tripl_nline_max)   !< @var do we extend a line beyond starting and endig points
       integer tripl_lext_id(tripl_nline_max)
       real tripl_rota(tripl_nline_max)      !< @var elipse rotation angle
       integer tripl_rota_id(tripl_nline_max)
