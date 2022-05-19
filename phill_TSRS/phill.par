@@ -49,5 +49,6 @@ CHKPFNUMBER          = 1                      # Restart file number
 CHKPINTERVAL         = 250                    # Checkpiont saving frequency (number of time steps)
 #
 [_TSRS]             # Runtime paramere section for statistics module
-SMPSTEP              = 10
+TSTART               = 1.0                    # Sampling starting time
+TINT                 = 0.05                   # Samplind time interval
 SKSTEP               = 2                      # Skipped initial steps
