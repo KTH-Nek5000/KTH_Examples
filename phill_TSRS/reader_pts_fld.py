@@ -48,7 +48,8 @@ def read_int_fld(fname):
     header = infile.read(132).split()
 
     # extract word size
-    wdsize = int(header[1])
+    wdsizet = int(header[1])
+    wdsizef = int(header[2])
 
     # identify endian encoding
     etagb = infile.read(4)
@@ -60,11 +61,11 @@ def read_int_fld(fname):
         emode = '>'
 
     # get simulation parameters
-    ldim = int(header[2])
-    npoints = int(header[4])
-    ntsnap = int(header[5])
-    nfld = int(header[6])
-    time = float(header[7])
+    ldim = int(header[3])
+    npoints = int(header[5])
+    ntsnap = int(header[6])
+    nfld = int(header[7])
+    time = float(header[8])
 
     # create main data structure
     data = pset(ldim,ntsnap,nfld,npoints)
@@ -73,7 +74,7 @@ def read_int_fld(fname):
     data.time = time
 
     # read snapshot time list
-    data.tmlist = read_flt(infile,emode,wdsize,data.ntsnap)
+    data.tmlist = read_flt(infile,emode,wdsizet,data.ntsnap)
 
     # read global point number
     glidlist = read_int(infile,emode,data.npoints)
@@ -85,7 +86,7 @@ def read_int_fld(fname):
 
     # read coordinates
     for il in range(data.npoints):
-        lpos = read_flt(infile,emode,wdsize,data.ldim)
+        lpos = read_flt(infile,emode,wdsizet,data.ldim)
         lptn = data.pset[il]
         data_pos = getattr(lptn,'pos')
         for jl in range(data.ldim):
@@ -96,7 +97,7 @@ def read_int_fld(fname):
         lptn = data.pset[il]
         data_fld = getattr(lptn,'fld')
         for jl in range(data.ntsnap):
-            lfld = read_flt(infile,emode,wdsize,data.nfld)
+            lfld = read_flt(infile,emode,wdsizef,data.nfld)
             for kl in range(data.nfld):
                 data_fld[jl][kl] = lfld[kl]
 
@@ -129,7 +130,7 @@ def print_point_data(data,il):
 
 if __name__ == "__main__":
     # in genera there should be loop over files and some concatenation mechanism
-    fname = 'ptsphill0.f00002'
+    fname = 'ptsphill0.f00001'
     data = read_int_fld(fname)
 
     print_sim_data(data)
