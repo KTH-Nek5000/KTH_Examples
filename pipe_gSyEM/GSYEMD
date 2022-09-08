@@ -122,8 +122,20 @@
 !     eddy orientation
       integer gsyem_eps(ldim,gsyem_neddy_max*gsyem_nfam_max)
 
+      ! profiles for given family
+      ! number of points in profile per family
+      integer gsyem_pnpoint(gsyem_nfam_max)
+      ! family profile array offset
+      integer gsyem_ppoff(gsyem_nfam_max+1)
+      ! position in a profile
+      real gsyem_prpos(gsyem_npoint_max*gsyem_nfam_max)
+      ! mean velocity
+      real gsyem_pumean(gsyem_npoint_max*gsyem_nfam_max)
+      ! turbulence kinetic energy
+      real gsyem_ptke(gsyem_npoint_max*gsyem_nfam_max)
+      ! dissipation rate
+      real gsyem_pdss(gsyem_npoint_max*gsyem_nfam_max)
 
-      
 !     common block section
       common /gsyemi/ gsyem_id, gsyem_ttot_id, gsyem_tini_id, 
      $     gsyem_tevl_id, gsyem_tchp_id, gsyem_sec_id, gsyem_mode, 
@@ -132,13 +144,15 @@
      $     gsyem_sig_max_id, gsyem_sig_min_id, gsyem_dir_id, 
      $     gsyem_fnum, gsyem_nsnap, gsyem_lfnum, gsyem_gfnum, 
      $     gsyem_lfmap, gsyem_lenum, gsyem_genum, gsyem_lemap,
-     $     gsyem_foff, gsyem_eoff, gsyem_eps
+     $     gsyem_foff, gsyem_eoff, gsyem_eps, gsyem_pnpoint,
+     $     gsyem_ppoff
 
       common /gsyemr/  gsyem_sig_max, gsyem_sig_min, gsyem_dir,
      $     gsyem_bmin, gsyem_bmax, gsyem_bcrd, gsyem_bnrm, 
      $     gsyem_cln_min, gsyem_cln_max, gsyem_mdst, gsyem_bext, 
      $     gsyem_area, gsyem_raxs, gsyem_rang,
      $     gsyem_sigma, gsyem_umean, gsyem_intn, gsyem_ub, gsyem_un,
-     $     gsyem_epos, gsyem_eamp, gsyem_ephs
+     $     gsyem_epos, gsyem_eamp, gsyem_ephs, gsyem_prpos,
+     $     gsyem_pumean, gsyem_ptke, gsyem_pdss
 
       common /gsyeml/ gsyem_ifinit, gsyem_chifrst, gsyem_dirl
