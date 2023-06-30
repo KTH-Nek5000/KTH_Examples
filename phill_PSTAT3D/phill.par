@@ -4,7 +4,7 @@
 [GENERAL] 
 stopAt = numSteps #endTime
 #endTime = 30.0
-numSteps = 1003
+numSteps = 0
 
 dt = -2.0e-04
 timeStepper = bdf3 #char #steady

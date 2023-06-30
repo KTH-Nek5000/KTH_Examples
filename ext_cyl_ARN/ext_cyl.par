@@ -52,7 +52,7 @@ PARFNAME             = outparfile             # Runtime parameter file name for 
 LOGLEVEL             = 4                      # Logging threshold for toolboxes
 WALLTIME             = 02:05                  # Simulation wall time
 #
-[_CHKPOINT]             # Runtime paramere section for checkpoint module
+[_CHKPT]             # Runtime paramere section for checkpoint module
 READCHKPT            = no                     # Restat from checkpoint
 CHKPFNUMBER          = 1                      # Restart file number
 CHKPINTERVAL         = 25                     # Checkpiont saving frequency (number of time steps)

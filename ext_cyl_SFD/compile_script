@@ -23,7 +23,7 @@ export FC="mpifort "${TOOLBOX_INC}
 export CC="mpicc"
 export PPLIST=""
 export USR="frame.o mntrlog_block.o mntrlog.o mntrtmr_block.o mntrtmr.o rprm_block.o rprm.o io_tools_block.o io_tools.o"
-USR+=" chkpoint.o chkpt_mstp.o sfd.o"
+USR+=" chkpt.o chkptms.o sfd.o"
 export USR_LFLAGS=""
 
 

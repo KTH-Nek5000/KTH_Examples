@@ -4,7 +4,7 @@
 [GENERAL]
 stopAt = numSteps
 #endTime = 100.0
-numSteps = 5000
+numSteps = 0
 
 #dt = -3e-03    
 dt = -3e-03
