@@ -102,11 +102,11 @@ PLIBS = $(PARPACKLIB) $(ALIBS) $(MPILIBS)
 #  You need to make sure these are correct for your system.
 #
 FC		= mpif90
-FFLAGS	= -O2
+FFLAGS	= -std=legacy -O2
 
 # Set the parallel fortran compiler
 PFC     = mpif90
-PFFLAGS = -O2
+PFFLAGS = -std=legacy -O2
 
 LDFLAGS = 
 CD		= cd

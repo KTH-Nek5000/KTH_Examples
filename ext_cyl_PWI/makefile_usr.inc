@@ -13,3 +13,4 @@ $(OBJDIR)/math_tools.o      :$(MATH_SRC)/math_tools.f;               $(FC) -c $(
 $(OBJDIR)/spnb.o            :$(SPNB_SRC)/spnb.f;                     $(FC) -c $(FL2) $< -o $@
 $(OBJDIR)/tstpr.o           :$(TSTPR_SRC)/tstpr.f ./TSTPRD;          $(FC) -c $(FL2) $< -o $@
 $(OBJDIR)/cnht_tools.o      :$(CNHT_SRC)/cnht_tools.f;               $(FC) -c $(FL2) $< -o $@
+$(OBJDIR)/pwit.o            :$(PWIT_SRC)/pwit.f ./TSTPRD;            $(FC) -c $(FL2) $< -o $@
