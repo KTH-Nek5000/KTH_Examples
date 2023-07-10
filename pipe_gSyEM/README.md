@@ -2,6 +2,8 @@
 
 This example presents number of tools for DNS including framework, restarting from a checkpoint and genralised synthetic eddy method.
 
+To run this example first create the mesh. Next generate map file with use of genmap and make sure profile data files (gsyem_prof_###.txt) for all families are present. Finally adjust include file GSYEMD setting max number of families, eddies, points and edges, compile the executable using 'compile_script' and perform tests.
+
 ## Tool list:
 * [frame](https://kth-nek5000.github.io/KTH_Framework/group__frame.html) - backbone of the toolbox
 * [mntr](https://kth-nek5000.github.io/KTH_Framework/group__mntr.html) - monitoring tool: logging and timing

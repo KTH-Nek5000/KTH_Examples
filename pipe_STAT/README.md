@@ -2,6 +2,9 @@
 
 This example presents use of turbulence statistics tool.
 
+## Usage:
+To run this example first create the mesh. Next generate map file with use of genmap. Finally adjust include file STATD choosing between time average only and time-space average, compile the executable using 'compile_script' and perform tests.
+
 ## Tool list:
 * [frame](https://kth-nek5000.github.io/KTH_Framework/group__frame.html) - backbone of the toolbox
 * [mntr](https://kth-nek5000.github.io/KTH_Framework/group__mntr.html) - monitoring tool: logging and timing
