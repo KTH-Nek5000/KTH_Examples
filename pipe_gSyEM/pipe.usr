@@ -60,21 +60,16 @@
       if(nid.eq.0) write(6,2) time,ubar,e2
  2    format(1p3e13.4,' monitor')
 
-      ! torque
+      ! Compute wall shear stress and friction velocity
       call torque_calc(1.0,x0,.false.,.false.) ! wall shear
       wall_area=2.*pi*RAD*ZLENPIPE
-      tauw=dragz(iobj_wall)/wall_area   !wall shear stress 
-      ! Note: we have 2 objects starting from 0. So we do averaging.
-      ! To see that, make the 3rd arg in torque_calc .true. 
+      tauw=dragvz(iobj_wall)/wall_area   !wall shear stress
+
       rho=1.0
       if (nid.eq.0) write(*,*) 'time, uTau: ',time,sqrt(tauw/rho)
 
+      ! Compute lambda2 and store in temperature field
       call lambda2(t(1,1,1,1,1))
-  
-      ! save initial condition
-!      if (istep.eq.0) then
-!         call outpost(vx,vy,vz,pr,t,'ini')
-!      endif
 
       if (ISTEP.eq.NSTEPS.or.LASTEP.eq.1) then
          call frame_end         ! finalise framework

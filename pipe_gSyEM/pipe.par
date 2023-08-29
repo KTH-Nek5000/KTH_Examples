@@ -1,0 +1,54 @@
+# par file for turbulent pipe flow using 
+# divergence-free synthetic eddy method as inflow
+#
+[GENERAL]
+stopAt = numSteps 
+numSteps = 1000
+dt = -1e-3
+writeControl = timeStep 
+writeInterval = 100
+dealiasing = yes
+
+[PROBLEMTYPE]
+equation = incompNS 
+variableProperties = no
+
+[PRESSURE]
+residualtol = 1e-08
+residualproj = yes
+
+[VELOCITY]
+viscosity = -5300.
+density = 1.
+residualtol = 1e-08
+residualproj = yes
+advection = yes
+
+[TEMPERATURE]
+solver = none
+writeToFieldFile = yes
+
+#
+[_RPRM]               # Runtime parameter section for rprm module
+PARFWRITE            = no                     # Do we write runtime parameter file
+PARFNAME             = outparfile             # Runtime parameter file name for output (without .par)
+#
+[_MNTR]              # Runtime parameter section for monitor module
+LOGLEVEL             = 4                      # Logging threshold for toolboxes
+WALLTIME             = 12:05                  # Simulation wall time
+#
+[_CHKPT]             # Runtime paramere section for checkpoint module
+READCHKPT            = no                     # Restat from checkpoint
+CHKPFNUMBER          = 2                      # Restart file number
+CHKPINTERVAL         = 250                    # Checkpoint saving frequency (number of time steps)
+#
+[_GSYEM]                # Runtime paramere section for gSyEM module
+MODE                 = 1                      # gSyEM mode
+NFAM                 = 1                      # Family number
+NEDDY01              = 10000                  # Numer of eddies per family
+FAMBC01              = 1                      # Family BC index
+FAMASIG01            = 0.5                    # Family sigma max
+FAMISIG01            = 0.0025                 # Family sigma min
+FAMDIRX01            = 0.0                    # Family normal X component
+FAMDIRY01            = 0.0                    # Family normal Y component
+FAMDIRZ01            = 0.0                    # Family normal Z component
